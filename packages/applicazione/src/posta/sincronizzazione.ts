@@ -139,11 +139,8 @@ async function gestisciErrore(dip: Dipendenze, utenteId: string, casellaId: stri
   const ora = dip.orologio.ora();
   const codice = e instanceof ErroreConnettore ? e.codice : "inatteso";
   await dip.unita.perUtente(utenteId, async (ctx: ContestoUtente) => {
-    if (codice === "autorizzazione_revocata") {
-      await caselle.cambiaStato(ctx, casellaId, "da_ricollegare", ["collegata", "permessi_incompleti"], ora, { ultimoErrore: codice });
-      await sincronizzazione.aggiorna(ctx, casellaId, { ultimoErrore: codice });
-      return;
-    }
+    // Un consenso revocato porta la casella a "da ricollegare" solo tramite la scrittura condizionata sulla
+    // generazione fatta dal connettore (§6.3): qui si ritenta, così un job vecchio non tocca una casella ricollegata.
     if (codice === "permessi_insufficienti") {
       await caselle.cambiaStato(ctx, casellaId, "permessi_incompleti", ["collegata"], ora, { ultimoErrore: codice });
       await sincronizzazione.aggiorna(ctx, casellaId, { ultimoErrore: codice });

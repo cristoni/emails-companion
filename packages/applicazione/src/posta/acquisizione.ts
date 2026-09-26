@@ -23,6 +23,25 @@ function hashContenuto(c: CopiaNormalizzata): string {
   return createHash("sha256").update(`${c.oggetto}\u0000${c.testo}`).digest("hex");
 }
 
+const ATTESA_COPIA_INVIATA_MS = 15 * 60 * 1000;
+
+/**
+ * Direzione con verifica del mittente (§5.3): un mittente uguale a un indirizzo dell'utente conta come
+ * invio solo se esiste una copia nella cartella inviata; altrimenti l'email resta in entrata (il mittente
+ * può essere contraffatto) e l'analisi attende la copia inviata per un tempo limitato.
+ */
+export function direzioneVerificata(input: {
+  cartelleCopie: Cartella[][];
+  mittente: string;
+  destinatari: string[];
+  indirizziUtente: ReadonlySet<string>;
+}): { direzione: "entrata" | "uscita" | "interna"; provvisoria: boolean } {
+  const direzione = determinaDirezione(input);
+  const haCopiaInviata = input.cartelleCopie.some((c) => c.includes("inviata"));
+  if (direzione !== "entrata" && !haCopiaInviata && input.indirizziUtente.has(input.mittente)) return { direzione: "entrata", provvisoria: true };
+  return { direzione, provvisoria: false };
+}
+
 /** Funzioni da eseguire per un'email appena acquisita, in base alla direzione. */
 export function funzioniIniziali(direzione: "entrata" | "uscita" | "interna"): FunzioneAI[] {
   return direzione === "entrata" ? ["classificazione_priorita"] : ["estrazione_attivita"];
@@ -51,15 +70,18 @@ export async function acquisisciCopia(
   const chiavi = await posta.chiaviLogiche(ctx, { messageId: copia.messageId, mittente: copia.mittente.indirizzo, hashContenuto: hash });
   let emailId = await posta.trovaEmailLogica(ctx, chiavi);
   let nuovaEmail = false;
+  let provvisoria = false;
 
   if (!emailId) {
     const destinatari = [...copia.a, ...copia.cc].map((d) => normalizzaIndirizzo(d.indirizzo));
-    const direzione = determinaDirezione({
+    const verificata = direzioneVerificata({
       cartelleCopie: [copia.cartelle],
       mittente: normalizzaIndirizzo(copia.mittente.indirizzo),
       destinatari,
       indirizziUtente,
     });
+    provvisoria = verificata.provvisoria;
+    const direzione = verificata.direzione;
     const preferenze = await impostazioni.preferenze(ctx);
     const lingua = scegliLingua({
       correzione: null,
@@ -112,7 +134,7 @@ export async function acquisisciCopia(
 
   const copie = await posta.copieDellEmail(ctx, emailId);
   if (!nuovaEmail) {
-    await aggiornaDirezioneDaCopie(ctx, emailId, copie.map((c) => c.cartelle), copia, indirizziUtente);
+    await aggiornaDirezioneDaCopie(dip, ctx, emailId, copie.map((c) => c.cartelle), copia, indirizziUtente);
     return { emailId, nuovaEmail: false, nuovaCopia: true };
   }
 
@@ -127,24 +149,43 @@ export async function acquisisciCopia(
   for (const funzione of funzioniIniziali(email.direzione)) {
     await posta.impostaStatoFunzione(ctx, emailId, funzione, "da_eseguire", ora);
   }
-  await ctx.coda.accoda("analizza_email", { utenteId: ctx.utenteId, emailId }, { chiave: `analisi:${emailId}` });
+  await ctx.coda.accoda(
+    "analizza_email",
+    { utenteId: ctx.utenteId, emailId },
+    { chiave: `analisi:${emailId}`, ...(provvisoria ? { esegui: new Date(ora.getTime() + ATTESA_COPIA_INVIATA_MS) } : {}) },
+  );
   return { emailId, nuovaEmail, nuovaCopia: true };
 }
 
+/**
+ * Una nuova copia può cambiare la direzione (es. arriva la copia inviata di un'email vista prima in entrata):
+ * se l'analisi non è ancora partita si reimpostano le funzioni per la nuova direzione.
+ */
 async function aggiornaDirezioneDaCopie(
+  dip: Dipendenze,
   ctx: ContestoUtente,
   emailId: string,
   cartelleCopie: Cartella[][],
   copia: CopiaNormalizzata,
   indirizziUtente: ReadonlySet<string>,
 ) {
-  const direzione = determinaDirezione({
+  const attuale = await posta.leggi(ctx, emailId, false);
+  if (!attuale) return;
+  const { direzione } = direzioneVerificata({
     cartelleCopie,
     mittente: normalizzaIndirizzo(copia.mittente.indirizzo),
     destinatari: [...copia.a, ...copia.cc].map((d) => normalizzaIndirizzo(d.indirizzo)),
     indirizziUtente,
   });
+  if (direzione === attuale.direzione) return;
   await posta.aggiornaDirezione(ctx, emailId, direzione);
+  const stati = await posta.statiFunzione(ctx, emailId);
+  if (Object.values(stati).some((s) => s && s.stato !== "da_eseguire")) return;
+  const ora = dip.orologio.ora();
+  for (const f of ["classificazione_priorita", "estrazione_attivita"] as const) {
+    await posta.impostaStatoFunzione(ctx, emailId, f, funzioniIniziali(direzione).includes(f) ? "da_eseguire" : "non_necessaria", ora);
+  }
+  await ctx.coda.accoda("analizza_email", { utenteId: ctx.utenteId, emailId }, { chiave: `analisi:${emailId}`, modalitaChiave: "replace" });
 }
 
 function anteprimaDi(testo: string): string {
