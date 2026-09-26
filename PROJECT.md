@@ -2,7 +2,7 @@
 
 ## 1. Stato e obiettivo
 
-Documento di riferimento per le funzionalità discusse. L'obiettivo è una webapp di posta che trasformi i messaggi in una vista operativa delle cose da fare, delle urgenze e delle risposte attese. L'utente deve poter risalire sempre alle email originali. Questa versione non prende decisioni architetturali.
+Documento di riferimento per le funzionalità discusse. L'obiettivo è una webapp di posta che trasformi i messaggi in una vista operativa delle cose da fare, delle urgenze e delle risposte attese. L'utente deve poter risalire sempre alle email originali. Questo documento descrive il prodotto; le scelte architetturali sono in `docs/architettura.md` e nelle decisioni registrate in `docs/adr/`, il glossario del dominio è in `CONTEXT.md`.
 
 ## 2. Decisioni già prese
 
@@ -18,6 +18,44 @@ Documento di riferimento per le funzionalità discusse. L'obiettivo è una webap
 - La categoria **News e Informazioni secondarie** compare nella vista principale come riepilogo delle email ricevute nelle ultime 24 ore, con accesso ai singoli originali.
 - Un elemento della vista principale può rimandare a una o più email distribuite in uno o più thread.
 - L'AI non invia autonomamente messaggi: l'utente approva l'invio.
+
+### 2.1 Decisioni di prodotto del 26 settembre 2026
+
+Prese durante la definizione dell'architettura; sostituiscono le corrispondenti questioni aperte del §9.
+
+**Accesso, caselle e connettori**
+
+- Google è il primo di più sistemi collegabili. L'accesso all'app avviene tramite un **provider di identità** (oggi Google); la posta viene letta e inviata tramite **connettori di posta** disaccoppiati dalle funzionalità. Il connettore viene scelto e configurato per utente al primo accesso.
+- Con Google un **unico consenso** in registrazione concede identità, lettura (`gmail.readonly`) e invio (`gmail.send`) con accesso offline; la casella dell'account di accesso diventa la prima casella collegata.
+- Un utente può collegare **più caselle** già nella prima versione. La home è unificata e ogni elemento indica la casella di provenienza; le risposte partono dalla casella corretta.
+- Pubblico iniziale: pilota dell'ideatore e di poche persone conosciute. Il progetto Google è "Esterno", in stato **In produzione non verificato**: gli utenti vedono l'avviso "app non verificata" e il progetto accetta al massimo 100 utenti nell'intera vita. Un lancio pubblico richiede la verifica Google degli scope "restricted" e un audit di sicurezza CASA annuale.
+
+**Privacy e conservazione**
+
+- Ogni chiamata ai modelli che contiene testo delle email richiede fornitori che non raccolgono dati (`data_collection: deny`) e **Zero Data Retention obbligatoria**. Se il modello scelto per una funzione non ha endpoint compatibili, l'impostazione lo segnala e chiede un altro modello.
+- Il testo normalizzato e le intestazioni delle email sono conservati, cifrati, **finché la casella resta collegata**; tutto viene eliminato quando l'utente scollega la casella o cancella l'account. Gli allegati non vengono salvati; l'originale HTML viene caricato dal provider quando l'utente lo apre.
+
+**Analisi e vista operativa**
+
+- **Importazione iniziale**: al collegamento di una casella si analizzano le email ricevute negli ultimi 14 giorni e quelle inviate negli ultimi 30, a partire dalle più recenti, dopo aver mostrato numero di email e stima del costo e ottenuto la conferma dell'utente.
+- Le Attività, le Attese e i collegamenti proposti dall'AI **compaiono subito come proposte**: riconoscibili, con le evidenze, e con i comandi conferma, modifica e scarta.
+- Una Situazione che rientra in più aree compare **una sola volta**, nell'area con precedenza più alta (Urgente, poi Risposte arrivate, poi Da fare, poi In attesa), con indicatori per gli altri stati.
+- Se la chiave OpenRouter manca, non è valida o non ha credito, oppure se il modello scelto non è disponibile, **la sincronizzazione continua e l'analisi va in pausa**: tutta per problemi di chiave o credito, solo la funzione interessata per problemi di modello. Le email restano leggibili come "da analizzare", un avviso in home e nelle impostazioni indica il motivo, l'analisi riprende da sola quando il problema è risolto. Non si passa mai in silenzio a un altro modello.
+- Una Risposta arrivata valutata **completa chiude automaticamente l'Attesa**, in modo annullabile: la chiusura è mostrata come inferenza, resta visibile in Risposte arrivate e l'utente può riaprire l'Attesa. Una risposta parziale o non pertinente lascia l'Attesa aperta.
+- Le **correzioni sono locali e permanenti**: valgono per l'elemento corretto, nessuna rianalisi le sovrascrive e un collegamento rifiutato non viene riproposto. Non c'è apprendimento automatico dalle correzioni. Un Contesto AI modificato vale per le email nuove; l'utente può avviare "Rianalizza" su una singola email, sugli elementi aperti o sugli ultimi N giorni, vedendo prima la stima del costo.
+- L'app non impone un tetto di spesa proprio: in registrazione consiglia di creare una chiave OpenRouter dedicata con limite di credito, mostra il consumo per funzione e offre l'interruttore "Pausa analisi AI".
+
+**Lingue e stile**
+
+- L'interfaccia è **multilingua fin dal progetto**, con **inglese come lingua predefinita** e italiano come seconda lingua iniziale. L'utente può cambiare lingua nelle impostazioni.
+- I testi prodotti dall'AI (motivazioni, descrizioni, titoli, riepiloghi, bozze) sono **nella lingua dell'email esaminata**, indipendentemente dalla lingua dell'interfaccia. Una bozza è nella lingua dell'email a cui risponde. Una voce del riepilogo che raccoglie email in lingue diverse usa la lingua dell'interfaccia.
+- Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify (www.mintlify.com): pulito, con molto spazio bianco, tipografia curata, un solo colore d'accento verde, temi chiaro e scuro.
+
+**Client, riepilogo e bozze**
+
+- I comandi da client tradizionale della prima versione sono in **sola lettura**: elenco delle email sincronizzate, lettura dell'originale in una vista sicura (script e immagini remote bloccati, comando "mostra immagini"), apertura nel provider, allegati indicati solo per nome. Risposte e solleciti passano dalle bozze confermate.
+- Il **Riepilogo News** viene rigenerato quando cambiano le email incluse, attendendo 10 minuti per raggrupparle e al massimo ogni 30 minuti, oltre che con il comando "Aggiorna". Mostra l'ora dell'ultimo aggiornamento e quante email nuove non vi sono ancora incluse. Senza News compare "Nessuna News nelle ultime 24 ore", senza chiamare il modello.
+- Le **bozze** vengono generate solo su richiesta ("Proponi risposta", "Proponi sollecito"). Per le Attese scadute l'app segnala un "sollecito consigliato" senza generare testo. Le bozze restano nell'app; l'invio richiede la conferma esplicita della versione esatta della bozza e un esito incerto viene mostrato all'utente, mai ritentato alla cieca.
 
 ## 3. Concetti funzionali
 
@@ -37,11 +75,11 @@ Questi sono concetti di prodotto, non uno schema dati o una scelta implementativ
 
 ### 4.1 Accesso Google e Gmail
 
-Il percorso iniziale consente di entrare con Google e di autorizzare l'accesso alla propria casella Gmail. L'utente deve capire quali funzioni richiedono l'accesso ai messaggi. Sono previsti stati comprensibili per autorizzazione mancante, revocata o non più valida. I test iniziali si svolgono su un account Gmail; il supporto ad altri provider non è deciso.
+Il percorso iniziale consente di entrare con Google e di autorizzare, con lo stesso consenso, la lettura e l'invio della propria casella Gmail. L'utente deve capire quali funzioni richiedono l'accesso ai messaggi. Sono previsti stati comprensibili per ogni casella: non collegata, collegata, permessi incompleti (l'utente ha deselezionato lettura o invio nel consenso), da ricollegare (autorizzazione revocata o non più valida) e scollegata. Dalle impostazioni l'utente può collegare altre caselle e scollegarle; lo scollegamento revoca l'autorizzazione ed elimina i dati di quella casella. I test iniziali si svolgono su un account Gmail; altri connettori di posta e provider di identità saranno aggiunti senza modificare le funzionalità.
 
 ### 4.2 Chiave OpenRouter dell'utente
 
-Nella registrazione e nelle impostazioni è presente un'interfaccia browser per inserire, aggiornare, verificare e rimuovere la chiave API OpenRouter dell'account. La chiave è personale; l'utente può vedere se è configurata e se funziona, senza che il valore completo venga mostrato dopo il salvataggio. Il significato di BYOK in questo progetto è: **ogni utente usa la propria chiave API OpenRouter**.
+Nella registrazione e nelle impostazioni è presente un'interfaccia browser per inserire, aggiornare, verificare e rimuovere la chiave API OpenRouter dell'account. La chiave è personale; l'utente può vedere se è configurata e se funziona, senza che il valore completo venga mostrato dopo il salvataggio. Il significato di BYOK in questo progetto è: **ogni utente usa la propria chiave API OpenRouter**. La verifica mostra lo stato della chiave (valida, non valida, credito esaurito) e l'eventuale limite residuo; l'interfaccia consiglia una chiave dedicata con limite di credito e ricorda che le impostazioni di registrazione dei prompt sull'account OpenRouter sono sotto il controllo dell'utente.
 
 ### 4.3 Contesto AI
 
@@ -79,7 +117,7 @@ Una risposta nello stesso thread è un indizio forte, ma la correlazione non si 
 
 ### 5.4 News e Informazioni secondarie
 
-Questa categoria raggruppa messaggi che, secondo le direttive dell'utente, non richiedono attenzione individuale immediata. Nella schermata principale appare **solo un riepilogo** delle email di questa categoria ricevute nelle ultime 24 ore. Dal riepilogo si possono consultare i messaggi originali. La finestra di 24 ore è mobile rispetto al momento in cui la vista viene consultata; la frequenza con cui aggiornare il testo del riepilogo è ancora da decidere. Un messaggio classificato erroneamente deve poter essere spostato fuori dalla categoria.
+Questa categoria raggruppa messaggi che, secondo le direttive dell'utente, non richiedono attenzione individuale immediata. Nella schermata principale appare **solo un riepilogo** delle email di questa categoria ricevute nelle ultime 24 ore. Dal riepilogo si possono consultare i messaggi originali. La finestra di 24 ore è mobile rispetto al momento in cui la vista viene consultata: l'elenco delle email incluse è sempre esatto, mentre il testo del riepilogo viene rigenerato secondo la regola del §2.1. Un messaggio classificato erroneamente deve poter essere spostato fuori dalla categoria.
 
 ## 6. Interfaccia principale
 
@@ -106,14 +144,14 @@ Aprendo un elemento, l'utente trova descrizione della situazione, fonti email, e
 
 ## 9. Questioni aperte di prodotto
 
-- Definire con precisione i comandi del client tradizionale da includere nella prima versione: ricerca, cartelle o etichette, allegati, composizione, inoltro e così via.
-- Decidere se le attività proposte dall'AI vengono create subito e corrette dopo, oppure se richiedono una conferma; le bozze restano sempre soggette a conferma prima dell'invio.
-- Definire come mostrare situazioni che possono appartenere a più aree della home, per esempio attività urgente e risposta arrivata.
-- Scegliere quando ricalcolare il riepilogo delle ultime 24 ore e cosa mostrare se non ci sono nuove News.
-- Definire come le correzioni puntuali influenzano le classificazioni future e se l'utente può avviare una nuova analisi dopo una modifica del Contesto AI.
-- Definire il comportamento se il modello scelto non è disponibile o la chiave OpenRouter manca, non funziona o non ha credito.
-- Definire il pubblico iniziale e i criteri con cui valutare se la vista operativa fa risparmiare tempo rispetto a Gmail.
+Le questioni su comandi del client nella prima versione, creazione delle proposte AI, situazioni in più aree, aggiornamento del riepilogo, effetto delle correzioni, errori di chiave o modello e pubblico iniziale sono state decise (§2.1). Restano aperte:
+
+- Quali comandi da client tradizionale aggiungere dopo la sola lettura (ricerca, etichette, archiviazione, inoltro, composizione libera, allegati); alcuni richiedono permessi Google più ampi.
+- Se e come trasformare correzioni ripetute in proposte di nuove direttive del Contesto AI, sempre confermate dall'utente.
+- I criteri con cui valutare se la vista operativa fa risparmiare tempo rispetto a Gmail (per esempio quota di elementi corretti, attese scoperte in ritardo, tempo dedicato allo smistamento).
+- Quali connettori di posta e provider di identità aggiungere dopo Google, e in che ordine.
+- Quando avviare la verifica Google e l'audit CASA necessari a un lancio pubblico.
 
 ## 10. Fuori dalle decisioni attuali
 
-Framework, linguaggi, hosting, database, schema di persistenza, sincronizzazione concreta, orchestrazione dei modelli, gestione tecnica dei segreti, costi e distribuzione pubblica saranno valutati successivamente. L'indicazione «configurabile dal browser» descrive l'esperienza utente e non prescrive di conservare o utilizzare la chiave nel codice eseguito dal browser.
+Framework, linguaggi, hosting, database, sincronizzazione, orchestrazione dei modelli e gestione tecnica dei segreti sono stati definiti il 26 settembre 2026 in `docs/architettura.md`, con le decisioni principali in `docs/adr/`. Costi di esercizio e distribuzione pubblica restano da valutare. L'indicazione «configurabile dal browser» descrive l'esperienza utente e non prescrive di conservare o utilizzare la chiave nel codice eseguito dal browser: la chiave viene inserita nel browser, conservata cifrata sul server e usata solo lato server.

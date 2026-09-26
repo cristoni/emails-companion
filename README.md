@@ -2,7 +2,7 @@
 
 Webapp per gestire la posta a partire da attività, urgenze, attese e risposte ricevute. Le email restano consultabili e costituiscono la fonte verificabile di ogni elemento mostrato.
 
-> Stato: definizione funzionale. Nessuna architettura o stack applicativo è stato scelto. Il primo account usato per i test sarà un account Gmail personale.
+> Stato: architettura definita (settembre 2026), implementazione in corso. Stack: Next.js su Vercel, worker Node su Railway, Postgres su Supabase, Gmail come primo connettore di posta, modelli tramite OpenRouter con la chiave di ogni utente. Il primo account usato per i test è un account Gmail personale.
 
 ## Esperienza principale
 
@@ -35,8 +35,15 @@ Ogni elemento rimanda ai messaggi pertinenti: può collegare una o più email e 
 - L'utente può scegliere un **modello diverso per ogni funzione AI**. Il valore iniziale per tutte le funzioni è `openai/gpt-6-luna` su OpenRouter.
 - Ogni nuova funzione applicativa che utilizza modelli AI deve avere una **corrispondente voce di configurazione del modello**, disponibile all'utente. Questa regola vale anche per le funzionalità aggiunte in futuro.
 
-## Ambito attuale
+## Interfaccia
 
-Questi file descrivono comportamento e requisiti di prodotto. Scelte su framework, hosting, persistenza, code, provider infrastrutturali, struttura interna dei servizi e modalità di gestione delle credenziali saranno prese in una fase successiva.
+- L'interfaccia è multilingua, in inglese per impostazione predefinita (disponibile anche in italiano); i testi prodotti dall'AI seguono la lingua dell'email esaminata.
+- Si possono collegare più caselle di posta; Google è il primo sistema supportato e altri connettori verranno aggiunti senza cambiare le funzionalità.
+- Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify.
 
-La specifica dettagliata è in [project.md](project.md). Le istruzioni generali per gli agenti di sviluppo sono in [agents.md](agents.md).
+## Documentazione
+
+- [PROJECT.md](PROJECT.md): specifica di prodotto e decisioni prese.
+- [CONTEXT.md](CONTEXT.md): glossario del dominio.
+- [docs/architettura.md](docs/architettura.md): architettura; le decisioni principali sono in [docs/adr/](docs/adr/).
+- [AGENTS.md](AGENTS.md): istruzioni per gli agenti di sviluppo.
