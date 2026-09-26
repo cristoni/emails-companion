@@ -1,5 +1,5 @@
 {
-  "name": "@ec/connettore-gmail",
+  "name": "@ec/testo",
   "private": true,
   "type": "module",
   "exports": {
@@ -10,13 +10,8 @@
   },
   "dependencies": {
     "@ec/core": "workspace:*",
-    "@googleapis/gmail": "22.0.1",
-    "gaxios": "^7.1.0",
-    "google-auth-library": "11.1.0",
-    "html-to-text": "10.0.1",
-    "nodemailer": "10.0.10",
-    "postal-mime": "4.0.0",
-    "@ec/testo": "workspace:*"
+    "eld": "2.1.0",
+    "html-to-text": "10.0.1"
   },
   "devDependencies": {
     "@types/html-to-text": "9.0.4"
