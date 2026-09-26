@@ -1,0 +1,16 @@
+{
+  "accesso": {
+    "titolo": "Your email, turned into what you need to do",
+    "sottotitolo": "Actions, things you are waiting on and replies — each one linked to the emails it comes from.",
+    "pulsante": "Continue with Google",
+    "informativa": {
+      "titolo": "Before you continue",
+      "lettura": "We read and send email from your Gmail mailbox only with your permission, and store its text encrypted.",
+      "fuoriBrowser": "New mail keeps being analysed while your browser is closed.",
+      "modelli": "Email text is sent to AI models through OpenRouter with your own key, only to providers that keep no data.",
+      "invio": "Nothing is ever sent without your explicit confirmation.",
+      "nonVerificata": "During the pilot Google shows an \"unverified app\" screen: this is expected.",
+      "completa": "Read the full privacy notice"
+    }
+  }
+}

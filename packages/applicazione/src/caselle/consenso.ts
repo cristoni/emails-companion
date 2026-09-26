@@ -38,7 +38,7 @@ export async function registraConsensoGoogle(
   unita: UnitaDiLavoro,
   utenteId: string,
   consenso: ConsensoGoogleRicevuto,
-  cursoreIniziale: () => Promise<string | null>,
+  cursoreIniziale: (casellaId: string) => Promise<string | null>,
 ): Promise<EsitoConsenso> {
   const ora = dip.orologio.ora();
   const esito = await unita.perUtente(utenteId, async (ctx) => {
@@ -68,7 +68,7 @@ export async function registraConsensoGoogle(
   });
 
   if (esito.tipo === "collegata" && esito.nuova && esito.stato !== "da_ricollegare") {
-    await inizializzaSincronizzazione(dip, unita, utenteId, esito.casellaId, await cursoreIniziale());
+    await inizializzaSincronizzazione(dip, unita, utenteId, esito.casellaId, await cursoreIniziale(esito.casellaId));
   }
   return esito;
 }

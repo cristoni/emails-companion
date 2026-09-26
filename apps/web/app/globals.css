@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Token semantici (docs/architettura.md §13.1): stile ispirato a Mintlify, un solo accento verde. */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-app), ui-monospace, SFMono-Regular, monospace;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #fafafa;
+  --color-surface-raised: #ffffff;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
+  --color-accent: #0d9373;
+  --color-accent-strong: #0b7a61;
+  --color-accent-soft: #e6f6f1;
+  --color-accent-contrast: #ffffff;
+  --color-urgent: #b45309;
+  --color-urgent-soft: #fef3c7;
+  --color-reply: #1d4ed8;
+  --color-reply-soft: #dbeafe;
+  --color-suggestion: #52525b;
+  --color-suggestion-soft: #f4f4f5;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+
+  --radius-card: 0.75rem;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.02);
+}
+
+@layer base {
+  .dark {
+    --color-surface: #09090b;
+    --color-surface-muted: #0f0f12;
+    --color-surface-raised: #131316;
+    --color-border: #27272a;
+    --color-border-strong: #3f3f46;
+    --color-text: #f4f4f5;
+    --color-text-muted: #a1a1aa;
+    --color-accent: #18e299;
+    --color-accent-strong: #34d399;
+    --color-accent-soft: #0b2a22;
+    --color-accent-contrast: #052e22;
+    --color-urgent: #fbbf24;
+    --color-urgent-soft: #3a2a07;
+    --color-reply: #93c5fd;
+    --color-reply-soft: #10213f;
+    --color-suggestion: #d4d4d8;
+    --color-suggestion-soft: #1f1f23;
+    --color-danger: #fca5a5;
+    --color-danger-soft: #3b0d0d;
+  }
+
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-surface text-text antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-semibold tracking-[-0.02em];
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+}
