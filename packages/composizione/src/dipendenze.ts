@@ -2,7 +2,7 @@ import { GatewayOpenRouter } from "@ec/ai";
 import { CONFIGURAZIONE_PREDEFINITA, type Dipendenze } from "@ec/applicazione";
 import type { FabbricaConnettori, GatewayModelli, Orologio, RilevatoreLingua } from "@ec/core/porte";
 import { CassaforteBusta } from "@ec/crypto";
-import { connetti, depositoChiaviDb, UnitaDiLavoro, type Connessione, type FabbricaCoda } from "@ec/db";
+import { caselle, connetti, depositoChiaviDb, UnitaDiLavoro, type Connessione, type FabbricaCoda } from "@ec/db";
 import { RilevatoreLinguaEld } from "@ec/testo";
 import type { ConfigurazioneAmbiente } from "./configurazione";
 import { FabbricaConnettoriGmail } from "./connettori-gmail";
@@ -34,8 +34,10 @@ export async function componi(cfg: ConfigurazioneAmbiente, opzioni: OpzioniCompo
   const cassaforte = new CassaforteBusta({ ...cfg.chiavi, deposito: depositoChiaviDb(connessione.db) });
   const unita = new UnitaDiLavoro({ db: connessione.db, cassaforte, coda: opzioni.coda });
   const orologio = orologioDiSistema;
+  const finta = cfg.modalita === "finta" && !opzioni.connettori ? await modalitaFinta(unita, orologio) : null;
   const connettori =
     opzioni.connettori ??
+    finta?.connettori ??
     (cfg.google
       ? new FabbricaConnettoriGmail({
           unita,
@@ -45,8 +47,8 @@ export async function componi(cfg: ConfigurazioneAmbiente, opzioni: OpzioniCompo
         })
       : null);
   if (!connettori) throw new Error("connettori_non_configurati");
-  const modelli = opzioni.modelli ?? new GatewayOpenRouter({ fetch: globalThis.fetch, titoloApp: "Emails Companion", urlApp: cfg.urlApp });
-  const lingua = opzioni.lingua ?? (await RilevatoreLinguaEld.crea());
+  const modelli = opzioni.modelli ?? finta?.modelli ?? new GatewayOpenRouter({ fetch: globalThis.fetch, titoloApp: "Emails Companion", urlApp: cfg.urlApp });
+  const lingua = opzioni.lingua ?? (finta ? { rileva: () => ({ lingua: "en", affidabile: true }) } : await RilevatoreLinguaEld.crea());
   const dip: Dipendenze = {
     unita,
     connettori,
@@ -57,4 +59,25 @@ export async function componi(cfg: ConfigurazioneAmbiente, opzioni: OpzioniCompo
     configurazione: { ...CONFIGURAZIONE_PREDEFINITA, notifichePushAttive: Boolean(cfg.pubsub) },
   };
   return { dip, connessione, chiudi: () => connessione.chiudi() };
+}
+
+/**
+ * Modalità finta (solo sviluppo locale e CI, mai in produzione: vedi leggiConfigurazione).
+ * Le caselle sono simulate e popolate con posta sintetica al primo accesso; i modelli sono euristici.
+ */
+async function modalitaFinta(unita: UnitaDiLavoro, orologio: Orologio) {
+  const { FabbricaConnettoriFinta, gatewayEuristico, popolaCasellaSintetica } = await import("@ec/testing");
+  const connettori = new FabbricaConnettoriFinta();
+  const popolate = new Set<string>();
+  connettori.risolviIndirizzo = async (casellaId) => {
+    const utenteId = await unita.sistema((ctx) => caselle.utenteDellaCasella(ctx.tx, casellaId));
+    if (!utenteId) return null;
+    const casella = await unita.perUtente(utenteId, (ctx) => caselle.leggi(ctx, casellaId));
+    if (casella && !popolate.has(casella.indirizzo)) {
+      popolate.add(casella.indirizzo);
+      popolaCasellaSintetica(connettori.casella(casella.indirizzo), orologio.ora());
+    }
+    return casella?.indirizzo ?? null;
+  };
+  return { connettori, modelli: gatewayEuristico() };
 }

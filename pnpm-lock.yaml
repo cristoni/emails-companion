@@ -191,6 +191,9 @@ importers:
       '@ec/db':
         specifier: workspace:*
         version: link:../db
+      '@ec/testing':
+        specifier: workspace:*
+        version: link:../testing
       '@ec/testo':
         specifier: workspace:*
         version: link:../testo

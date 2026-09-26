@@ -16,6 +16,7 @@
     "@ec/crypto": "workspace:*",
     "@ec/db": "workspace:*",
     "@ec/testo": "workspace:*",
-    "drizzle-orm": "0.45.3"
+    "drizzle-orm": "0.45.3",
+    "@ec/testing": "workspace:*"
   }
 }
