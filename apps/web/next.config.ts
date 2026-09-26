@@ -11,6 +11,7 @@ const intestazioniStatiche = [
 const config: NextConfig = {
   agentRules: false,
   poweredByHeader: false,
+  outputFileTracingIncludes: { "/*": ["./messages/**/*.json"] },
   serverExternalPackages: ["pg", "graphile-worker", "eld", "@google-cloud/pubsub"],
   async headers() {
     return [{ source: "/:percorso*", headers: intestazioniStatiche }];

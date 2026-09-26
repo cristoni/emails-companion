@@ -1,0 +1,14 @@
+{
+  "titolo": "La tua posta, trasformata in ciò che devi fare",
+  "sottotitolo": "Attività, attese e risposte arrivate — ognuna collegata alle email da cui nasce.",
+  "pulsante": "Continua con Google",
+  "informativa": {
+    "titolo": "Prima di continuare",
+    "lettura": "Leggiamo e inviamo posta dalla tua casella Gmail solo con il tuo permesso, e ne conserviamo il testo cifrato.",
+    "fuoriBrowser": "La posta nuova continua a essere analizzata anche a browser chiuso.",
+    "modelli": "Il testo delle email viene inviato ai modelli AI tramite OpenRouter con la tua chiave, solo a fornitori che non conservano dati.",
+    "invio": "Nulla viene mai inviato senza la tua conferma esplicita.",
+    "nonVerificata": "Durante il pilota Google mostra la schermata \"app non verificata\": è previsto.",
+    "completa": "Leggi l'informativa completa"
+  }
+}
