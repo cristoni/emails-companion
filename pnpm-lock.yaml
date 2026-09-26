@@ -26,6 +26,9 @@ importers:
       '@ec/ai':
         specifier: workspace:*
         version: link:../../packages/ai
+      '@ec/applicazione':
+        specifier: workspace:*
+        version: link:../../packages/applicazione
       '@ec/connettore-gmail':
         specifier: workspace:*
         version: link:../../packages/connettore-gmail
@@ -38,6 +41,9 @@ importers:
       '@ec/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@ec/testo':
+        specifier: workspace:*
+        version: link:../../packages/testo
       graphile-worker:
         specifier: 0.18.0
         version: 0.18.0(typescript@6.0.3)
@@ -58,11 +64,39 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
 
+  packages/applicazione:
+    dependencies:
+      '@ec/ai':
+        specifier: workspace:*
+        version: link:../ai
+      '@ec/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ec/db':
+        specifier: workspace:*
+        version: link:../db
+      drizzle-orm:
+        specifier: 0.45.3
+        version: 0.45.3(@types/pg@8.23.1)(pg@8.23.0)
+    devDependencies:
+      '@ec/crypto':
+        specifier: workspace:*
+        version: link:../crypto
+      '@ec/testing':
+        specifier: workspace:*
+        version: link:../testing
+      '@ec/testo':
+        specifier: workspace:*
+        version: link:../testo
+
   packages/connettore-gmail:
     dependencies:
       '@ec/core':
         specifier: workspace:*
         version: link:../core
+      '@ec/testo':
+        specifier: workspace:*
+        version: link:../testo
       '@googleapis/gmail':
         specifier: 22.0.1
         version: 22.0.1
@@ -128,6 +162,12 @@ importers:
       '@ec/core':
         specifier: workspace:*
         version: link:../core
+      '@ec/crypto':
+        specifier: workspace:*
+        version: link:../crypto
+      '@ec/db':
+        specifier: workspace:*
+        version: link:../db
       embedded-postgres:
         specifier: 17.10.0-beta.17
         version: 17.10.0-beta.17
@@ -138,6 +178,22 @@ importers:
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1
+
+  packages/testo:
+    dependencies:
+      '@ec/core':
+        specifier: workspace:*
+        version: link:../core
+      eld:
+        specifier: 2.1.0
+        version: 2.1.0
+      html-to-text:
+        specifier: 10.0.1
+        version: 10.0.1
+    devDependencies:
+      '@types/html-to-text':
+        specifier: 9.0.4
+        version: 9.0.4
 
 packages:
 
@@ -1038,6 +1094,10 @@ packages:
 
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
+
+  eld@2.1.0:
+    resolution: {integrity: sha512-hDQ9FX17th7NDNMO8/St6m3ADQVqjF0sQoOHI6NUAxC7yDaPmZ9wC9d8zau/9FIqOV7KtNwrPKRt6fkkrzZj0g==}
+    engines: {node: '>=14.17.0'}
 
   embedded-postgres@17.10.0-beta.17:
     resolution: {integrity: sha512-s9ITJA41OTIQmn91RLqQ5X2MVP2BCZ8pb4tQX3MY8VOd8xNCzzlgfHGcXuitDzK800FhbG/3YufFk21KTTvpzA==}
@@ -2199,6 +2259,8 @@ snapshots:
   ecdsa-sig-formatter@1.0.11:
     dependencies:
       safe-buffer: 5.2.1
+
+  eld@2.1.0: {}
 
   embedded-postgres@17.10.0-beta.17:
     dependencies:

@@ -14,7 +14,9 @@
     "@ec/crypto": "workspace:*",
     "@ec/db": "workspace:*",
     "graphile-worker": "0.18.0",
-    "pino": "^10.3.1"
+    "pino": "^10.3.1",
+    "@ec/testo": "workspace:*",
+    "@ec/applicazione": "workspace:*"
   },
   "devDependencies": {
     "@ec/testing": "workspace:*"

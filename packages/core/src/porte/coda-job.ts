@@ -3,21 +3,21 @@ import type { FunzioneAI, IdCasella, IdEmail, IdInvio, IdUtente } from "../domin
 /** Payload dei job: solo identificativi, mai contenuti. */
 export interface PayloadJob {
   pianifica_sincronizzazioni: Record<string, never>;
-  sincronizza_casella: { casellaId: IdCasella };
-  stima_importazione: { casellaId: IdCasella };
-  importa_pagina: { casellaId: IdCasella; tipo: "ricevute" | "inviate"; paginaDa?: string };
-  recupera_risposte: { casellaId: IdCasella; attesaId: string };
-  analizza_email: { emailId: IdEmail };
+  sincronizza_casella: { utenteId: IdUtente; casellaId: IdCasella };
+  stima_importazione: { utenteId: IdUtente; casellaId: IdCasella };
+  importa_pagina: { utenteId: IdUtente; casellaId: IdCasella; tipo: "ricevute" | "inviate"; ids: string[] };
+  recupera_risposte: { utenteId: IdUtente; attesaId: string };
+  analizza_email: { utenteId: IdUtente; emailId: IdEmail };
   riconcilia_utente: { utenteId: IdUtente };
   aggiorna_riepilogo_news: { utenteId: IdUtente };
   genera_bozza: { utenteId: IdUtente; bozzaId: string; richiestaId: string };
-  invia_email: { invioId: IdInvio };
-  verifica_invio: { invioId: IdInvio };
-  rinnova_watch_e_alias: { casellaId: IdCasella };
+  invia_email: { utenteId: IdUtente; invioId: IdInvio };
+  verifica_invio: { utenteId: IdUtente; invioId: IdInvio };
+  rinnova_watch_e_alias: { utenteId: IdUtente; casellaId: IdCasella };
   verifica_chiave: { utenteId: IdUtente };
   verifica_modelli: { utenteId: IdUtente; funzione?: FunzioneAI };
   rianalizza: { utenteId: IdUtente; richiestaId: string };
-  scollega_casella: { casellaId: IdCasella };
+  scollega_casella: { utenteId: IdUtente; casellaId: IdCasella };
   elimina_account: { utenteId: IdUtente };
   sweeper_invii: Record<string, never>;
   pulizia: Record<string, never>;

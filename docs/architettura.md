@@ -65,11 +65,12 @@ apps/
   web/                  Next.js: pagine, Server Actions, route di autenticazione, OAuth caselle, originali
   worker/               processo graphile-worker, consumer Pub/Sub, composizione delle dipendenze
 packages/
-  core/                 dominio puro + casi d'uso + porte (nessuna dipendenza da infrastruttura)
+  core/                 dominio puro + porte verso i sistemi esterni (nessuna dipendenza da infrastruttura)
     src/dominio/        entità, stati derivati, aree, valori effettivi, correlazione, finestra News, lingua
-    src/applicazione/   casi d'uso (acquisisci, analizza, riconcilia, correggi, bozze, invio, caselle…)
-    src/porte/          ConnettorePosta, GatewayModelli, Cassaforte, Orologio, CodaJob, repository
-  db/                   schema Drizzle, migrazioni, repository legati all'utente, accodamento job
+    src/porte/          ConnettorePosta, GatewayModelli, Cassaforte, Orologio, CodaJob, RilevatoreLingua
+  applicazione/         casi d'uso (acquisisci, analizza, riconcilia, correggi, bozze, invio, caselle…)
+  db/                   schema Drizzle, migrazioni, repository legati all'utente, unità di lavoro, coda
+  testo/                normalizzazione del testo e rilevamento della lingua
   ai/                   registro delle Funzioni AI, prompt, schemi Zod, gateway OpenRouter, verifiche
   connettore-gmail/     implementazione della porta ConnettorePosta per Gmail (OAuth, sync, invio)
   crypto/               Cassaforte: cifratura a busta e indici ciechi
@@ -78,8 +79,11 @@ docs/
   adr/  agents/  architettura.md  deploy.md
 ```
 
+I casi d'uso usano direttamente i repository concreti di `db`. Le porte esistono solo verso i sistemi esterni: i test di scenario girano su Postgres reale, quindi interfacce astratte dei repository non aggiungerebbero valore.
+
 Regole di dipendenza, verificate da un test:
-- `core` non importa nulla da `db`, `ai`, `connettore-*`, `crypto` o dai framework.
+- `core` non importa nulla da `db`, `ai`, `connettore-*`, `crypto`, `applicazione` o dai framework.
+- `applicazione` non importa connettori concreti, il gateway OpenRouter o i framework: li riceve tramite le porte.
 - `ai` non importa il caso d'uso di invio.
 - Solo il caso d'uso di invio chiama `ConnettorePosta.invia`.
 - `apps/web` non importa `packages/testing` né plugin di test di Better Auth.
