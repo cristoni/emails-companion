@@ -1,0 +1,60 @@
+import { GatewayOpenRouter } from "@ec/ai";
+import { CONFIGURAZIONE_PREDEFINITA, type Dipendenze } from "@ec/applicazione";
+import type { FabbricaConnettori, GatewayModelli, Orologio, RilevatoreLingua } from "@ec/core/porte";
+import { CassaforteBusta } from "@ec/crypto";
+import { connetti, depositoChiaviDb, UnitaDiLavoro, type Connessione, type FabbricaCoda } from "@ec/db";
+import { RilevatoreLinguaEld } from "@ec/testo";
+import type { ConfigurazioneAmbiente } from "./configurazione";
+import { FabbricaConnettoriGmail } from "./connettori-gmail";
+
+export interface Composizione {
+  dip: Dipendenze;
+  connessione: Connessione;
+  chiudi(): Promise<void>;
+}
+
+export const orologioDiSistema: Orologio = { ora: () => new Date() };
+
+export interface OpzioniComposizione {
+  coda: FabbricaCoda;
+  massimoConnessioni?: number;
+  /** Sostituzioni per la modalità finta (connettore e modelli simulati). */
+  connettori?: FabbricaConnettori;
+  modelli?: GatewayModelli;
+  lingua?: RilevatoreLingua;
+}
+
+/** Costruisce le dipendenze dei casi d'uso a partire dalla configurazione. */
+export async function componi(cfg: ConfigurazioneAmbiente, opzioni: OpzioniComposizione): Promise<Composizione> {
+  const connessione = connetti({
+    connectionString: cfg.databaseUrl,
+    ...(cfg.databaseCa ? { ca: cfg.databaseCa } : {}),
+    massimo: opzioni.massimoConnessioni ?? 5,
+  });
+  const cassaforte = new CassaforteBusta({ ...cfg.chiavi, deposito: depositoChiaviDb(connessione.db) });
+  const unita = new UnitaDiLavoro({ db: connessione.db, cassaforte, coda: opzioni.coda });
+  const orologio = orologioDiSistema;
+  const connettori =
+    opzioni.connettori ??
+    (cfg.google
+      ? new FabbricaConnettoriGmail({
+          unita,
+          oauth: { clientId: cfg.google.clientId, clientSecret: cfg.google.clientSecret, redirectUri: cfg.google.redirectUriCaselle },
+          topicNotifiche: cfg.pubsub?.topic ?? null,
+          orologio,
+        })
+      : null);
+  if (!connettori) throw new Error("connettori_non_configurati");
+  const modelli = opzioni.modelli ?? new GatewayOpenRouter({ fetch: globalThis.fetch, titoloApp: "Emails Companion", urlApp: cfg.urlApp });
+  const lingua = opzioni.lingua ?? (await RilevatoreLinguaEld.crea());
+  const dip: Dipendenze = {
+    unita,
+    connettori,
+    modelli,
+    orologio,
+    ids: { nuovo: () => crypto.randomUUID() },
+    lingua,
+    configurazione: { ...CONFIGURAZIONE_PREDEFINITA, notifichePushAttive: Boolean(cfg.pubsub) },
+  };
+  return { dip, connessione, chiudi: () => connessione.chiudi() };
+}

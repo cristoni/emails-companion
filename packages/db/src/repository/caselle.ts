@@ -123,6 +123,20 @@ export const caselle = {
       .where(and(eq(casella.utenteId, ctx.utenteId), eq(casella.id, id)));
   },
 
+  /** Lettura trasversale: utente proprietario di una casella (per i connettori). */
+  async utenteDellaCasella(tx: Transazione, casellaId: string): Promise<string | null> {
+    const [riga] = await tx.select({ utenteId: casella.utenteId }).from(casella).where(eq(casella.id, casellaId));
+    return riga?.utenteId ?? null;
+  },
+
+  /** Caselle attive di tutti gli utenti, per il rinnovo quotidiano di watch e alias. */
+  async attiveDiTutti(tx: Transazione) {
+    return tx
+      .select({ casellaId: casella.id, utenteId: casella.utenteId })
+      .from(casella)
+      .where(inArray(casella.stato, ["collegata", "permessi_incompleti"]));
+  },
+
   /** Lettura trasversale per il consumer delle notifiche. */
   async attivaPerIndirizzo(tx: Transazione, indirizzoGlobale: string) {
     const [riga] = await tx

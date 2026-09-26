@@ -16,7 +16,9 @@
     "graphile-worker": "0.18.0",
     "pino": "^10.3.1",
     "@ec/testo": "workspace:*",
-    "@ec/applicazione": "workspace:*"
+    "@ec/applicazione": "workspace:*",
+    "@ec/composizione": "workspace:*",
+    "@google-cloud/pubsub": "6.1.0"
   },
   "devDependencies": {
     "@ec/testing": "workspace:*"

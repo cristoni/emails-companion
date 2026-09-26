@@ -1,0 +1,21 @@
+{
+  "name": "@ec/composizione",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ec/ai": "workspace:*",
+    "@ec/applicazione": "workspace:*",
+    "@ec/connettore-gmail": "workspace:*",
+    "@ec/core": "workspace:*",
+    "@ec/crypto": "workspace:*",
+    "@ec/db": "workspace:*",
+    "@ec/testo": "workspace:*",
+    "drizzle-orm": "0.45.3"
+  }
+}
