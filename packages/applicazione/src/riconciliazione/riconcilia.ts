@@ -306,12 +306,12 @@ async function applica(
   const origineEsistente = await operativo.situazionePerOrigine(ctx, e.id);
 
   if (!destinazione && (origineEsistente || richiesteNuove.length || elementiNuovi.length || urgenteOperativa) && !e.soloPerRisposte) {
-    const titolo = c.titoloProposto?.trim() || e.oggetto || "—";
+    const titolo = (c.titoloProposto ?? output?.titolo_situazione ?? "").trim() || e.oggetto || "—";
     destinazione = await operativo.creaSituazione(ctx, {
       id: dip.ids.nuovo(),
       emailOrigineId: e.id,
       titolo,
-      descrizione: c.descrizioneProposta?.trim() || "",
+      descrizione: (c.descrizioneProposta ?? output?.descrizione_situazione ?? "").trim(),
       lingua: e.lingua,
       creataIl: e.ricevutaIl,
     });
