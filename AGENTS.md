@@ -31,3 +31,17 @@ La chiave API OpenRouter è impostata dall'utente nel browser durante la registr
 - I requisiti descrivono il **cosa** e il comportamento atteso; non definiscono ancora architettura, framework, schema dati, provider di hosting o implementazione dei segreti.
 - Non trasformare ipotesi o domande aperte in requisiti decisi. Registrare in `project.md` le decisioni di prodotto successive prima di implementarle.
 - Quando una modifica tocca classificazione, attese o priorità, verificare i casi con più thread, email inviate fuori dalla webapp, correzioni dell'utente e finestre delle ultime 24 ore.
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked on GitHub Issues (cristoni/emails-companion) via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical labels (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
