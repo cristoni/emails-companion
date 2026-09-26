@@ -1,0 +1,65 @@
+{
+  "titolo": "Set up your workspace",
+  "descrizione": "A few steps before your mail becomes a list of things to do.",
+  "fatto": "Done",
+  "daFare": "To do",
+  "vaiHome": "Go to your home",
+  "vaiHomeComunque": "Skip for now",
+  "informativa": {
+    "titolo": "Privacy notice",
+    "dati": "We read your Gmail messages and store their text and headers encrypted while the mailbox stays connected.",
+    "modelli": "Email text is sent to AI models through OpenRouter with your key, only to providers with zero data retention.",
+    "conservazione": "Disconnecting a mailbox or deleting your account removes everything derived from it.",
+    "limitedUse": "The use of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.",
+    "completa": "Read the full notice",
+    "accetta": "I understand and agree",
+    "accettata": "You accepted this notice."
+  },
+  "chiave": {
+    "titolo": "Your OpenRouter key",
+    "spiegazione": "All AI analysis runs with your own OpenRouter key. It is verified, stored encrypted and never shown again.",
+    "etichetta": "API key",
+    "verifica": "Verify and save",
+    "consiglio": "Tip: create a dedicated key with a credit limit. Prompt logging settings on your OpenRouter account stay under your control.",
+    "salvata": "Saved key ending in {cifre} — {stato}",
+    "stati": {
+      "non_verificata": "not verified",
+      "valida": "valid",
+      "non_valida": "not valid",
+      "credito_esaurito": "out of credit",
+      "limitata": "limit reached"
+    },
+    "esiti": {
+      "valida": "Key verified and saved.",
+      "non_valida": "OpenRouter rejected this key.",
+      "credito_esaurito": "The key is valid but has no credit left.",
+      "errore_temporaneo": "OpenRouter could not be reached. Try again in a moment.",
+      "formato_non_valido": "This does not look like an OpenRouter key."
+    }
+  },
+  "contesto": {
+    "titolo": "AI context",
+    "spiegazione": "Tell the assistant what matters to you: important senders, what counts as urgent, what is just News & FYI. These are the default directives; edit them freely.",
+    "etichetta": "Your directives",
+    "salva": "Save AI context",
+    "salvato": "Saved."
+  },
+  "importazione": {
+    "titolo": "Initial import",
+    "spiegazione": "We analyse the last 14 days of received mail and 30 days of sent mail, newest first. Your home fills in when the analysis is done.",
+    "nessunaCasella": "No connected mailbox yet.",
+    "stima": "{numero} emails, estimated cost {costo}",
+    "conferma": "Start import",
+    "rinvia": "Later",
+    "autorizza": "Authorise Gmail",
+    "fasi": {
+      "da_stimare": "Estimating…",
+      "stimata": "Estimate ready",
+      "confermata": "Starting…",
+      "rifiutata": "Postponed",
+      "in_corso": "Import in progress",
+      "completata": "Import completed",
+      "errore": "Import failed"
+    }
+  }
+}

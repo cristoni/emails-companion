@@ -1,0 +1,33 @@
+{
+  "indietro": "Back",
+  "titolo": "Privacy notice",
+  "introduzione": "Emails Companion is a private pilot. This notice explains what the app does with your data.",
+  "titolare": {
+    "titolo": "Who is responsible",
+    "testo": "The app is operated by its developer for a small pilot group. Contact details are provided to each participant."
+  },
+  "dati": {
+    "titolo": "What we process",
+    "testo": "With your consent we read and send email from the Gmail mailboxes you connect. We store the normalised text, headers and AI-derived items encrypted in a database in the European Union. Attachments are not stored: we only keep their file names. Original messages are loaded from Gmail when you open them."
+  },
+  "finalita": {
+    "titolo": "Why",
+    "testo": "Only to provide the features you see in the app: turning your mail into actions, things you are waiting on, replies and a daily News digest, and preparing drafts that you send yourself after an explicit confirmation."
+  },
+  "modelli": {
+    "titolo": "AI models",
+    "testo": "To analyse your mail, email text is sent through OpenRouter using your own API key, only to providers that do not collect data and apply zero data retention. Your data is never used to train models. Logging preferences on your own OpenRouter account are under your control."
+  },
+  "conservazione": {
+    "titolo": "How long",
+    "testo": "Data is kept while the mailbox stays connected. Disconnecting a mailbox or deleting your account removes everything derived from it; managed database backups expire according to the provider's retention period."
+  },
+  "diritti": {
+    "titolo": "Your choices",
+    "testo": "You can pause the AI analysis, disconnect any mailbox, revoke access from your Google account and delete your account at any time from Settings."
+  },
+  "limitedUse": {
+    "titolo": "Google API Services",
+    "testo": "The use and transfer of information received from Google APIs to any other app will adhere to the Google API Services User Data Policy, including the Limited Use requirements."
+  }
+}

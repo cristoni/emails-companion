@@ -1,0 +1,65 @@
+{
+  "titolo": "Configura il tuo spazio",
+  "descrizione": "Pochi passi prima che la tua posta diventi un elenco di cose da fare.",
+  "fatto": "Fatto",
+  "daFare": "Da fare",
+  "vaiHome": "Vai alla home",
+  "vaiHomeComunque": "Salta per ora",
+  "informativa": {
+    "titolo": "Informativa",
+    "dati": "Leggiamo i tuoi messaggi Gmail e ne conserviamo testo e intestazioni cifrati finché la casella resta collegata.",
+    "modelli": "Il testo delle email viene inviato ai modelli AI tramite OpenRouter con la tua chiave, solo a fornitori che non conservano dati.",
+    "conservazione": "Scollegare una casella o eliminare l'account cancella tutto ciò che ne deriva.",
+    "limitedUse": "L'uso delle informazioni ricevute dalle API di Google rispetta la Google API Services User Data Policy, inclusi i requisiti di Limited Use.",
+    "completa": "Leggi l'informativa completa",
+    "accetta": "Ho capito e accetto",
+    "accettata": "Hai accettato questa informativa."
+  },
+  "chiave": {
+    "titolo": "La tua chiave OpenRouter",
+    "spiegazione": "Tutte le analisi AI usano la tua chiave OpenRouter. Viene verificata, conservata cifrata e non viene più mostrata.",
+    "etichetta": "Chiave API",
+    "verifica": "Verifica e salva",
+    "consiglio": "Consiglio: crea una chiave dedicata con un limite di credito. Le impostazioni di registrazione dei prompt del tuo account OpenRouter restano sotto il tuo controllo.",
+    "salvata": "Chiave salvata che termina con {cifre} — {stato}",
+    "stati": {
+      "non_verificata": "non verificata",
+      "valida": "valida",
+      "non_valida": "non valida",
+      "credito_esaurito": "credito esaurito",
+      "limitata": "limite raggiunto"
+    },
+    "esiti": {
+      "valida": "Chiave verificata e salvata.",
+      "non_valida": "OpenRouter ha rifiutato questa chiave.",
+      "credito_esaurito": "La chiave è valida ma non ha più credito.",
+      "errore_temporaneo": "OpenRouter non è raggiungibile. Riprova tra poco.",
+      "formato_non_valido": "Non sembra una chiave OpenRouter."
+    }
+  },
+  "contesto": {
+    "titolo": "Contesto AI",
+    "spiegazione": "Spiega all'assistente cosa conta per te: mittenti importanti, cosa è urgente, cosa è solo News e informazioni. Queste sono le direttive predefinite; modificale liberamente.",
+    "etichetta": "Le tue direttive",
+    "salva": "Salva il Contesto AI",
+    "salvato": "Salvato."
+  },
+  "importazione": {
+    "titolo": "Importazione iniziale",
+    "spiegazione": "Analizziamo gli ultimi 14 giorni di posta ricevuta e 30 di posta inviata, dalle più recenti. La home si riempie quando l'analisi è terminata.",
+    "nessunaCasella": "Nessuna casella collegata.",
+    "stima": "{numero} email, costo stimato {costo}",
+    "conferma": "Avvia l'importazione",
+    "rinvia": "Più tardi",
+    "autorizza": "Autorizza Gmail",
+    "fasi": {
+      "da_stimare": "Stima in corso…",
+      "stimata": "Stima pronta",
+      "confermata": "Avvio…",
+      "rifiutata": "Rinviata",
+      "in_corso": "Importazione in corso",
+      "completata": "Importazione completata",
+      "errore": "Importazione non riuscita"
+    }
+  }
+}

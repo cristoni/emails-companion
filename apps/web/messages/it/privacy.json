@@ -1,0 +1,33 @@
+{
+  "indietro": "Indietro",
+  "titolo": "Informativa sulla privacy",
+  "introduzione": "Emails Companion è un pilota privato. Questa informativa spiega cosa fa l'app con i tuoi dati.",
+  "titolare": {
+    "titolo": "Chi è responsabile",
+    "testo": "L'app è gestita dal suo sviluppatore per un piccolo gruppo di prova. I contatti sono forniti a ogni partecipante."
+  },
+  "dati": {
+    "titolo": "Cosa trattiamo",
+    "testo": "Con il tuo consenso leggiamo e inviamo posta dalle caselle Gmail che colleghi. Conserviamo il testo normalizzato, le intestazioni e gli elementi derivati dall'AI, cifrati, in un database nell'Unione europea. Gli allegati non vengono conservati: teniamo solo i nomi dei file. Gli originali vengono caricati da Gmail quando li apri."
+  },
+  "finalita": {
+    "titolo": "Perché",
+    "testo": "Solo per fornire le funzioni che vedi nell'app: trasformare la posta in attività, attese, risposte arrivate e un riepilogo quotidiano delle News, e preparare bozze che invii tu dopo una conferma esplicita."
+  },
+  "modelli": {
+    "titolo": "Modelli AI",
+    "testo": "Per analizzare la posta, il testo delle email viene inviato tramite OpenRouter con la tua chiave API, solo a fornitori che non raccolgono dati e applicano la conservazione zero. I tuoi dati non vengono mai usati per addestrare modelli. Le preferenze di registrazione del tuo account OpenRouter sono sotto il tuo controllo."
+  },
+  "conservazione": {
+    "titolo": "Per quanto tempo",
+    "testo": "I dati sono conservati finché la casella resta collegata. Scollegare una casella o eliminare l'account cancella tutto ciò che ne deriva; i backup gestiti del database scadono secondo la ritenzione del fornitore."
+  },
+  "diritti": {
+    "titolo": "Le tue scelte",
+    "testo": "Puoi mettere in pausa l'analisi AI, scollegare qualsiasi casella, revocare l'accesso dal tuo account Google ed eliminare l'account in qualunque momento dalle Impostazioni."
+  },
+  "limitedUse": {
+    "titolo": "Servizi API di Google",
+    "testo": "L'uso e il trasferimento ad altre app delle informazioni ricevute dalle API di Google rispetteranno la Google API Services User Data Policy, inclusi i requisiti di Limited Use."
+  }
+}
