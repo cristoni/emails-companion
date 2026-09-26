@@ -106,13 +106,16 @@ Regole di dipendenza, verificate da un test:
   - voci del riepilogo;
   - bozze;
   - valori testuali delle correzioni e dettagli degli eventi.
-- **Indici ciechi.** Le ricerche per uguaglianza usano HMAC-SHA256 con una chiave per utente derivata con HKDF: indirizzi normalizzati, `Message-ID`, `In-Reply-To`/`References`, dominio del mittente, hash del contenuto e dell'input delle analisi. La somiglianza tra oggetti si calcola nel worker dopo la decifratura, su insiemi piccoli.
+- **Indici ciechi.** Le ricerche per uguaglianza usano HMAC-SHA256.
+  - **Chiave per utente** (derivata con HKDF): indirizzi normalizzati dei partecipanti, `Message-ID`, `In-Reply-To`/`References`, dominio del mittente, hash del contenuto e dell'input delle analisi.
+  - **Chiave globale dell'app**, distinta dalla chiave principale, solo per le due ricerche trasversali agli utenti: l'identificativo dell'account esterno della casella (Google `sub`) e l'indirizzo della casella. Servono al vincolo "una casella esterna, un solo utente" e all'instradamento delle notifiche Pub/Sub. Il `sub` è comunque presente in chiaro in `auth_account.account_id` di Better Auth per l'account di accesso.
+  - La somiglianza tra oggetti si calcola nel worker dopo la decifratura, su insiemi piccoli.
 - **In chiaro restano** solo identificativi, stati, date, codici, flag e metadati strutturali necessari alle query.
 
 ### 5.2 Identità, caselle e indirizzi
 
 - Tabelle di Better Auth (`auth_utente`, `auth_sessione`, `auth_account`, `auth_verifica`) generate dalla CLI `auth`. Le colonne dei token di `auth_account` restano sempre nulle (§6.1); un test lo verifica.
-- `casella` (**Casella collegata**): connettore (`gmail`), indirizzo cifrato + HMAC, HMAC dell'account esterno (Google `sub`), stato (§6.4), scope concessi, errore. Un indice unico parziale su `(connettore, account_esterno_hmac) WHERE stato NOT IN ('scollegata')` garantisce che un account esterno sia collegato a **un solo utente** alla volta.
+- `casella` (**Casella collegata**): connettore (`gmail`), indirizzo cifrato + HMAC globale, HMAC globale dell'account esterno (Google `sub`), stato (§6.4), scope concessi, errore. Un indice unico parziale su `(connettore, account_esterno_hmac) WHERE stato NOT IN ('scollegata')` garantisce che un account esterno sia collegato a **un solo utente** alla volta.
 - `credenziale_casella`: refresh token, access token e scadenza cifrati, `generazione` del consenso (§6.3).
 - `sincronizzazione_casella`: cursore opaco, stato dell'Importazione iniziale (§6.4), istante di collegamento, ultima sincronizzazione riuscita, scadenza del watch, stato di ritentativo (`non_prima_di`, `errori_consecutivi`, ultimo errore come codice).
 - `indirizzo_utente`: indirizzi dell'utente (HMAC + valore cifrato) ricavati dalle caselle e dagli alias "Invia come" (`users.settings.sendAs.list`, coperto da `gmail.readonly`). Aggiornati a ogni collegamento, scollegamento e rinnovo quotidiano.
@@ -303,7 +306,7 @@ Un 404 su `history.list` avvia la risincronizzazione:
 ### 7.5 Notifiche e pianificazione
 
 - **Watch**: `users.watch` senza filtro di etichette, rinnovato ogni giorno insieme agli alias.
-- **Consumer Pub/Sub**: risolve `emailAddress` (tramite HMAC) nell'unica casella attiva e accoda la sincronizzazione.
+- **Consumer Pub/Sub**: risolve `emailAddress` tramite l'HMAC globale dell'indirizzo nell'unica casella attiva e accoda la sincronizzazione.
 - **Frequenza**: con Pub/Sub attivo si fa un controllo di sicurezza ogni 5 minuti; senza, per esempio in sviluppo, polling ogni minuto.
 
 ### 7.6 Lingua

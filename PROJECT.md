@@ -47,6 +47,11 @@ Prese durante la definizione dell'architettura; sostituiscono le corrispondenti 
 - La correlazione tra thread riguarda tutte le Situazioni aperte, non solo le Attese.
 - Una tua email in uscita (anche inviata da Gmail fuori dall'app) che soddisfa un'Attività la **completa automaticamente**, in modo annullabile e mostrato come inferenza. Come per la chiusura automatica delle Attese, serve un'evidenza verificata nell'email; senza, il completamento resta solo una proposta.
 - La lingua rilevata di un'email è correggibile dall'utente, che può poi rianalizzarla.
+- Soglie iniziali, modificabili in seguito senza cambiare il comportamento:
+  - una Situazione è Urgente anche quando ha un'Attività in scadenza entro 48 ore;
+  - un'Attività completata dall'AI resta segnalata sulla card per 7 giorni;
+  - la correlazione tra thread considera le Situazioni con attività negli ultimi 60 giorni;
+  - dopo un'interruzione della sincronizzazione il recupero copre al massimo 90 giorni, e l'utente viene avvisato se l'interruzione è più lunga.
 - Se la chiave OpenRouter manca, non è valida o non ha credito, oppure se il modello scelto non è disponibile, **la sincronizzazione continua e l'analisi va in pausa**: tutta per problemi di chiave o credito, solo la funzione interessata per problemi di modello. Le email restano leggibili come "da analizzare", un avviso in home e nelle impostazioni indica il motivo, l'analisi riprende da sola quando il problema è risolto. Non si passa mai in silenzio a un altro modello.
 - Una Risposta arrivata valutata **completa chiude automaticamente l'Attesa**, in modo annullabile, se per ogni elemento richiesto c'è un'evidenza verificata nella risposta. La chiusura è mostrata come inferenza, resta visibile in Risposte arrivate e l'utente può riaprire l'Attesa: la riapertura vale per quella risposta, mentre una nuova risposta completa può chiuderla di nuovo. Una risposta parziale o non pertinente lascia l'Attesa aperta.
 - Le **correzioni sono locali e permanenti**: valgono per l'elemento corretto, nessuna rianalisi le sovrascrive e un collegamento rifiutato non viene riproposto. Non c'è apprendimento automatico dalle correzioni. Un Contesto AI modificato vale per le email nuove; l'utente può avviare "Rianalizza" su una singola email, sugli elementi aperti o sugli ultimi N giorni, vedendo prima la stima del costo.

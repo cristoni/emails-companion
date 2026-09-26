@@ -10,7 +10,7 @@ Cifriamo nell'applicazione, prima che arrivino al database, tutti i contenuti pe
 
 Lo schema è a busta: AES-256-GCM con una chiave dati per utente, cifrata da una chiave principale versionata. I dati associati sono `utente:tabella:colonna:id`, così un cifrato non può essere spostato tra utenti, colonne o righe.
 
-Le ricerche per uguaglianza usano **indici ciechi**: HMAC con una chiave per utente derivata con HKDF, su indirizzi, `Message-ID`, riferimenti, dominio e hash. La somiglianza tra oggetti si calcola nel worker dopo la decifratura, su insiemi piccoli. In chiaro restano solo identificativi, stati, date, codici e metadati strutturali.
+Le ricerche per uguaglianza usano **indici ciechi**: HMAC con una chiave per utente derivata con HKDF, su indirizzi, `Message-ID`, riferimenti, dominio e hash. Fanno eccezione due ricerche trasversali agli utenti, l'account esterno di una casella e il suo indirizzo, che usano una chiave HMAC globale dell'app distinta dalla chiave principale. Servono a garantire che una casella esterna appartenga a un solo utente e a instradare le notifiche. La somiglianza tra oggetti si calcola nel worker dopo la decifratura, su insiemi piccoli. In chiaro restano solo identificativi, stati, date, codici e metadati strutturali.
 
 L'isolamento tra utenti è garantito dallo schema, non solo dalle query:
 - ogni tabella ha `UNIQUE (utente_id, id)` e chiavi esterne composte con `utente_id`;
