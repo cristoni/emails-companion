@@ -5,19 +5,27 @@ Webapp di posta che ricostruisce dalle email ricevute e inviate una vista operat
 ## Posta
 
 **Email**:
-Messaggio ricevuto o inviato dalla casella collegata dell'utente, consultabile nella posta originale. Ha una **Direzione**.
+Messaggio ricevuto o inviato dall'utente, consultabile nella posta originale. Se è presente in più **Caselle collegate** dell'utente conta una sola volta e ha una **Copia** in ciascuna. Ha una **Direzione**.
 _Da evitare_: messaggio (come sinonimo generico), mail item
 
+**Copia**:
+La presenza di un'**Email** in una specifica **Casella collegata**, con le sue cartelle, il suo **Thread** e il link all'originale.
+_Da evitare_: duplicato, istanza
+
 **Direzione**:
-Indica se un'**Email** è _in entrata_ (ricevuta) o _in uscita_ (inviata dall'utente, anche fuori dalla webapp).
+Indica se un'**Email** è _in entrata_ (ricevuta), _in uscita_ (inviata dall'utente, anche fuori dalla webapp) o _interna_.
 _Da evitare_: tipo, verso
+
+**Email interna**:
+**Email** scambiata solo tra indirizzi dell'utente (per esempio un promemoria a sé stessi). Può generare **Attività**, mai **Attese**.
+_Da evitare_: email a sé stessi (come unico caso), nota
 
 **Thread**:
 Raggruppamento di **Email** deciso dal provider di posta. È un indizio di correlazione, non l'identità di una **Situazione**.
 _Da evitare_: conversazione (quando si intende una Situazione)
 
 **Casella collegata**:
-Una casella di posta dell'utente autorizzata alla lettura e all'invio tramite un **Connettore di posta**. Un utente può avere più **Caselle collegate**; ogni **Email** appartiene a una sola di esse.
+Una casella di posta dell'utente autorizzata alla lettura e all'invio tramite un **Connettore di posta**. Un utente può avere più **Caselle collegate**; una casella esterna è collegata a un solo utente alla volta.
 _Da evitare_: mailbox, account di posta (quando ambiguo con l'account dell'app)
 
 **Connettore di posta**:
@@ -35,11 +43,15 @@ _Da evitare_: backfill (in testi per l'utente), migrazione
 ## Vista operativa
 
 **Situazione**:
-Questione operativa ricostruita da una o più **Email**, anche appartenenti a **Thread** o **Caselle collegate** diverse. Un'**Email** può appartenere a più **Situazioni**.
+Questione operativa ricostruita da una o più **Email**, anche appartenenti a **Thread** o **Caselle collegate** diverse. Nasce da un'**Email** che genera un'**Attività**, un'**Attesa** o un'urgenza; un'**Email** origina al massimo una **Situazione** ma può essere collegata ad altre. È _attiva_ finché ha elementi aperti, risposte da vedere o un'urgenza non gestita; altrimenti è _conclusa_.
 _Da evitare_: pratica, caso, ticket, conversazione
 
+**Prossima azione**:
+Il passo successivo suggerito per una **Situazione**, calcolato dai suoi elementi aperti (rivedere una risposta, l'**Attività** più vicina alla scadenza, un sollecito consigliato).
+_Da evitare_: next step (in testi italiani), suggerimento AI
+
 **Attività**:
-Azione che spetta all'utente, eventualmente con scadenza e priorità, derivata da una o più **Email**.
+Azione che spetta all'utente, eventualmente con scadenza e priorità, derivata da una o più **Email**. Un'**Email** in uscita che la soddisfa può completarla automaticamente: il completamento deciso dall'AI è un'**Inferenza** annullabile.
 _Da evitare_: task, todo, compito
 
 **Attesa**:
@@ -55,7 +67,7 @@ Valutazione di una **Risposta arrivata** che soddisfa solo in parte la richiesta
 _Da evitare_: risposta incompleta, attesa chiusa parzialmente
 
 **Attesa soddisfatta**:
-**Attesa** chiusa perché una **Risposta arrivata** è stata valutata completa, dall'AI oppure dall'utente. La chiusura decisa dall'AI è un'**Inferenza**: resta visibile in **Risposte arrivate** e l'utente può riaprire l'**Attesa** con una **Correzione**.
+**Attesa** chiusa perché una **Risposta arrivata** è stata valutata completa, dall'AI oppure dall'utente. La chiusura decisa dall'AI è un'**Inferenza**: resta visibile in **Risposte arrivate** e l'utente può riaprire l'**Attesa** correggendo la valutazione di quella risposta; una nuova risposta completa può chiuderla di nuovo.
 _Da evitare_: attesa risolta, attesa completata
 
 **Area della home**:
@@ -109,7 +121,7 @@ Modifica esplicita dell'utente a un risultato dell'AI (classificazione, priorit�
 _Da evitare_: feedback, override
 
 **Collegamento**:
-Associazione tra un'**Email** e una **Situazione** o un'**Attesa**, con l'indicazione di come è stata stabilita (stesso **Thread**, intestazioni di risposta, AI o utente). Un collegamento rifiutato dall'utente non viene riproposto.
+Associazione tra un'**Email** e una **Situazione**, con l'indicazione di come è stata stabilita (stesso **Thread**, intestazioni di risposta, invio dall'app, AI o utente). Il collegamento tra un'**Email** e un'**Attesa** è la **Risposta arrivata**. Un collegamento stabilito dall'AI resta una **Proposta** finché l'utente non lo conferma; uno rifiutato non viene riproposto.
 _Da evitare_: link, match
 
 ## Invio
@@ -135,6 +147,8 @@ L'interfaccia è in inglese per impostazione predefinita. Questi sono i termini 
 | Termine | Inglese |
 | --- | --- |
 | Situazione | Situation |
+| Prossima azione | Next step |
+| Email interna / Copia | Internal email / Copy |
 | Attività / Da fare | Action / To do |
 | Attesa / In attesa | Waiting item / Waiting on |
 | Risposta arrivata / Risposte arrivate | Reply received / Replies |

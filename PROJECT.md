@@ -28,20 +28,27 @@ Prese durante la definizione dell'architettura; sostituiscono le corrispondenti 
 - Google è il primo di più sistemi collegabili. L'accesso all'app avviene tramite un **provider di identità** (oggi Google); la posta viene letta e inviata tramite **connettori di posta** disaccoppiati dalle funzionalità. Il connettore viene scelto e configurato per utente al primo accesso.
 - Con Google un **unico consenso** in registrazione concede identità, lettura (`gmail.readonly`) e invio (`gmail.send`) con accesso offline; la casella dell'account di accesso diventa la prima casella collegata.
 - Un utente può collegare **più caselle** già nella prima versione. La home è unificata e ogni elemento indica la casella di provenienza; le risposte partono dalla casella corretta.
+- Una casella esterna (per esempio un account Gmail) può essere collegata da **un solo utente** dell'app alla volta; chi prova a collegarla riceve una spiegazione.
+- La stessa email presente in più caselle dell'utente **conta una sola volta**. Le **email interne**, scambiate solo tra indirizzi dell'utente (per esempio promemoria a sé stessi), possono generare Attività ma mai Attese.
 - Pubblico iniziale: pilota dell'ideatore e di poche persone conosciute. Il progetto Google è "Esterno", in stato **In produzione non verificato**: gli utenti vedono l'avviso "app non verificata" e il progetto accetta al massimo 100 utenti nell'intera vita. Un lancio pubblico richiede la verifica Google degli scope "restricted" e un audit di sicurezza CASA annuale.
 
 **Privacy e conservazione**
 
 - Ogni chiamata ai modelli che contiene testo delle email richiede fornitori che non raccolgono dati (`data_collection: deny`) e **Zero Data Retention obbligatoria**. Se il modello scelto per una funzione non ha endpoint compatibili, l'impostazione lo segnala e chiede un altro modello.
-- Il testo normalizzato e le intestazioni delle email sono conservati, cifrati, **finché la casella resta collegata**; tutto viene eliminato quando l'utente scollega la casella o cancella l'account. Gli allegati non vengono salvati; l'originale HTML viene caricato dal provider quando l'utente lo apre.
+- Il testo normalizzato, le intestazioni delle email e i testi derivati dall'AI sono conservati, cifrati, **finché la casella resta collegata**; tutto ciò che deriva da una casella viene eliminato quando l'utente la scollega o cancella l'account (i backup del database seguono la loro ritenzione, indicata nell'informativa). Gli allegati non vengono salvati; l'originale HTML viene caricato dal provider quando l'utente lo apre.
+- Prima che il testo di un'email venga inviato ai modelli, l'utente accetta un'informativa che spiega trattamento, conservazione, invio tramite OpenRouter con la sua chiave e dichiarazione Limited Use di Google. Senza consenso l'analisi resta in pausa.
 
 **Analisi e vista operativa**
 
-- **Importazione iniziale**: al collegamento di una casella si analizzano le email ricevute negli ultimi 14 giorni e quelle inviate negli ultimi 30, a partire dalle più recenti, dopo aver mostrato numero di email e stima del costo e ottenuto la conferma dell'utente.
-- Le Attività, le Attese e i collegamenti proposti dall'AI **compaiono subito come proposte**: riconoscibili, con le evidenze, e con i comandi conferma, modifica e scarta.
+- **Importazione iniziale**: al collegamento di una casella si analizzano le email ricevute negli ultimi 14 giorni e quelle inviate negli ultimi 30, a partire dalle più recenti, dopo aver mostrato numero di email e stima del costo e ottenuto la conferma dell'utente. Durante l'importazione la home mostra l'avanzamento; le Situazioni vengono ricostruite in ordine cronologico quando l'analisi della finestra è terminata. Le risposte alle richieste inviate nella finestra vengono recuperate anche se più vecchie di 14 giorni, solo per valutare le Attese.
+- Le Attività, le Attese e i collegamenti proposti dall'AI **compaiono subito come proposte**: riconoscibili, con le evidenze, e con i comandi conferma, modifica e scarta. Un collegamento stabilito dall'AI resta una proposta finché l'utente non lo conferma, qualunque sia la confidenza.
 - Una Situazione che rientra in più aree compare **una sola volta**, nell'area con precedenza più alta (Urgente, poi Risposte arrivate, poi Da fare, poi In attesa), con indicatori per gli altri stati.
+- Una Situazione nasce da un'email che genera un'Attività, un'Attesa o un'urgenza. Titolo e descrizione sono prodotti dall'analisi di quell'email, nella sua lingua; la **prossima azione suggerita** è calcolata dagli elementi aperti. Una Situazione urgente senza azioni si toglie da Urgente con "Segna come gestita". Una Situazione senza elementi aperti è conclusa; l'utente può archiviarla o riaprirla.
+- La correlazione tra thread riguarda tutte le Situazioni aperte, non solo le Attese.
+- Una tua email in uscita (anche inviata da Gmail fuori dall'app) che soddisfa un'Attività la **completa automaticamente**, in modo annullabile e mostrato come inferenza. Come per la chiusura automatica delle Attese, serve un'evidenza verificata nell'email; senza, il completamento resta solo una proposta.
+- La lingua rilevata di un'email è correggibile dall'utente, che può poi rianalizzarla.
 - Se la chiave OpenRouter manca, non è valida o non ha credito, oppure se il modello scelto non è disponibile, **la sincronizzazione continua e l'analisi va in pausa**: tutta per problemi di chiave o credito, solo la funzione interessata per problemi di modello. Le email restano leggibili come "da analizzare", un avviso in home e nelle impostazioni indica il motivo, l'analisi riprende da sola quando il problema è risolto. Non si passa mai in silenzio a un altro modello.
-- Una Risposta arrivata valutata **completa chiude automaticamente l'Attesa**, in modo annullabile: la chiusura è mostrata come inferenza, resta visibile in Risposte arrivate e l'utente può riaprire l'Attesa. Una risposta parziale o non pertinente lascia l'Attesa aperta.
+- Una Risposta arrivata valutata **completa chiude automaticamente l'Attesa**, in modo annullabile, se per ogni elemento richiesto c'è un'evidenza verificata nella risposta. La chiusura è mostrata come inferenza, resta visibile in Risposte arrivate e l'utente può riaprire l'Attesa: la riapertura vale per quella risposta, mentre una nuova risposta completa può chiuderla di nuovo. Una risposta parziale o non pertinente lascia l'Attesa aperta.
 - Le **correzioni sono locali e permanenti**: valgono per l'elemento corretto, nessuna rianalisi le sovrascrive e un collegamento rifiutato non viene riproposto. Non c'è apprendimento automatico dalle correzioni. Un Contesto AI modificato vale per le email nuove; l'utente può avviare "Rianalizza" su una singola email, sugli elementi aperti o sugli ultimi N giorni, vedendo prima la stima del costo.
 - L'app non impone un tetto di spesa proprio: in registrazione consiglia di creare una chiave OpenRouter dedicata con limite di credito, mostra il consumo per funzione e offre l'interruttore "Pausa analisi AI".
 
@@ -93,9 +100,9 @@ L'utente può scegliere un modello OpenRouter separato per ogni funzione. Config
 
 | Funzione AI | Uso | Modello iniziale |
 | --- | --- | --- |
-| Classificazione e priorità | Distinguere News, urgenze e altri messaggi; motivare la priorità. | `openai/gpt-6-luna` |
-| Estrazione attività | Riconoscere azioni, impegni e scadenze. | `openai/gpt-6-luna` |
-| Gestione attese e risposte | Rilevare richieste nelle email inviate e collegare risposte, anche tra thread. | `openai/gpt-6-luna` |
+| Classificazione e priorità | Distinguere News, urgenze e altri messaggi; motivare la priorità; proporre titolo e descrizione di una nuova Situazione. | `openai/gpt-6-luna` |
+| Estrazione attività | Riconoscere azioni, impegni, promemoria e scadenze; aggiornare gli elementi già estratti in caso di rianalisi. | `openai/gpt-6-luna` |
+| Gestione attese e risposte | Rilevare richieste nelle email inviate; collegare email a Situazioni e Attese aperte, anche tra thread; valutare risposte e completamento delle Attività. | `openai/gpt-6-luna` |
 | Riepilogo News | Sintetizzare i messaggi secondari delle ultime 24 ore. | `openai/gpt-6-luna` |
 | Bozze assistite | Proporre risposte e solleciti da approvare. | `openai/gpt-6-luna` |
 
