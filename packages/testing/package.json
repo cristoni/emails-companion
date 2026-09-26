@@ -1,0 +1,20 @@
+{
+  "name": "@ec/testing",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./postgres": "./src/postgres/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ec/core": "workspace:*",
+    "embedded-postgres": "17.10.0-beta.17",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
+  }
+}

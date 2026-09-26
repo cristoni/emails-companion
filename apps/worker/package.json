@@ -1,0 +1,22 @@
+{
+  "name": "worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@ec/ai": "workspace:*",
+    "@ec/connettore-gmail": "workspace:*",
+    "@ec/core": "workspace:*",
+    "@ec/crypto": "workspace:*",
+    "@ec/db": "workspace:*",
+    "graphile-worker": "0.18.0",
+    "pino": "^10.3.1"
+  },
+  "devDependencies": {
+    "@ec/testing": "workspace:*"
+  }
+}

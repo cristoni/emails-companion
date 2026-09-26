@@ -1,0 +1,24 @@
+# dipendenze e build
+node_modules/
+dist/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# ambiente: mai segreti nel repository pubblico
+.env
+.env.*
+!.env.example
+
+# test
+playwright-report/
+test-results/
+.pg-test/
+
+# strumenti
+.vercel/
+.turbo/
+*.log
+.DS_Store
+Thumbs.db

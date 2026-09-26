@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - "@embedded-postgres/windows-x64"
+  - "@embedded-postgres/linux-x64"
+  - "@embedded-postgres/darwin-arm64"
+  - "@embedded-postgres/darwin-x64"
+  - esbuild
+  - sharp

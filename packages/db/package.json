@@ -1,0 +1,25 @@
+{
+  "name": "@ec/db",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/migra.ts"
+  },
+  "dependencies": {
+    "@ec/core": "workspace:*",
+    "@ec/crypto": "workspace:*",
+    "drizzle-orm": "0.45.3",
+    "graphile-worker": "0.18.0",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "0.31.11"
+  }
+}

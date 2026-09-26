@@ -1,0 +1,23 @@
+{
+  "name": "@ec/connettore-gmail",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ec/core": "workspace:*",
+    "@googleapis/gmail": "22.0.1",
+    "gaxios": "^7.1.0",
+    "google-auth-library": "11.1.0",
+    "html-to-text": "10.0.1",
+    "nodemailer": "10.0.10",
+    "postal-mime": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "9.0.4"
+  }
+}
