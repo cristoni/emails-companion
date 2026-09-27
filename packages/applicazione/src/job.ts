@@ -6,6 +6,9 @@ import { verificaChiavePeriodica, verificaModelliPeriodica } from "./impostazion
 import { importaPagina, recuperaRisposte, stimaImportazione } from "./posta/importazione";
 import { pianificaSincronizzazioni, sincronizzaCasella } from "./posta/sincronizzazione";
 import { riconciliaUtente } from "./riconciliazione/riconcilia";
+import { gestoriBozze } from "./bozze";
+import { aggiornaRiepilogoNews } from "./news/riepilogo";
+import { rianalizza } from "./rianalisi/rianalizza";
 
 export type GestoriJob = { [N in NomeJob]: (payload: PayloadJob[N]) => Promise<void> };
 
@@ -31,13 +34,14 @@ export function gestoriJob(dip: Dipendenze, estensioni: Partial<GestoriJob> = {}
     verifica_modelli: (p) => verificaModelliPeriodica(dip, p.utenteId, p.funzione),
     scollega_casella: (p) => scollegaCasella(dip, p.utenteId, p.casellaId),
     elimina_account: (p) => eliminaAccount(dip, p.utenteId),
-    aggiorna_riepilogo_news: nonDisponibile,
-    genera_bozza: nonDisponibile,
-    invia_email: nonDisponibile,
-    verifica_invio: nonDisponibile,
-    rianalizza: nonDisponibile,
-    sweeper_invii: nonDisponibile,
+    aggiorna_riepilogo_news: async (p) => {
+      await aggiornaRiepilogoNews(dip, p.utenteId);
+    },
+    rianalizza: async (p) => {
+      await rianalizza(dip, p.utenteId, p.richiestaId);
+    },
     pulizia: nonDisponibile,
+    ...gestoriBozze(dip),
     ...estensioni,
   };
 }

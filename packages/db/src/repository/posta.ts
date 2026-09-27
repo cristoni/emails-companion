@@ -424,8 +424,8 @@ export const posta = {
   async segnaPronta(ctx: ContestoUtente, emailId: string) {
     await ctx.tx
       .update(email)
-      .set({ statoRiconciliazione: "pronta" })
-      .where(and(eq(email.utenteId, ctx.utenteId), eq(email.id, emailId), ne(email.statoRiconciliazione, "pronta")));
+      .set({ statoRiconciliazione: "pronta", generazioneRiconciliazione: sql`${email.generazioneRiconciliazione} + 1` })
+      .where(and(eq(email.utenteId, ctx.utenteId), eq(email.id, emailId)));
   },
 
   async segnaRiconciliata(ctx: ContestoUtente, emailId: string, ora: Date) {

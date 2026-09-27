@@ -3,6 +3,7 @@ import { caselle, posta, sincronizzazione, type ContestoUtente } from "@ec/db";
 import { GIORNO_MS, MINUTO_MS, type Dipendenze } from "../dipendenze";
 import { prossimoTentativo } from "../ritentativi";
 import { acquisisciCopia } from "./acquisizione";
+import { programmaRiepilogoNews } from "../news/riepilogo";
 
 const STATI_SINCRONIZZABILI = ["collegata", "permessi_incompleti"] as const;
 const MASSIMO_RECUPERO_MS = 90 * GIORNO_MS;
@@ -51,7 +52,9 @@ export async function sincronizzaCasella(dip: Dipendenze, utenteId: string, case
           const continua = await dip.unita.perUtente(utenteId, async (ctx) => {
             const stato = await caselle.bloccaStato(ctx, casellaId);
             if (!stato || !STATI_SINCRONIZZABILI.includes(stato as (typeof STATI_SINCRONIZZABILI)[number])) return false;
-            for (const id of pagina.eliminate) await posta.segnaEliminata(ctx, casellaId, id);
+            let eliminate = false;
+            for (const id of pagina.eliminate) if (await posta.segnaEliminata(ctx, casellaId, id)) eliminate = true;
+            if (eliminate) await programmaRiepilogoNews(dip, ctx);
             for (const cambio of pagina.cambiCartelle) {
               await posta.aggiornaCartelle(ctx, casellaId, cambio.idConnettore, cambio.cartelle, cambio.etichette);
             }
@@ -116,7 +119,9 @@ async function risincronizza(
         if (nota) {
           const cartelle = await connettore.cartelle(id);
           await dip.unita.perUtente(utenteId, async (ctx) => {
-            if (!cartelle) await posta.segnaEliminata(ctx, casellaId, id);
+            if (!cartelle) {
+              if (await posta.segnaEliminata(ctx, casellaId, id)) await programmaRiepilogoNews(dip, ctx);
+            }
             else await posta.aggiornaCartelle(ctx, casellaId, id, cartelle.cartelle, cartelle.etichette);
           });
           continue;

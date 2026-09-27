@@ -28,6 +28,7 @@ import {
 import { GIORNO_MS, type Dipendenze } from "../dipendenze";
 import { categoriaEffettiva, opzioniRiconciliazione } from "../analisi/analizza-email";
 import { invocaFunzione } from "../analisi/invocazione";
+import { abbinaInvioPerEmail } from "../bozze";
 import { emailPerModello } from "../analisi/per-modello";
 
 const EMAIL_PER_GIRO = 25;
@@ -55,7 +56,9 @@ interface Contesto {
   titoloProposto: string | null;
   descrizioneProposta: string | null;
   estrazione: { analisiId: string; output: OutputEstrazione } | null;
-  deterministiche: Map<string, "thread" | "intestazioni">;
+  deterministiche: Map<string, "invio_app" | "thread" | "intestazioni">;
+  ruoloInvioApp: "risposta" | "sollecito" | null;
+  generazione: number;
   rifiutate: Set<string>;
   candidate: string[];
   indirizziUtente: Set<string>;
@@ -81,7 +84,15 @@ async function caricaContesto(dip: Dipendenze, ctx: ContestoUtente, emailId: str
   const idEstrazione = stati.estrazione_attivita?.stato === "eseguita" ? stati.estrazione_attivita.analisiId : null;
   const salvato = idEstrazione ? await analisi.leggiOutput<{ risolto: OutputEstrazione }>(ctx, idEstrazione) : null;
 
-  const deterministiche = new Map<string, "thread" | "intestazioni">();
+  const deterministiche = new Map<string, "invio_app" | "thread" | "intestazioni">();
+  let ruoloInvioApp: "risposta" | "sollecito" | null = null;
+  if (email.direzione !== "entrata") {
+    const abbinamento = await abbinaInvioPerEmail(ctx, emailId, dip.orologio.ora());
+    if (abbinamento?.situazioneId && !rifiutate.has(abbinamento.situazioneId)) {
+      deterministiche.set(abbinamento.situazioneId, "invio_app");
+      ruoloInvioApp = abbinamento.ruolo;
+    }
+  }
   const aggiungi = async (altre: string[], origine: "thread" | "intestazioni") => {
     for (const altra of altre) {
       if (altra === emailId) continue;
@@ -105,6 +116,8 @@ async function caricaContesto(dip: Dipendenze, ctx: ContestoUtente, emailId: str
     descrizioneProposta: classificazione?.descrizioneSituazione ?? salvato?.risolto.descrizione_situazione ?? null,
     estrazione: salvato && idEstrazione ? { analisiId: idEstrazione, output: salvato.risolto } : null,
     deterministiche,
+    ruoloInvioApp,
+    generazione: await riconciliazione.generazione(ctx, emailId),
     rifiutate,
     candidate: [],
     indirizziUtente,
@@ -270,7 +283,7 @@ export async function riconciliaEmail(dip: Dipendenze, utenteId: string, emailId
   await dip.unita.perUtente(utenteId, (ctx) => applica(dip, ctx, c, output, analisiAtteseId, input?.testi ?? { [c.email.id]: c.email.testo }));
   await dip.unita.perUtente(utenteId, async (ctx) => {
     await posta.impostaStatoFunzione(ctx, emailId, "attese_risposte", statoAttese, dip.orologio.ora(), motivo, analisiAtteseId);
-    await posta.segnaRiconciliata(ctx, emailId, dip.orologio.ora());
+    await riconciliazione.segnaRiconciliata(ctx, emailId, c.generazione, dip.orologio.ora());
   });
 }
 
@@ -284,13 +297,17 @@ async function applica(
 ): Promise<void> {
   const ora = dip.orologio.ora();
   const e = c.email;
+  // Un rifiuto confermato durante la chiamata al modello deve valere già in questa applicazione.
+  c.rifiutate = await operativo.collegamentiRifiutati(ctx, e.id);
+  for (const s of c.rifiutate) c.deterministiche.delete(s);
   const evid = (lista: { email: string; citazione: string }[]): Evidenza[] => verificaEvidenze(lista, testi);
   const toccate = new Set<string>();
 
   // 1. Situazione di destinazione: deterministica, poi proposta dall'AI, poi nuova se servono elementi.
   const collegamentiAi = (output?.collegamenti ?? []).filter((l) => l.pertinente && !c.rifiutate.has(l.candidato)).sort((a, b) => b.confidenza - a.confidenza);
   for (const [sit, origine] of c.deterministiche) {
-    await operativo.collega(ctx, { emailId: e.id, situazioneId: sit, origine, ruolo: "risposta", stato: "confermato", confidenza: null, analisiId: null }, ora);
+    const ruolo = origine === "invio_app" ? (c.ruoloInvioApp ?? "risposta") : "risposta";
+    await operativo.collega(ctx, { emailId: e.id, situazioneId: sit, origine, ruolo, stato: "confermato", confidenza: null, analisiId: null }, ora);
     toccate.add(sit);
   }
   for (const l of collegamentiAi) {
@@ -301,7 +318,7 @@ async function applica(
   let destinazione: string | null = [...c.deterministiche.keys()][0] ?? collegamentiAi[0]?.candidato ?? null;
 
   const richiesteNuove = (output?.richieste ?? []).filter((r) => r.esito === "nuovo" && !r.sollecito_di);
-  const elementiNuovi = (c.estrazione?.output.elementi ?? []).filter((x) => x.esito === "nuovo");
+  const elementiNuovi = e.direzione === "entrata" && c.categoria === "news" ? [] : (c.estrazione?.output.elementi ?? []).filter((x) => x.esito === "nuovo");
   const urgenteOperativa = e.direzione === "entrata" && c.urgente && c.categoria !== "news";
   const origineEsistente = await operativo.situazionePerOrigine(ctx, e.id);
 
@@ -331,8 +348,8 @@ async function applica(
   }
   if (destinazione) toccate.add(destinazione);
 
-  // 2. Attività dall'estrazione.
-  if (c.estrazione && destinazione) {
+  // 2. Attività dall'estrazione (mai per un'email in entrata spostata tra le News).
+  if (c.estrazione && destinazione && !(e.direzione === "entrata" && c.categoria === "news")) {
     const esistenti = await operativo.attivitaDellEmail(ctx, e.id);
     const correzioni = await operativo.correzioniPer(ctx, esistenti.map((a) => ({ tipo: "attivita" as const, id: a.id })));
     const giaApplicata = esistenti.some((a) => a.analisiId === c.estrazione?.analisiId);

@@ -1,5 +1,6 @@
 import { caselle, eliminazione, indirizzi, sincronizzazione } from "@ec/db";
 import type { Dipendenze } from "../dipendenze";
+import { programmaRiepilogoNews } from "../news/riepilogo";
 
 const LOTTO_ELIMINAZIONE = 200;
 
@@ -24,6 +25,7 @@ export async function scollegaCasella(dip: Dipendenze, utenteId: string, casella
   await dip.unita.perUtente(utenteId, async (ctx) => {
     await eliminazione.datiCasella(ctx, casellaId);
     await caselle.rendiTerminale(ctx, casellaId, dip.orologio.ora());
+    await programmaRiepilogoNews(dip, ctx);
     await ctx.coda.accoda("riconcilia_utente", { utenteId }, { chiave: `riconcilia:${utenteId}`, coda: `utente:${utenteId}`, modalitaChiave: "preserve_run_at" });
   });
 }

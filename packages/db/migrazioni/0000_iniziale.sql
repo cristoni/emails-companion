@@ -309,6 +309,7 @@ CREATE TABLE "email" (
 	"fonte_lingua" text NOT NULL,
 	"solo_per_risposte" boolean DEFAULT false NOT NULL,
 	"stato_riconciliazione" text DEFAULT 'in_attesa' NOT NULL,
+	"generazione_riconciliazione" integer DEFAULT 0 NOT NULL,
 	"riconciliata_il" timestamp with time zone,
 	"creata_il" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "email_utente_id_uq" UNIQUE("utente_id","id"),

@@ -191,7 +191,10 @@ export const operativo = {
       .where(and(eq(collegamento.utenteId, ctx.utenteId), eq(collegamento.emailId, c.emailId), eq(collegamento.situazioneId, c.situazioneId)));
     if (!r) throw new Error("collegamento_non_trovato");
     if (r.stato === "proposto" && c.stato === "confermato" && c.origine !== "ai") {
-      await ctx.tx.update(collegamento).set({ stato: "confermato", origine: c.origine, aggiornatoIl: ora }).where(eq(collegamento.id, r.id));
+      await ctx.tx
+        .update(collegamento)
+        .set({ stato: "confermato", origine: c.origine, aggiornatoIl: ora })
+        .where(and(eq(collegamento.utenteId, ctx.utenteId), eq(collegamento.id, r.id), eq(collegamento.stato, "proposto")));
       return { id: r.id, stato: "confermato" };
     }
     return { id: r.id, stato: r.stato as StatoCollegamento };
@@ -453,7 +456,7 @@ export const operativo = {
           analisiId: r.analisiId,
           aggiornataIl: ora,
         })
-        .where(eq(rispostaArrivata.id, esistente.id));
+        .where(and(eq(rispostaArrivata.utenteId, ctx.utenteId), eq(rispostaArrivata.id, esistente.id)));
     }
     await ctx.tx.delete(requisitoSoddisfatto).where(and(eq(requisitoSoddisfatto.utenteId, ctx.utenteId), eq(requisitoSoddisfatto.rispostaId, esistente.id)));
     await ctx.tx.delete(evidenza).where(and(eq(evidenza.utenteId, ctx.utenteId), eq(evidenza.rispostaId, esistente.id)));
@@ -542,9 +545,19 @@ export const operativo = {
 
   // ── Correzioni ed eventi ──
 
+  /**
+   * Scrive una correzione con istante strettamente successivo alle precedenti sullo stesso campo:
+   * il valore effettivo è "l'ultima correzione attiva" e due correzioni nello stesso millisecondo sarebbero ambigue.
+   */
   async correggi(ctx: ContestoUtente, soggetto: Soggetto, campo: string, valore: unknown, valorePrecedente: unknown, ora: Date): Promise<string> {
     const id = crypto.randomUUID();
     const colonna = COLONNA_CORREZIONE[soggetto.tipo];
+    const [ultima] = await ctx.tx
+      .select({ il: sql<Date>`max(${correzione.creataIl})` })
+      .from(correzione)
+      .where(and(eq(correzione.utenteId, ctx.utenteId), eq(correzione[colonna], soggetto.id), eq(correzione.campo, campo)));
+    const precedente = ultima?.il ? new Date(ultima.il) : null;
+    if (precedente && precedente.getTime() >= ora.getTime()) ora = new Date(precedente.getTime() + 1);
     await ctx.tx.insert(correzione).values({
       id,
       utenteId: ctx.utenteId,

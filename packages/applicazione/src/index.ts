@@ -10,3 +10,8 @@ export * from "./riconciliazione/riconcilia";
 export * from "./caselle/consenso";
 export * from "./caselle/ciclo-vita";
 export * from "./impostazioni/impostazioni";
+export * from "./news/riepilogo";
+export * from "./rianalisi/rianalizza";
+export * from "./bozze";
+export * from "./viste";
+export * from "./correzioni";

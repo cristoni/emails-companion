@@ -28,8 +28,8 @@ export const riconciliazione = {
   async rimettiInCoda(ctx: ContestoUtente, emailIds: string[]): Promise<number> {
     if (emailIds.length === 0) return 0;
     const risultato = await ctx.tx.execute(sql`
-      update email set stato_riconciliazione = 'pronta'
-      where utente_id = ${ctx.utenteId} and stato_riconciliazione = 'riconciliata' and id = any(${sql.param(emailIds)}::uuid[])
+      update email set stato_riconciliazione = 'pronta', generazione_riconciliazione = generazione_riconciliazione + 1
+      where utente_id = ${ctx.utenteId} and stato_riconciliazione in ('riconciliata', 'pronta') and id = any(${sql.param(emailIds)}::uuid[])
       returning id`);
     return (risultato as unknown as { rows: unknown[] }).rows.length;
   },
@@ -52,6 +52,20 @@ export const riconciliazione = {
       where utente_id = ${ctx.utenteId} and ricevuta_il > ${dopo.toISOString()}::timestamptz and direzione = 'uscita'
         and destinatari_indici && ${sql.param(destinatariIndici)}::text[]`);
     return (risultato as unknown as { rows: { id: string }[] }).rows.map((r) => r.id);
+  },
+
+  async generazione(ctx: ContestoUtente, emailId: string): Promise<number> {
+    const risultato = await ctx.tx.execute(sql`select generazione_riconciliazione as g from email where utente_id = ${ctx.utenteId} and id = ${emailId}::uuid`);
+    return Number((risultato as unknown as { rows: { g: number }[] }).rows[0]?.g ?? 0);
+  },
+
+  /** Segna riconciliata solo se nessuno l'ha rimessa in coda durante la riconciliazione. */
+  async segnaRiconciliata(ctx: ContestoUtente, emailId: string, generazione: number, ora: Date): Promise<boolean> {
+    const risultato = await ctx.tx.execute(sql`
+      update email set stato_riconciliazione = 'riconciliata', riconciliata_il = ${ora.toISOString()}::timestamptz
+      where utente_id = ${ctx.utenteId} and id = ${emailId}::uuid and generazione_riconciliazione = ${generazione}
+      returning id`);
+    return (risultato as unknown as { rows: unknown[] }).rows.length > 0;
   },
 
   async indiceMittente(ctx: ContestoUtente, emailId: string): Promise<string | null> {

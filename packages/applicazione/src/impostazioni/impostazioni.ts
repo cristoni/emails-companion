@@ -2,6 +2,8 @@ import { FUNZIONI_AI, type FunzioneAI, type MotivoPausa } from "@ec/core/dominio
 import { impostazioni, posta, type ContestoUtente, type Preferenze } from "@ec/db";
 import { MINUTO_MS, type Dipendenze } from "../dipendenze";
 import { opzioniRiconciliazione } from "../analisi/analizza-email";
+import { programmaRiepilogoNews } from "../news/riepilogo";
+import { riprendiRianalisi } from "../rianalisi/rianalizza";
 
 export type EsitoChiave = "valida" | "non_valida" | "credito_esaurito" | "errore_temporaneo" | "formato_non_valido";
 
@@ -92,9 +94,10 @@ export async function accettaInformativa(dip: Dipendenze, ctx: ContestoUtente): 
 }
 
 export async function aggiornaPreferenze(dip: Dipendenze, ctx: ContestoUtente, modifiche: Partial<Preferenze>): Promise<void> {
-  const pausaPrima = (await impostazioni.preferenze(ctx)).pausaManuale;
+  const prima = await impostazioni.preferenze(ctx);
   await impostazioni.aggiornaPreferenze(ctx, modifiche, dip.orologio.ora());
-  if (pausaPrima && modifiche.pausaManuale === false) await riprendiAnalisi(dip, ctx, ["pausa_manuale"]);
+  if (prima.pausaManuale && modifiche.pausaManuale === false) await riprendiAnalisi(dip, ctx, ["pausa_manuale"]);
+  if (modifiche.lingua !== undefined && modifiche.lingua !== prima.lingua) await programmaRiepilogoNews(dip, ctx);
 }
 
 /**
@@ -123,5 +126,7 @@ export async function riprendiAnalisi(dip: Dipendenze, ctx: ContestoUtente, moti
       riprese += 1;
     }
   }
+  if (!funzione || funzione === "riepilogo_news") await programmaRiepilogoNews(dip, ctx);
+  if (!funzione || funzione === "classificazione_priorita" || funzione === "estrazione_attivita") await riprendiRianalisi(ctx);
   return riprese;
 }

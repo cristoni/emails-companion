@@ -10,3 +10,8 @@ export * from "./repository/operativo";
 export * from "./repository/riconciliazione";
 export * from "./repository/eliminazione";
 export * from "./repository/chiavi";
+export * from "./repository/news";
+export * from "./repository/rianalisi";
+export * from "./repository/bozze";
+export * from "./repository/viste";
+export * from "./repository/correzioni";

@@ -254,6 +254,7 @@ export const email = pgTable(
     fonteLingua: text().notNull(),
     soloPerRisposte: boolean().notNull().default(false),
     statoRiconciliazione: text().notNull().default("in_attesa"),
+    generazioneRiconciliazione: integer().notNull().default(0),
     riconciliataIl: tsOpz(),
     creataIl: ts(),
   },

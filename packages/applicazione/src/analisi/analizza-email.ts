@@ -1,8 +1,9 @@
 import { verificaEvidenze, type OutputClassificazione } from "@ec/ai";
-import { valoreEffettivo, type Categoria, type Email, type FunzioneAI } from "@ec/core/dominio";
+import { inFinestraNews, valoreEffettivo, type Categoria, type Email, type FunzioneAI } from "@ec/core/dominio";
 import { impostazioni, operativo, posta, type ContestoUtente } from "@ec/db";
 import type { Dipendenze } from "../dipendenze";
 import { verificaFineImportazione } from "../posta/importazione";
+import { programmaRiepilogoNews } from "../news/riepilogo";
 import { invocaFunzione } from "./invocazione";
 import { emailPerModello } from "./per-modello";
 
@@ -86,6 +87,8 @@ async function classifica(dip: Dipendenze, utenteId: string, email: Email, fuso:
   const evidenze = verificaEvidenze(output.evidenze, { [email.id]: email.testo });
   const ora = dip.orologio.ora();
   await dip.unita.perUtente(utenteId, async (ctx) => {
+    const precedente = await posta.leggiClassificazione(ctx, email.id);
+    const eraNews = precedente !== null && (await categoriaEffettiva(ctx, email.id, precedente.categoria)) === "news";
     await posta.salvaClassificazione(
       ctx,
       {
@@ -105,6 +108,9 @@ async function classifica(dip: Dipendenze, utenteId: string, email: Email, fuso:
     await posta.impostaStatoFunzione(ctx, email.id, "classificazione_priorita", "eseguita", ora, null, esito.analisiId);
     const categoria = await categoriaEffettiva(ctx, email.id, output.categoria);
     await posta.impostaStatoFunzione(ctx, email.id, "estrazione_attivita", categoria === "news" ? "non_necessaria" : "da_eseguire", ora);
+    if (email.direzione === "entrata" && !email.soloPerRisposte && (categoria === "news" || eraNews) && inFinestraNews(email.ricevutaIl, ora)) {
+      await programmaRiepilogoNews(dip, ctx);
+    }
   });
   return "continua";
 }

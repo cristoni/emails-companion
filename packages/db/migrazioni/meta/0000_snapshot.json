@@ -1,5 +1,5 @@
 {
-  "id": "996d6356-bb94-4886-a3b6-b86e1c90325b",
+  "id": "a6844b8f-3ddf-4202-9cc9-bb3171885a97",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -2443,6 +2443,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'in_attesa'"
+        },
+        "generazione_riconciliazione": {
+          "name": "generazione_riconciliazione",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         },
         "riconciliata_il": {
           "name": "riconciliata_il",
