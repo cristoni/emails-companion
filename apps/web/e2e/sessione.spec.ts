@@ -68,4 +68,27 @@ test.describe("con la sessione dell'utente demo", () => {
     expect(contiene(testoRsc)).toBe(false);
     expect(contiene(await page.content())).toBe(false);
   });
+
+  test("nessuna pagina dell'app, né il suo payload RSC, contiene la chiave OpenRouter", async ({ page }) => {
+    const chiave = chiaveOpenRouterFinta();
+    const casuale = chiave.replace(/^sk-or-v1-demo/, "");
+    const canarini = [chiave, chiave.slice(0, -4), casuale.slice(0, 12), casuale.slice(-16, -4)];
+    const contiene = (testo: string) => canarini.some((c) => testo.includes(c));
+
+    for (const percorso of ["/settings", "/status", "/", "/mail", "/news"]) {
+      const documento = await page.goto(percorso);
+      expect(documento?.status(), percorso).toBe(200);
+      await page.waitForLoadState("networkidle");
+      expect(contiene(await page.content()), percorso).toBe(false);
+      const rsc = await page.request.get(percorso, { headers: { RSC: "1" } });
+      expect(contiene(await rsc.text()), `${percorso} (RSC)`).toBe(false);
+    }
+    // Le impostazioni mostrano solo le ultime cifre, e il campo per sostituirla è vuoto e mascherato.
+    await page.goto("/settings#openrouter");
+    await expect(page.getByText(chiave.slice(-4), { exact: false }).first()).toBeVisible();
+    const campo = page.locator("#openrouter input[type=password]");
+    await expect(campo).toHaveCount(1);
+    await expect(campo).toHaveValue("");
+    await expect(campo).toHaveAttribute("autocomplete", "off");
+  });
 });
