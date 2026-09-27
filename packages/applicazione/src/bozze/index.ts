@@ -33,6 +33,16 @@ export {
   type RichiestaBozza,
   type VistaBozza,
 } from "./richiesta";
+export {
+  bozzeDellaSituazione,
+  dettaglioBozza,
+  RITARDO_GENERAZIONE_MS,
+  type DettaglioBozzaDto,
+  type EmailDellaBozzaDto,
+  type StatoGenerazioneBozza,
+  type VoceBozzaDto,
+} from "./vista";
+export { LIMITE_CORPO, LIMITE_OGGETTO } from "./busta";
 
 type JobBozze = "genera_bozza" | "invia_email" | "verifica_invio" | "sweeper_invii";
 

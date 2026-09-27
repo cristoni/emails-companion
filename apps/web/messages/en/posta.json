@@ -1,0 +1,165 @@
+{
+  "titolo": "Mail",
+  "descrizione": "A read-only list of the emails synced from your connected mailboxes. Replies and follow-ups go through drafts you confirm.",
+  "filtro": {
+    "etichetta": "Filter by connected mailbox",
+    "tutte": "All mailboxes"
+  },
+  "elenco": {
+    "etichetta": "Emails, newest first",
+    "da": "From",
+    "a": "To",
+    "nessunDestinatario": "No recipients",
+    "altri": "and {numero, plural, one {# other} other {# others}}",
+    "senzaOggetto": "(no subject)",
+    "urgente": "Urgent",
+    "allegati": "{numero, plural, one {# attachment} other {# attachments}}",
+    "casella": "Connected mailbox: {indirizzo}",
+    "paginazione": "Pages",
+    "piuVecchie": "Older emails",
+    "piuRecenti": "Newest emails"
+  },
+  "vuoto": {
+    "titolo": "No emails yet",
+    "testo": "Emails appear here once your connected mailboxes finish syncing.",
+    "titoloCasella": "No emails in this mailbox",
+    "testoCasella": "Pick another connected mailbox or show all of them.",
+    "titoloPagina": "No older emails",
+    "testoPagina": "You reached the end of the list.",
+    "tornaInizio": "Back to the newest emails"
+  },
+  "email": {
+    "titoloPagina": "Email",
+    "indietro": "Back to Mail",
+    "senzaOggetto": "(no subject)",
+    "urgente": "Urgent",
+    "intestazioni": "Headers",
+    "da": "From",
+    "a": "To",
+    "cc": "Cc",
+    "replyTo": "Reply-To",
+    "data": "Date",
+    "nessuno": "None",
+    "interpretazione": "AI interpretation and corrections"
+  },
+  "copie": {
+    "titolo": "Copies in your mailboxes",
+    "descrizione": "An email in more than one connected mailbox counts once and has a copy in each.",
+    "cartelle": "Folders",
+    "nessunaCartella": "No folder",
+    "inviataDallApp": "Sent from this app",
+    "inviataFuori": "Sent outside this app",
+    "eliminata": "Deleted in Gmail: the original is no longer available there."
+  },
+  "allegati": {
+    "titolo": "Attachments",
+    "nota": "The app does not store attachments. Open the email in Gmail to download them."
+  },
+  "soloPerRisposte": {
+    "titolo": "Retrieved only to check replies",
+    "testo": "This email is older than the initial import window. It was fetched only to check whether it answers one of your requests, so the AI does not analyse it on its own."
+  },
+  "testo": {
+    "titolo": "Text",
+    "descrizione": "The plain text of the email, as the AI reads it. Links and images are not active here.",
+    "vuoto": "This email has no text."
+  },
+  "originale": {
+    "titolo": "Original",
+    "descrizione": "Shown in an isolated frame: scripts never run and remote images stay hidden until you show them.",
+    "mostraImmagini": "Show images",
+    "nascondiImmagini": "Hide images",
+    "avvisoImmagini": "Showing images can tell the sender that you opened the email.",
+    "immaginiVisibili": "Remote images are visible.",
+    "titoloFrame": "Original email"
+  },
+  "classificazione": {
+    "titolo": "AI classification",
+    "descrizione": "How the AI read this email. Your corrections win over later analyses.",
+    "categoria": "Category",
+    "urgenza": "Urgency",
+    "priorita": "Priority",
+    "urgente": "Urgent",
+    "nonUrgente": "Not urgent",
+    "dallAi": "Set by the AI",
+    "corretta": "Corrected by you",
+    "valoreAi": "Original AI value: {valore}",
+    "motivazione": "AI reasoning",
+    "evidenze": "Evidence",
+    "nessunaEvidenza": "No quote was recorded for this classification.",
+    "nuovaCategoria": "New category",
+    "salva": "Save",
+    "segnaUrgente": "Mark as urgent",
+    "segnaNonUrgente": "Mark as not urgent",
+    "annulla": "Undo correction",
+    "annullata": "Correction undone",
+    "nonClassificata": "The AI has not classified this email yet.",
+    "soloPerRisposte": "This email is not classified: it was retrieved only to check replies.",
+    "nonPrevista": "Sent and internal emails are not classified: the AI only looks for commitments and requests in them.",
+    "statoFunzione": "Classification: {stato}"
+  },
+  "perche": {
+    "titolo": "Why?",
+    "funzione": "AI function",
+    "modello": "Model",
+    "modelloServito": "Served by",
+    "contesto": "AI context",
+    "versione": "Version {numero}",
+    "nonRegistrata": "Not recorded",
+    "completata": "Analysed",
+    "nessuna": "No details about this analysis are available."
+  },
+  "lingua": {
+    "titolo": "Language",
+    "descrizione": "AI texts about this email, such as reasoning, titles and drafts, are written in this language.",
+    "attuale": "Language of the email",
+    "fonte": "Source",
+    "fonti": {
+      "rilevata": "Detected automatically",
+      "thread": "Taken from the thread",
+      "risposta": "Taken from the email it replies to",
+      "interfaccia": "Your interface language, used when detection was unsure",
+      "utente": "Set by you"
+    },
+    "correggi": "Correct the language",
+    "scegli": "Language",
+    "altra": "Other language…",
+    "codice": "Language code",
+    "codiceAiuto": "An ISO 639-1 code such as sl, optionally with a region such as pt-BR.",
+    "salva": "Save language",
+    "annulla": "Undo correction",
+    "codiceNonValido": "Enter a valid language code, for example sl or pt-BR."
+  },
+  "rianalisi": {
+    "titolo": "Reanalyse this email",
+    "invito": "You corrected the language. Reanalyse the email so the AI reads it again and writes its texts in that language. You will see the estimated cost first.",
+    "pulsante": "Reanalyse this email",
+    "stima": "{numero, plural, one {# email} other {# emails}} will be analysed again. Estimated cost: {costo}.",
+    "costoMinimo": "less than {costo}",
+    "prezziIncompleti": "Some model prices are unknown, so the real cost may be higher.",
+    "nota": "The cost is charged to your OpenRouter key. Nothing runs until you confirm.",
+    "conferma": "Confirm reanalysis",
+    "nonOra": "Not now",
+    "nessunaEmail": "There is nothing to reanalyse for this email.",
+    "inCorso": "Reanalysis in progress. The results will appear here when it finishes.",
+    "completata": "Reanalysis completed.",
+    "richiesta": "Requested",
+    "esiti": {
+      "non_confermabile": "This estimate can no longer be confirmed. Estimate again."
+    }
+  },
+  "situazioni": {
+    "titolo": "Situations",
+    "descrizione": "The situations this email is linked to.",
+    "nessuna": "This email is not part of any situation.",
+    "origine": "Started this situation",
+    "ruolo": "Role",
+    "come": "Link source"
+  },
+  "analisi": {
+    "titolo": "AI functions",
+    "descrizione": "What each AI function has done with this email.",
+    "nessuna": "No AI function runs on this email.",
+    "motivo": "Reason: {motivo}"
+  }
+}

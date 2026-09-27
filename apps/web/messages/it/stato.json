@@ -1,0 +1,76 @@
+{
+  "titolo": "Stato",
+  "descrizione": "Sincronizzazione della posta e analisi AI a colpo d’occhio. La pagina si aggiorna da sola.",
+  "aggiornato": "Aggiornato",
+  "durata": {
+    "menoDiUnMinuto": "meno di un minuto"
+  },
+  "caselle": {
+    "titolo": "Caselle",
+    "nessuna": "Nessuna casella collegata",
+    "nessunaTesto": "Collega una casella nelle Impostazioni per iniziare la sincronizzazione.",
+    "ritardo": "Ritardo della sincronizzazione",
+    "maiSincronizzata": "Non ancora sincronizzata",
+    "inRitardo": "In ritardo",
+    "aggiornata": "Aggiornata",
+    "ultimaSync": "Ultima sincronizzazione riuscita",
+    "importazione": "Importazione iniziale",
+    "avanzamento": "{acquisite} di {totale} email acquisite",
+    "avanzamentoEtichetta": "Avanzamento dell’importazione iniziale",
+    "elencoInCorso": "Conteggio delle email da importare in corso…",
+    "erroreSync": "Errore di sincronizzazione",
+    "erroreCasella": "Errore della casella",
+    "erroriConsecutivi": "{numero, plural, one {# tentativo fallito di seguito} other {# tentativi falliti di seguito}}",
+    "prossimoTentativo": "Prossimo tentativo",
+    "gestisci": "Gestisci nelle Impostazioni"
+  },
+  "analisi": {
+    "titolo": "Analisi AI",
+    "descrizione": "Email per stato dell’analisi, in tutte le tue caselle.",
+    "daEseguire": "Da analizzare",
+    "inPausa": "In pausa",
+    "errore": "In errore",
+    "email": "{numero, plural, one {email} other {email}}"
+  },
+  "pause": {
+    "titolo": "Pause attive",
+    "nessuna": "Nessuna pausa: l’analisi AI è attiva.",
+    "descrizione": "Durante una pausa la posta continua a sincronizzarsi e le email restano “da analizzare”. L’analisi riprende da sola quando la causa è risolta.",
+    "tutte": "Tutte le Funzioni AI",
+    "funzione": "Funzione AI",
+    "motivo": "Motivo",
+    "dal": "Dal",
+    "prossimaVerifica": "Prossima verifica",
+    "risolvi": "Risolvi nelle Impostazioni",
+    "riprendi": "Riprendi nelle Impostazioni"
+  },
+  "erroriRecenti": {
+    "titolo": "Errori recenti",
+    "descrizione": "Le ultime chiamate AI fallite e le email rimaste in errore.",
+    "nessuno": "Nessun errore recente.",
+    "quando": "Quando",
+    "funzione": "Funzione AI",
+    "errore": "Errore",
+    "email": "Email",
+    "senzaEmail": "Nessuna email",
+    "funzioneSconosciuta": "Funzione AI"
+  },
+  "elaborazione": {
+    "titolo": "Elaborazione in background",
+    "riconciliazione": "Aggiornamento delle Situazioni",
+    "riconciliazioneAiuto": "Collega le email analizzate a Situazioni, attività e attese.",
+    "news": "Riepilogo News",
+    "newsAiuto": "Riassume le email di News e Informazioni secondarie delle ultime 24 ore.",
+    "nessunErrore": "Nessun errore",
+    "errori": "{numero, plural, one {# errore di seguito} other {# errori di seguito}}",
+    "ultimoErrore": "Ultimo errore",
+    "nonAvviata": "Non è ancora stato eseguito nulla."
+  },
+  "codiciErrore": {
+    "recupero_limitato": "La sincronizzazione è rimasta ferma a lungo: il recupero copre solo gli ultimi 90 giorni.",
+    "non_trovato": "Il messaggio non esiste più nella casella",
+    "parametro_non_valido": "OpenRouter ha rifiutato un parametro della richiesta",
+    "catalogo_non_disponibile": "Non è stato possibile leggere l’elenco dei modelli di OpenRouter",
+    "schema_non_supportato": "Il modello non supporta il formato di risposta richiesto"
+  }
+}

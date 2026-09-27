@@ -9,7 +9,11 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json && pnpm -r --parallel typecheck",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "demo": "tsx packages/demo/src/avvia.ts",
+    "demo:reset": "tsx packages/demo/src/avvia.ts --reset",
+    "demo:browser": "pnpm --filter web exec playwright open --load-storage=../../.demo/sessione-playwright.json http://localhost:3100",
+    "test:e2e": "pnpm --filter web test:e2e"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

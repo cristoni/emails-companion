@@ -1,0 +1,196 @@
+{
+  "tipi": {
+    "risposta": "Reply",
+    "sollecito": "Follow-up"
+  },
+  "titoli": {
+    "risposta": "Reply draft",
+    "sollecito": "Follow-up draft"
+  },
+  "stati": {
+    "generazione": "Being written",
+    "modificabile": "Draft",
+    "confermato": "Confirmed send",
+    "in_invio": "Sending",
+    "esito_incerto": "Unknown outcome",
+    "inviato": "Sent",
+    "fallito": "Not sent"
+  },
+  "proponi": {
+    "risposta": "Draft a reply",
+    "sollecito": "Draft a follow-up",
+    "consigliato": "Recommended",
+    "consigliatoAiuto": "The expected date has passed, so a follow-up is recommended.",
+    "inCorso": "Preparing…",
+    "aiuto": "The AI writes a draft for you to review. Nothing is sent without your confirmation.",
+    "esiti": {
+      "email_non_trovata": "This email is no longer available.",
+      "attesa_non_trovata": "This waiting item no longer exists.",
+      "attesa_non_attiva": "This waiting item is closed, so there is nothing to follow up.",
+      "casella_non_pronta": "No connected mailbox can send this. Reconnect it in Settings.",
+      "nessun_destinatario": "There is nobody to write to: every recipient is one of your own addresses.",
+      "errore": "Something went wrong. Try again."
+    }
+  },
+  "sezione": {
+    "titolo": "Drafts",
+    "descrizione": "Replies and follow-ups prepared here. Nothing is sent until you confirm.",
+    "vuota": "No drafts yet.",
+    "senzaOggetto": "Draft being written",
+    "a": "To",
+    "da": "From",
+    "aggiornata": "Updated",
+    "originale": "Original email"
+  },
+  "pagina": {
+    "situazione": "Back to the situation",
+    "descrizione": {
+      "risposta": "A reply written in the language of the email. Review it, edit it and confirm before anything is sent.",
+      "sollecito": "A follow-up to your request, written in its language. Review it, edit it and confirm before anything is sent."
+    },
+    "origine": {
+      "risposta": "Replying to",
+      "sollecito": "Following up on your request"
+    },
+    "attesa": "Waiting item",
+    "da": "From",
+    "impostazioni": "Open Settings"
+  },
+  "generazione": {
+    "titolo": "Writing the draft…",
+    "spiegazione": "The AI is writing a draft in the language of the email. This page updates on its own.",
+    "richiesta": "Requested",
+    "inRitardo": "This is taking longer than usual",
+    "inRitardoTesto": "You can keep waiting or ask for a new draft.",
+    "inPausa": "AI analysis is paused",
+    "inPausaTesto": "Resolve it in Settings, then regenerate the draft: a paused draft doesn't restart on its own.",
+    "fallita": "The AI couldn't write the draft",
+    "fallitaTesto": "You can ask for a new draft.",
+    "rigenera": "Regenerate",
+    "esiti": {
+      "ok": "New draft requested.",
+      "non_modificabile": "This draft can no longer be changed."
+    }
+  },
+  "editor": {
+    "titolo": "Draft",
+    "oggetto": "Subject",
+    "oggettoAiuto": "Keep the suggested subject to stay in the same Gmail thread.",
+    "corpo": "Message",
+    "salva": "Save",
+    "salvataggio": "Saving…",
+    "modificheNonSalvate": "Unsaved changes",
+    "salvata": "Saved",
+    "rivedi": "Review and send",
+    "rivediAiuto": "Save your changes before you review the send.",
+    "nuovaVersione": "A newer version of this draft was saved elsewhere. Your text is still here.",
+    "caricaUltima": "Discard my changes and load it",
+    "annulla": "Discard changes",
+    "versione": "Version {numero}",
+    "salvataIl": "saved",
+    "origini": {
+      "ai": "Written by the AI",
+      "utente": "Edited by you"
+    },
+    "esiti": {
+      "modificata": "Saved as a new version.",
+      "versione_superata": "This draft changed since you opened it. Load the latest version, then apply your changes again.",
+      "oggetto_non_valido": "The subject is too long.",
+      "corpo_non_valido": "The message is too long.",
+      "non_modificabile": "This draft is being sent or was sent, so it can no longer be changed.",
+      "non_trovata": "This draft no longer exists.",
+      "errore": "Something went wrong. Try again."
+    }
+  },
+  "busta": {
+    "da": "From",
+    "a": "To",
+    "cc": "Cc",
+    "bcc": "Bcc",
+    "oggetto": "Subject",
+    "oggettoCalcolato": "Suggested subject",
+    "nessunOggetto": "No subject",
+    "nessunTesto": "No message text",
+    "fissa": "Recipients and mailbox are set by the app from the email headers and can't be changed.",
+    "intestazioni": "Technical headers",
+    "inRispostaA": "In-Reply-To",
+    "riferimenti": "References",
+    "nessuno": "None",
+    "casellaNonPronta": "This mailbox can't send right now. Reconnect it in Settings."
+  },
+  "avvisi": {
+    "reply_to_dominio_diverso": {
+      "titolo": "Replies go to a different domain",
+      "testo": "The email asks for replies at an address on a different domain from the sender's. Make sure you trust it."
+    },
+    "destinatari_nuovi": {
+      "titolo": "New recipients",
+      "testo": "Some recipients weren't part of this thread."
+    },
+    "possibile_duplicato": {
+      "titolo": "This may be a duplicate",
+      "testo": "A previous attempt may already have been delivered. Sending again could deliver the same message twice."
+    }
+  },
+  "contesto": {
+    "titolo": "Emails used for this draft",
+    "descrizione": "The app chose these emails; the AI read only these.",
+    "nessuna": "You wrote this version: no emails were given to the AI.",
+    "da": "From"
+  },
+  "conferma": {
+    "titolo": "Confirm send",
+    "descrizione": "This is exactly what will be sent. Nothing leaves your mailbox until you press Send now.",
+    "versione": "Version {numero}",
+    "invia": "Send now",
+    "invio": "Sending…",
+    "modifica": "Back to editing",
+    "riesame": "Review the latest version",
+    "esiti": {
+      "confermato": "Send confirmed.",
+      "gia_in_corso": "This draft is already being sent.",
+      "versione_superata": "The draft changed since this page was opened.",
+      "casella_non_pronta": "The mailbox can't send right now. Reconnect it in Settings.",
+      "non_trovata": "This draft no longer exists.",
+      "bozza_vuota": "The draft has no message or no recipients.",
+      "errore": "Something went wrong. Nothing was sent. Try again."
+    }
+  },
+  "invio": {
+    "inCorso": "Sending",
+    "inCorsoTesto": "Confirmed and on its way. This page updates on its own.",
+    "confermatoIl": "Confirmed",
+    "inviato": "Sent",
+    "inviatoIl": "Sent",
+    "fallito": "Not sent",
+    "fallitoTesto": "Nothing left your mailbox. You can edit the draft and send it again.",
+    "verifica": "Checking whether it left",
+    "verificaTesto": "We're looking for it in your sent mail until <ora></ora>. You can decide after that; deciding earlier could create a duplicate.",
+    "incerto": "We couldn't confirm whether it left",
+    "incertoTesto": "It hasn't appeared in your sent mail. Check the Sent folder in Gmail, then tell us what happened.",
+    "nonInviato": "It was not sent",
+    "nonInviatoDomanda": "Mark it as not sent and unlock the draft?",
+    "nonInviatoConferma": "Yes, it was not sent",
+    "reinvia": "Send again",
+    "reinviaDomanda": "The first attempt may have been delivered, so sending again could create a duplicate. Continue?",
+    "reinviaConferma": "Continue to confirmation",
+    "annullato": {
+      "utente_non_inviato": "You marked the previous attempt as not sent.",
+      "utente_reinvia": "You chose to send again. Review the draft and confirm a new send."
+    },
+    "esitiDecisione": {
+      "annullato": "Done.",
+      "non_trovato": "This send no longer exists.",
+      "non_incerto": "The outcome is now known: the page has been updated.",
+      "in_verifica": "We're still checking. You can decide in a few minutes.",
+      "errore": "Something went wrong. Try again."
+    }
+  },
+  "erroriInvio": {
+    "non_inviato": "The send wasn't picked up in time",
+    "casella_non_pronta": "The mailbox couldn't send",
+    "versione_mancante": "The saved version wasn't found",
+    "busta_modificata": "The draft changed after you confirmed it",
+    "connettore_non_disponibile": "The mail connector wasn't available"
+  }
+}

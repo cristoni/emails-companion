@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { ProviderTema } from "@/components/provider-tema";
+import { preferenzeDellUtente } from "@/lib/server/preferenze";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -18,10 +19,11 @@ export const metadata: Metadata = {
 export default async function LayoutRadice({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const tema = (await preferenzeDellUtente())?.tema ?? "system";
   return (
     <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${mono.variable}`}>
       <body className="min-h-dvh font-sans">
-        <ProviderTema nonce={nonce}>
+        <ProviderTema nonce={nonce} tema={tema}>
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
         </ProviderTema>
       </body>

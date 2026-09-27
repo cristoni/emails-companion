@@ -1,0 +1,28 @@
+{
+  "titolo": "News & FYI",
+  "descrizione": "Emails classified as News & FYI in the last 24 hours. Move out any that need your attention.",
+  "elenco": {
+    "titolo": "Emails in the last 24 hours",
+    "conteggio": "{numero, plural, one {# email} other {# emails}}",
+    "vuoto": "No News in the last 24 hours",
+    "vuotoAiuto": "Emails classified as News & FYI appear here for 24 hours.",
+    "nelRiepilogo": "In the digest",
+    "nonNelRiepilogo": "Not yet in the digest",
+    "ricevuta": "Received",
+    "casella": "Mailbox",
+    "senzaOggetto": "(no subject)"
+  },
+  "sposta": {
+    "categoria": "Move to",
+    "azione": "Move out of News",
+    "spostata": "Moved out of News & FYI."
+  },
+  "spostate": {
+    "titolo": "Moved out of News",
+    "descrizione": "Emails you moved out of News & FYI in the last 24 hours. Undo to put them back.",
+    "categoria": "Now: {categoria}",
+    "spostataIl": "Moved",
+    "annulla": "Undo",
+    "annullata": "Back in News & FYI."
+  }
+}

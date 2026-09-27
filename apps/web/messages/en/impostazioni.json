@@ -1,0 +1,341 @@
+{
+  "titolo": "Settings",
+  "descrizione": "Your mailboxes, OpenRouter key and AI models, and how the assistant reads your mail.",
+  "annulla": "Cancel",
+  "indice": {
+    "etichetta": "On this page",
+    "caselle": "Mailboxes",
+    "chiave": "OpenRouter key",
+    "modelli": "AI models",
+    "contesto": "AI context",
+    "preferenze": "Preferences",
+    "consumo": "Usage",
+    "rianalisi": "Reanalyse",
+    "privacy": "Privacy",
+    "account": "Account"
+  },
+  "esitiCollegamento": {
+    "casella_collegata": {
+      "titolo": "Mailbox connected",
+      "testo": "Reading and sending are allowed. Check the initial import below."
+    },
+    "permessi_incompleti": {
+      "titolo": "Some permissions are missing",
+      "testo": "Google didn’t grant both reading and sending. Choose Authorize and allow both on the consent screen."
+    },
+    "da_ricollegare": {
+      "titolo": "Google didn’t grant lasting access",
+      "testo": "Choose Reconnect so the app can keep syncing while you’re away."
+    },
+    "casella_non_trovata": {
+      "titolo": "Mailbox not found",
+      "testo": "This mailbox was disconnected or no longer exists."
+    },
+    "richiesta_non_valida": {
+      "titolo": "The connection couldn’t be completed",
+      "testo": "The request expired or was started in another session. Try again."
+    },
+    "consenso_negato": {
+      "titolo": "Connection cancelled",
+      "testo": "Nothing changed. You can try again whenever you like."
+    },
+    "account_di_altro_utente": {
+      "titolo": "This mailbox belongs to another user",
+      "testo": "A mailbox can be connected by only one user of the app at a time."
+    },
+    "account_diverso_da_quello_atteso": {
+      "titolo": "A different Google account was chosen",
+      "testo": "To reconnect or authorize a mailbox, choose that mailbox’s own Google account."
+    },
+    "errore_google": {
+      "titolo": "Google couldn’t complete the connection",
+      "testo": "Try again in a moment."
+    }
+  },
+  "pauseAttive": {
+    "titolo": "AI analysis is paused",
+    "testo": "Mail keeps syncing and new emails wait for analysis. It resumes on its own once the cause is fixed.",
+    "risolvi": "Fix",
+    "riprendi": "Resume"
+  },
+  "caselle": {
+    "titolo": "Connected mailboxes",
+    "descrizione": "The app reads and sends mail through these mailboxes. Each item in your home shows the mailbox it comes from.",
+    "collega": "Connect another mailbox",
+    "nessuna": "No connected mailbox",
+    "nessunaTesto": "Connect a Gmail mailbox to start building your home.",
+    "connettore": "Mail connector",
+    "connettori": {
+      "gmail": "Gmail",
+      "altro": "Other connector"
+    },
+    "collegataIl": "Connected",
+    "permessi": "Permissions",
+    "lettura": "Read",
+    "invio": "Send",
+    "concesso": "allowed",
+    "mancante": "missing",
+    "importazione": "Initial import",
+    "ricollega": "Reconnect",
+    "ricollegaTesto": "Google access was revoked or has expired, so syncing is paused. Reconnect with the same account: your data is kept.",
+    "autorizza": "Authorize",
+    "autorizzaTesto": "Reading or sending wasn’t allowed. Authorize again and allow both on the Google consent screen.",
+    "scollegamentoInCorso": "Disconnecting: Google access is being revoked and this mailbox’s data deleted.",
+    "stima": {
+      "titolo": "Initial import ready",
+      "testo": "{numero, plural, =0 {No emails to analyse} one {# email to analyse} other {# emails to analyse}} · estimated cost {costo}",
+      "calcolataIl": "Estimated",
+      "conferma": "Start import",
+      "rinvia": "Not now",
+      "importaOra": "Import now",
+      "rinviata": "You postponed the initial import. New mail is still synced and analysed.",
+      "inAttesa": "The estimate is being prepared.",
+      "requisiti": "Accept the privacy notice and save a valid OpenRouter key to start the import.",
+      "primaAccesso": "Reconnect or authorize this mailbox first: the import needs to read its mail."
+    },
+    "scollega": {
+      "etichetta": "Disconnect",
+      "titolo": "Disconnect {indirizzo}?",
+      "revoca": "The app’s access to this mailbox is revoked at Google.",
+      "dati": "This mailbox’s emails and analyses are deleted, with the actions, waiting items and Situations that come only from them.",
+      "altre": "Emails that are also in another connected mailbox stay.",
+      "nuovaImportazione": "Connecting it again later starts a new initial import.",
+      "irreversibile": "This can’t be undone.",
+      "conferma": "Disconnect and delete data"
+    },
+    "esiti": {
+      "ok": "Done.",
+      "gia_decisa": "This import has already started or changed. The page shows its current state.",
+      "non_trovata": "This mailbox is no longer connected.",
+      "non_valido": "The request isn’t valid. Reload the page."
+    }
+  },
+  "chiave": {
+    "titolo": "OpenRouter key",
+    "descrizione": "All AI analysis runs with your own OpenRouter key. It’s stored encrypted and never shown again after saving.",
+    "nessuna": "No key saved",
+    "nessunaTesto": "AI analysis is paused until you add a key.",
+    "stato": "Status",
+    "stati": {
+      "non_verificata": "Not verified",
+      "valida": "Valid",
+      "non_valida": "Not valid",
+      "credito_esaurito": "Out of credit",
+      "limitata": "Limit reached",
+      "sconosciuto": "Unknown"
+    },
+    "chiave": "Key",
+    "finale": "ending in {cifre}",
+    "etichetta": "Name on OpenRouter",
+    "limite": "Remaining limit",
+    "senzaLimite": "No limit set",
+    "nonNoto": "Unknown",
+    "verificata": "Last checked",
+    "sostituisci": "Replace the key",
+    "aggiungi": "Add a key",
+    "campo": "OpenRouter API key",
+    "segnaposto": "sk-or-v1-…",
+    "salva": "Verify and save",
+    "consiglio": "Use a key created only for this app, with a credit limit: the limit caps what the app can spend.",
+    "registrazione": "Prompt logging and data settings on your OpenRouter account stay under your control. Review them on OpenRouter.",
+    "esiti": {
+      "valida": "Key verified and saved.",
+      "non_valida": "OpenRouter rejected this key. It was saved as not valid, so AI analysis is paused until you add a working key.",
+      "credito_esaurito": "The key was saved, but it has no credit left. AI analysis stays paused until credit is available.",
+      "errore_temporaneo": "OpenRouter couldn’t be reached. Nothing was saved; try again in a moment.",
+      "formato_non_valido": "This doesn’t look like an OpenRouter key (it starts with sk-or-). Nothing was saved.",
+      "vuota": "Paste a key first."
+    },
+    "rimuovi": {
+      "etichetta": "Remove key",
+      "titolo": "Remove the OpenRouter key?",
+      "pausa": "AI analysis pauses, and the app asks for a new key before showing your home. Mail keeps syncing.",
+      "openrouter": "The key is deleted only from this app. To revoke it, delete it on OpenRouter too.",
+      "conferma": "Remove key"
+    }
+  },
+  "modelli": {
+    "titolo": "AI models",
+    "descrizione": "Each AI function uses its own OpenRouter model. Only models with structured output and Zero Data Retention endpoints are accepted.",
+    "funzioni": {
+      "classificazione_priorita": {
+        "nome": "Classification and priority",
+        "descrizione": "Reads each email you receive (headers, subject, text and attachment names) to tell News & FYI from urgent and other mail, explain its priority, and suggest the title and description of a new Situation."
+      },
+      "estrazione_attivita": {
+        "nome": "Action extraction",
+        "descrizione": "Reads received mail that isn’t News & FYI, and your sent and internal mail, with related emails and earlier results, to find actions, commitments, reminders and deadlines."
+      },
+      "attese_risposte": {
+        "nome": "Waiting items and replies",
+        "descrizione": "Reads sent and received mail together with open Situations, waiting items and actions, to spot requests you made, link emails across threads, and judge replies and completed actions."
+      },
+      "riepilogo_news": {
+        "nome": "News digest",
+        "descrizione": "Reads the News & FYI emails received in the last 24 hours and summarises them, each point linked to its emails."
+      },
+      "bozze_assistite": {
+        "nome": "Assisted drafts",
+        "descrizione": "Only when you ask for a reply or follow-up: reads the email you’re answering, its thread and the allowed context emails, and suggests a draft for you to review. It never sends anything."
+      },
+      "sconosciuta": {
+        "nome": "AI function",
+        "descrizione": "An AI function of the app."
+      }
+    },
+    "modello": "Model",
+    "predefinito": "Default",
+    "usaPredefinito": "Default model",
+    "compatibilita": "Compatibility",
+    "stati": {
+      "ok": "Compatible",
+      "incompatibile": "Not compatible",
+      "non_disponibile": "Not available"
+    },
+    "statiAiuto": {
+      "ok": "The model has endpoints with structured output and Zero Data Retention.",
+      "incompatibile": "This function is paused: the model has no endpoint with structured output and Zero Data Retention. Choose another model.",
+      "non_disponibile": "This function is paused: the model isn’t available on OpenRouter. Choose another model."
+    },
+    "verificato": "Last checked",
+    "campo": "OpenRouter model ID for {funzione}",
+    "salva": "Change model",
+    "ripristina": "Restore default",
+    "aiuto": "Model IDs look like provider/model, as listed on openrouter.ai/models. A change applies to the next calls; if this function was paused because of its model, it resumes on its own.",
+    "esiti": {
+      "ok": "Model saved.",
+      "incompatibile": "This model has no endpoint with structured output and Zero Data Retention. Choose another one.",
+      "non_disponibile": "This model isn’t available on OpenRouter. Check the ID.",
+      "vuoto": "Enter a model ID.",
+      "non_valido": "The request isn’t valid. Reload the page."
+    }
+  },
+  "contesto": {
+    "titolo": "AI context",
+    "descrizione": "Your directives for how the AI reads, classifies and prioritises your mail. They replace the default directives, but can’t remove the app’s guarantees: evidence behind every claim, and no email sent without your confirmation.",
+    "ambito": "Changes apply to new emails. To apply them to mail that was already analysed, use Reanalyse.",
+    "vaiRianalisi": "Go to Reanalyse",
+    "inUsoVersione": "Version {numero} in use",
+    "inUsoPredefinite": "Default directives in use",
+    "senzaVersioni": "You haven’t saved an AI context yet, so the default directives are used. They’re shown below for you to edit.",
+    "campo": "Your directives",
+    "salva": "Save as new version",
+    "predefinite": {
+      "etichetta": "Restore default directives",
+      "titolo": "Restore the default directives?",
+      "testo": "They’re saved as a new version. Your current text stays in the version history.",
+      "conferma": "Restore defaults"
+    },
+    "versioni": "Version history",
+    "versione": "Version {numero}",
+    "inUso": "In use",
+    "mostra": "Show text",
+    "ripristina": "Restore",
+    "ripristinaAiuto": "Restoring saves this text as a new version.",
+    "esiti": {
+      "ok": "Saved as a new version.",
+      "vuoto": "Write your directives first, or restore the defaults.",
+      "troppo_lungo": "The text is too long (up to 20,000 characters).",
+      "non_trovata": "This version no longer exists.",
+      "non_valido": "The request isn’t valid. Reload the page."
+    }
+  },
+  "preferenze": {
+    "titolo": "Preferences",
+    "descrizione": "Language, theme and time zone of the app. Text written by the AI stays in the language of each email.",
+    "lingua": "Language",
+    "linguaAiuto": "Language of the app’s interface.",
+    "lingue": {
+      "en": "English",
+      "it": "Italiano"
+    },
+    "tema": "Theme",
+    "temaAiuto": "Applied right away and saved to your account.",
+    "temi": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "fuso": "Time zone",
+    "fusoAiuto": "Dates, times and deadlines are shown in this time zone.",
+    "usaBrowser": "Use this browser’s time zone ({fuso})",
+    "salva": "Save",
+    "esiti": {
+      "ok": "Saved.",
+      "non_valido": "This value isn’t supported."
+    }
+  },
+  "pausa": {
+    "titolo": "AI analysis",
+    "attiva": "Running",
+    "inPausa": "Paused by you",
+    "pausa": "Pause AI analysis",
+    "riprendi": "Resume AI analysis",
+    "siFerma": "What stops",
+    "siFermaTesto": "Every call to an AI model: analysis of new mail, the News digest, suggested drafts and reanalysis. Nothing is spent on your OpenRouter key.",
+    "continua": "What continues",
+    "continuaTesto": "Mail sync, reading your emails, your existing actions, waiting items and corrections, and sending drafts you confirm.",
+    "ripresa": "When you resume, emails that arrived in the meantime are analysed."
+  },
+  "consumo": {
+    "titolo": "Usage",
+    "descrizione": "AI calls made with your key in the last 30 days, by AI function. Your OpenRouter account has the authoritative figures.",
+    "funzione": "AI function",
+    "invocazioni": "Calls",
+    "costo": "Cost",
+    "tokenIngresso": "Input tokens",
+    "tokenUscita": "Output tokens",
+    "totale": "Total",
+    "nessuno": "No AI calls in the last 30 days.",
+    "funzioneSconosciuta": "Other"
+  },
+  "rianalisi": {
+    "titolo": "Reanalyse",
+    "descrizione": "Runs classification and action extraction again with your current AI context and models. Your corrections are kept and always take precedence.",
+    "ambito": "What to reanalyse",
+    "aperti": "Emails behind open items",
+    "apertiAiuto": "The emails of Situations with open actions or waiting items.",
+    "giorni": "Emails from the last few days",
+    "giorniCampo": "Number of days",
+    "giorniAiuto": "From 1 to 365 days.",
+    "stima": "Estimate cost",
+    "nienteParte": "Estimating doesn’t call any model. Nothing runs until you confirm.",
+    "ambitoAperti": "Emails behind open items",
+    "ambitoGiorni": "Emails from the last {giorni, plural, one {day} other {# days}}",
+    "numero": "{numero, plural, =0 {No emails to reanalyse} one {# email to reanalyse} other {# emails to reanalyse}}",
+    "costo": "Estimated cost: {costo}",
+    "prezziMancanti": "Price not available for: {funzioni}. The estimate leaves them out.",
+    "conferma": "Start reanalysis",
+    "pausaAttiva": "AI analysis is paused: the reanalysis starts once analysis resumes.",
+    "esiti": {
+      "ok": "Reanalysis started. It runs in the background; follow it on the Status page.",
+      "stima_scaduta": "This estimate is no longer valid. Estimate again.",
+      "non_trovata": "This estimate no longer exists. Estimate again.",
+      "non_valido": "Choose between 1 and 365 days."
+    },
+    "vaiStato": "Open Status"
+  },
+  "privacy": {
+    "titolo": "Privacy",
+    "descrizione": "How your mail is read, stored and sent to AI models, and how to delete it.",
+    "accettata": "You accepted version {versione} of the privacy notice.",
+    "nonAccettata": "You haven’t accepted the current privacy notice (version {versione}). AI analysis stays paused until you do.",
+    "leggi": "Read the privacy notice",
+    "accetta": "Review and accept"
+  },
+  "account": {
+    "titolo": "Delete account",
+    "descrizione": "Removes your account and everything the app stores about you.",
+    "etichetta": "Delete account…",
+    "titoloConferma": "Delete your account and all its data?",
+    "analisi": "AI analysis stops immediately.",
+    "caselle": "Every connected mailbox is disconnected and its Google access revoked.",
+    "dati": "Emails, analyses, Situations, drafts, your AI context and your OpenRouter key are deleted.",
+    "backup": "Database backups keep data until their retention period ends, as the privacy notice explains.",
+    "uscita": "You’re signed out right away. This can’t be undone.",
+    "capisco": "I understand that my account and data will be deleted for good.",
+    "conferma": "Delete my account",
+    "inCorso": "Deleting…",
+    "errore": "The account couldn’t be deleted. Try again."
+  }
+}

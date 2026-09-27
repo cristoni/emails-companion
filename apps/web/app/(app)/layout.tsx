@@ -19,7 +19,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
         ]}
         etichette={{ esci: t("esci"), tema: t("tema"), menu: t("menu") }}
       />
-      <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 lg:px-12">
+      <main className="min-w-0 flex-1 px-4 pt-16 pb-6 sm:px-8 lg:px-12 lg:pt-6">
         <div className="mx-auto w-full max-w-5xl">{children}</div>
       </main>
       <AggiornamentoAutomatico />

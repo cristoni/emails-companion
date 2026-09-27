@@ -170,7 +170,8 @@
     "inCorso": "Working…",
     "annulla": "Undo",
     "conferma": "Confirm",
-    "chiudi": "Close"
+    "chiudi": "Close",
+    "rinuncia": "Cancel"
   },
   "tempo": {
     "mai": "Never"

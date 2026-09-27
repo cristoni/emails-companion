@@ -1,0 +1,76 @@
+{
+  "titolo": "Status",
+  "descrizione": "Mail sync and AI analysis at a glance. This page refreshes on its own.",
+  "aggiornato": "Updated",
+  "durata": {
+    "menoDiUnMinuto": "less than a minute"
+  },
+  "caselle": {
+    "titolo": "Mailboxes",
+    "nessuna": "No connected mailbox",
+    "nessunaTesto": "Connect a mailbox in Settings to start syncing.",
+    "ritardo": "Sync delay",
+    "maiSincronizzata": "Not synced yet",
+    "inRitardo": "Behind",
+    "aggiornata": "Up to date",
+    "ultimaSync": "Last successful sync",
+    "importazione": "Initial import",
+    "avanzamento": "{acquisite} of {totale} emails fetched",
+    "avanzamentoEtichetta": "Initial import progress",
+    "elencoInCorso": "Still counting the emails to import…",
+    "erroreSync": "Sync error",
+    "erroreCasella": "Mailbox error",
+    "erroriConsecutivi": "{numero, plural, one {# failed attempt in a row} other {# failed attempts in a row}}",
+    "prossimoTentativo": "Next attempt",
+    "gestisci": "Manage in Settings"
+  },
+  "analisi": {
+    "titolo": "AI analysis",
+    "descrizione": "Emails by analysis state, across all your mailboxes.",
+    "daEseguire": "Waiting for analysis",
+    "inPausa": "Paused",
+    "errore": "Failed",
+    "email": "{numero, plural, one {email} other {emails}}"
+  },
+  "pause": {
+    "titolo": "Active pauses",
+    "nessuna": "No pauses: AI analysis is running.",
+    "descrizione": "While paused, mail keeps syncing and emails wait as “waiting for analysis”. Analysis resumes on its own once the cause is fixed.",
+    "tutte": "All AI functions",
+    "funzione": "AI function",
+    "motivo": "Reason",
+    "dal": "Since",
+    "prossimaVerifica": "Next check",
+    "risolvi": "Fix in Settings",
+    "riprendi": "Resume in Settings"
+  },
+  "erroriRecenti": {
+    "titolo": "Recent errors",
+    "descrizione": "The latest failed AI calls and emails left with an error.",
+    "nessuno": "No recent errors.",
+    "quando": "When",
+    "funzione": "AI function",
+    "errore": "Error",
+    "email": "Email",
+    "senzaEmail": "No email",
+    "funzioneSconosciuta": "AI function"
+  },
+  "elaborazione": {
+    "titolo": "Background processing",
+    "riconciliazione": "Situation updates",
+    "riconciliazioneAiuto": "Links analysed emails to Situations, actions and waiting items.",
+    "news": "News digest",
+    "newsAiuto": "Summarises the News & FYI emails of the last 24 hours.",
+    "nessunErrore": "No errors",
+    "errori": "{numero, plural, one {# error in a row} other {# errors in a row}}",
+    "ultimoErrore": "Last error",
+    "nonAvviata": "Nothing has run yet."
+  },
+  "codiciErrore": {
+    "recupero_limitato": "Sync was interrupted for a long time: catch-up covers the last 90 days only.",
+    "non_trovato": "The message no longer exists in the mailbox",
+    "parametro_non_valido": "OpenRouter rejected a request parameter",
+    "catalogo_non_disponibile": "The OpenRouter model list couldn’t be read",
+    "schema_non_supportato": "The model doesn’t support the required answer format"
+  }
+}

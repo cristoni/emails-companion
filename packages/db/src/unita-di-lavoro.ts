@@ -48,8 +48,43 @@ export class UnitaDiLavoro {
 
   async #esegui<T>(lavoro: (tx: Transazione, coda: CodaJob) => Promise<T>): Promise<T> {
     const dopo: (() => void)[] = [];
-    const risultato = await this.#dip.db.transaction(async (tx) => lavoro(tx, this.#dip.coda(tx, (a) => dopo.push(a))));
+    const risultato = await this.#dip.db.transaction(async (tx) => {
+      const ripristina = mettiInFilaLeQuery(tx);
+      try {
+        return await lavoro(tx, this.#dip.coda(tx, (a) => dopo.push(a)));
+      } finally {
+        ripristina();
+      }
+    });
     for (const azione of dopo) azione();
     return risultato;
   }
+}
+
+type Interrogazione = (...argomenti: unknown[]) => unknown;
+
+/**
+ * Dentro una transazione tutte le query passano dallo stesso client di pg, e i repository ne lanciano
+ * più d'una insieme (Promise.all). pg 8 le accoda da sé ma lo segnala come deprecato e pg 9 le rifiuterà:
+ * qui le mettiamo in fila, in un solo punto, per tutta la durata della transazione. Il client è quello
+ * della sessione di Drizzle; se la sua forma cambiasse, la funzione non fa nulla.
+ */
+export function mettiInFilaLeQuery(tx: Transazione): () => void {
+  const client = (tx as unknown as { session?: { client?: { query?: unknown } } }).session?.client;
+  if (!client || typeof client.query !== "function") return () => {};
+  const originale = client.query as Interrogazione;
+  let coda: Promise<unknown> = Promise.resolve();
+  const inFila: Interrogazione = (...argomenti) => {
+    // Solo la forma con promessa usata da Drizzle; callback e oggetti con submit passano invariati.
+    const conCallback = argomenti.some((a) => typeof a === "function");
+    const inviabile = typeof (argomenti[0] as { submit?: unknown } | undefined)?.submit === "function";
+    if (conCallback || inviabile) return originale.apply(client, argomenti);
+    const risultato = coda.then(() => originale.apply(client, argomenti));
+    coda = risultato.catch(() => undefined);
+    return risultato;
+  };
+  client.query = inFila;
+  return () => {
+    client.query = originale;
+  };
 }

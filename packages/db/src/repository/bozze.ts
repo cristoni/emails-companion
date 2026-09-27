@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
 import {
   normalizzaIndirizzo,
   serializzazioneCanonica,
@@ -8,7 +8,7 @@ import {
   type StatoInvio,
 } from "@ec/core/dominio";
 import type { Transazione } from "../connessione";
-import { attesa, bozza, bozzaVersione, email, emailCopia, invio, situazione } from "../schema";
+import { analisiAi, attesa, bozza, bozzaVersione, email, emailCopia, invio, situazione } from "../schema";
 import type { ContestoUtente } from "../unita-di-lavoro";
 import { operativo } from "./operativo";
 
@@ -314,6 +314,55 @@ export const bozze = {
       .from(situazione)
       .where(and(eq(situazione.utenteId, ctx.utenteId), eq(situazione.id, situazioneId)));
     return r ? (r.assorbitaIn ?? r.id) : null;
+  },
+
+  /**
+   * Bozze di una Situazione, comprese quelle nate in Situazioni poi assorbite in essa: l'assorbimento è
+   * appiattito (`operativo.assorbi`), quindi basta un livello. Dalla più recente.
+   */
+  async perSituazione(ctx: ContestoUtente, situazioneId: string): Promise<Bozza[]> {
+    const righe = await ctx.tx
+      .select({ b: bozza })
+      .from(bozza)
+      .leftJoin(situazione, and(eq(situazione.id, bozza.situazioneId), eq(situazione.utenteId, bozza.utenteId)))
+      .where(and(eq(bozza.utenteId, ctx.utenteId), or(eq(bozza.situazioneId, situazioneId), eq(situazione.assorbitaIn, situazioneId))))
+      .orderBy(desc(bozza.creataIl), desc(bozza.id));
+    return righe.map((r) => mappaBozza(r.b));
+  },
+
+  /**
+   * Bozze senza Situazione che rispondono a una delle email indicate: nascono da un'email che, alla
+   * richiesta, aveva solo collegamenti proposti. Dalla più recente.
+   */
+  async senzaSituazionePerEmail(ctx: ContestoUtente, emailIds: readonly string[]): Promise<Bozza[]> {
+    if (emailIds.length === 0) return [];
+    const righe = await ctx.tx
+      .select()
+      .from(bozza)
+      .where(and(eq(bozza.utenteId, ctx.utenteId), isNull(bozza.situazioneId), inArray(bozza.emailRispostaId, [...emailIds])))
+      .orderBy(desc(bozza.creataIl), desc(bozza.id));
+    return righe.map(mappaBozza);
+  },
+
+  /**
+   * Ultima invocazione di "Bozze assistite" sull'email a cui si risponde, a partire dall'istante indicato:
+   * stato ed eventuale codice d'errore, per spiegare all'utente una generazione che non arriva.
+   */
+  async ultimaGenerazione(ctx: ContestoUtente, emailId: string, dal: Date): Promise<{ stato: string; errore: string | null; avviataIl: Date } | null> {
+    const [r] = await ctx.tx
+      .select({ stato: analisiAi.stato, errore: analisiAi.errore, avviataIl: analisiAi.avviataIl })
+      .from(analisiAi)
+      .where(
+        and(
+          eq(analisiAi.utenteId, ctx.utenteId),
+          eq(analisiAi.funzione, "bozze_assistite"),
+          eq(analisiAi.emailId, emailId),
+          gte(analisiAi.avviataIl, dal),
+        ),
+      )
+      .orderBy(desc(analisiAi.avviataIl))
+      .limit(1);
+    return r ?? null;
   },
 
   /** Attesa da sollecitare, decifrata. */

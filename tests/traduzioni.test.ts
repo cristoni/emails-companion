@@ -21,16 +21,17 @@ function messaggi(lingua: string): Record<string, unknown> {
 
 describe("traduzioni dell'interfaccia", () => {
   it("inglese e italiano hanno esattamente le stesse chiavi", () => {
-    const en = chiavi(messaggi("en")).sort();
-    const it_ = chiavi(messaggi("it")).sort();
-    expect(it_.filter((k) => !en.includes(k))).toEqual([]);
-    expect(en.filter((k) => !it_.includes(k))).toEqual([]);
+    const en = new Set(chiavi(messaggi("en")));
+    const it_ = new Set(chiavi(messaggi("it")));
+    expect([...it_].filter((k) => !en.has(k)).sort()).toEqual([]);
+    expect([...en].filter((k) => !it_.has(k)).sort()).toEqual([]);
   });
 
   it("nessun messaggio è vuoto", () => {
     for (const lingua of ["en", "it"]) {
-      const vuoti = chiavi(messaggi(lingua)).filter((k) => {
-        const valore = k.split(".").reduce<unknown>((acc, parte) => (acc as Record<string, unknown>)[parte], messaggi(lingua));
+      const tutti = messaggi(lingua);
+      const vuoti = chiavi(tutti).filter((k) => {
+        const valore = k.split(".").reduce<unknown>((acc, parte) => (acc as Record<string, unknown>)[parte], tutti);
         return typeof valore !== "string" || valore.trim() === "";
       });
       expect(vuoti).toEqual([]);

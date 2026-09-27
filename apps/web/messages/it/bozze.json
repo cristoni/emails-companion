@@ -1,0 +1,196 @@
+{
+  "tipi": {
+    "risposta": "Risposta",
+    "sollecito": "Sollecito"
+  },
+  "titoli": {
+    "risposta": "Bozza di risposta",
+    "sollecito": "Bozza di sollecito"
+  },
+  "stati": {
+    "generazione": "In scrittura",
+    "modificabile": "Bozza",
+    "confermato": "Invio confermato",
+    "in_invio": "In invio",
+    "esito_incerto": "Esito incerto",
+    "inviato": "Inviata",
+    "fallito": "Non inviata"
+  },
+  "proponi": {
+    "risposta": "Proponi risposta",
+    "sollecito": "Proponi sollecito",
+    "consigliato": "Consigliato",
+    "consigliatoAiuto": "La data attesa è passata: è consigliato un sollecito.",
+    "inCorso": "Preparazione…",
+    "aiuto": "L'AI scrive una bozza da rivedere. Nulla viene inviato senza la tua conferma.",
+    "esiti": {
+      "email_non_trovata": "Questa email non è più disponibile.",
+      "attesa_non_trovata": "Questa attesa non esiste più.",
+      "attesa_non_attiva": "Questa attesa è chiusa: non c'è nulla da sollecitare.",
+      "casella_non_pronta": "Nessuna casella collegata può inviarla. Ricollegala nelle impostazioni.",
+      "nessun_destinatario": "Non c'è nessuno a cui scrivere: tutti i destinatari sono tuoi indirizzi.",
+      "errore": "Qualcosa è andato storto. Riprova."
+    }
+  },
+  "sezione": {
+    "titolo": "Bozze",
+    "descrizione": "Risposte e solleciti preparati qui. Nulla viene inviato finché non confermi.",
+    "vuota": "Nessuna bozza.",
+    "senzaOggetto": "Bozza in scrittura",
+    "a": "A",
+    "da": "Da",
+    "aggiornata": "Aggiornata",
+    "originale": "Email originale"
+  },
+  "pagina": {
+    "situazione": "Torna alla situazione",
+    "descrizione": {
+      "risposta": "Una risposta scritta nella lingua dell'email. Rivedila, modificala e conferma prima di qualsiasi invio.",
+      "sollecito": "Un sollecito alla tua richiesta, scritto nella sua lingua. Rivedilo, modificalo e conferma prima di qualsiasi invio."
+    },
+    "origine": {
+      "risposta": "In risposta a",
+      "sollecito": "Sollecito alla tua richiesta"
+    },
+    "attesa": "Attesa",
+    "da": "Da",
+    "impostazioni": "Apri le impostazioni"
+  },
+  "generazione": {
+    "titolo": "Scrittura della bozza…",
+    "spiegazione": "L'AI sta scrivendo una bozza nella lingua dell'email. La pagina si aggiorna da sola.",
+    "richiesta": "Richiesta",
+    "inRitardo": "Ci sta mettendo più del solito",
+    "inRitardoTesto": "Puoi continuare ad aspettare o chiedere una nuova bozza.",
+    "inPausa": "L'analisi AI è in pausa",
+    "inPausaTesto": "Risolvi il problema nelle impostazioni, poi rigenera la bozza: una bozza in pausa non riparte da sola.",
+    "fallita": "L'AI non è riuscita a scrivere la bozza",
+    "fallitaTesto": "Puoi chiedere una nuova bozza.",
+    "rigenera": "Rigenera",
+    "esiti": {
+      "ok": "Nuova bozza richiesta.",
+      "non_modificabile": "Questa bozza non si può più modificare."
+    }
+  },
+  "editor": {
+    "titolo": "Bozza",
+    "oggetto": "Oggetto",
+    "oggettoAiuto": "Mantieni l'oggetto suggerito per restare nello stesso thread di Gmail.",
+    "corpo": "Messaggio",
+    "salva": "Salva",
+    "salvataggio": "Salvataggio…",
+    "modificheNonSalvate": "Modifiche non salvate",
+    "salvata": "Salvata",
+    "rivedi": "Rivedi e invia",
+    "rivediAiuto": "Salva le modifiche prima di rivedere l'invio.",
+    "nuovaVersione": "Nel frattempo è stata salvata una versione più recente di questa bozza. Il tuo testo è ancora qui.",
+    "caricaUltima": "Scarta le mie modifiche e caricala",
+    "annulla": "Scarta le modifiche",
+    "versione": "Versione {numero}",
+    "salvataIl": "salvata",
+    "origini": {
+      "ai": "Scritta dall'AI",
+      "utente": "Modificata da te"
+    },
+    "esiti": {
+      "modificata": "Salvata come nuova versione.",
+      "versione_superata": "La bozza è cambiata da quando l'hai aperta. Carica l'ultima versione, poi applica di nuovo le tue modifiche.",
+      "oggetto_non_valido": "L'oggetto è troppo lungo.",
+      "corpo_non_valido": "Il messaggio è troppo lungo.",
+      "non_modificabile": "Questa bozza è in invio o è stata inviata: non si può più modificare.",
+      "non_trovata": "Questa bozza non esiste più.",
+      "errore": "Qualcosa è andato storto. Riprova."
+    }
+  },
+  "busta": {
+    "da": "Da",
+    "a": "A",
+    "cc": "Cc",
+    "bcc": "Ccn",
+    "oggetto": "Oggetto",
+    "oggettoCalcolato": "Oggetto suggerito",
+    "nessunOggetto": "Nessun oggetto",
+    "nessunTesto": "Nessun testo",
+    "fissa": "Destinatari e casella sono stabiliti dall'app dalle intestazioni dell'email e non si possono modificare.",
+    "intestazioni": "Intestazioni tecniche",
+    "inRispostaA": "In-Reply-To",
+    "riferimenti": "References",
+    "nessuno": "Nessuno",
+    "casellaNonPronta": "Questa casella al momento non può inviare. Ricollegala nelle impostazioni."
+  },
+  "avvisi": {
+    "reply_to_dominio_diverso": {
+      "titolo": "Le risposte vanno a un altro dominio",
+      "testo": "L'email chiede di rispondere a un indirizzo di un dominio diverso da quello del mittente. Assicurati che sia affidabile."
+    },
+    "destinatari_nuovi": {
+      "titolo": "Destinatari nuovi",
+      "testo": "Alcuni destinatari non facevano parte di questo thread."
+    },
+    "possibile_duplicato": {
+      "titolo": "Possibile duplicato",
+      "testo": "Un tentativo precedente potrebbe essere già stato consegnato. Inviando di nuovo lo stesso messaggio potrebbe arrivare due volte."
+    }
+  },
+  "contesto": {
+    "titolo": "Email usate per questa bozza",
+    "descrizione": "Le ha scelte l'app; l'AI ha letto solo queste.",
+    "nessuna": "Questa versione l'hai scritta tu: all'AI non è stata passata nessuna email.",
+    "da": "Da"
+  },
+  "conferma": {
+    "titolo": "Conferma l'invio",
+    "descrizione": "Questo è esattamente ciò che verrà inviato. Nulla parte dalla tua casella finché non premi Invia ora.",
+    "versione": "Versione {numero}",
+    "invia": "Invia ora",
+    "invio": "Invio…",
+    "modifica": "Torna alla modifica",
+    "riesame": "Rivedi l'ultima versione",
+    "esiti": {
+      "confermato": "Invio confermato.",
+      "gia_in_corso": "Questa bozza è già in invio.",
+      "versione_superata": "La bozza è cambiata da quando hai aperto questa pagina.",
+      "casella_non_pronta": "La casella al momento non può inviare. Ricollegala nelle impostazioni.",
+      "non_trovata": "Questa bozza non esiste più.",
+      "bozza_vuota": "La bozza non ha un messaggio o non ha destinatari.",
+      "errore": "Qualcosa è andato storto. Non è stato inviato nulla. Riprova."
+    }
+  },
+  "invio": {
+    "inCorso": "Invio in corso",
+    "inCorsoTesto": "Confermato e in partenza. La pagina si aggiorna da sola.",
+    "confermatoIl": "Confermato",
+    "inviato": "Inviata",
+    "inviatoIl": "Inviata",
+    "fallito": "Non inviata",
+    "fallitoTesto": "Dalla tua casella non è partito nulla. Puoi modificare la bozza e inviarla di nuovo.",
+    "verifica": "Verifichiamo se è partita",
+    "verificaTesto": "La cerchiamo nella posta inviata fino a <ora></ora>. Dopo potrai decidere tu: decidere prima potrebbe creare un duplicato.",
+    "incerto": "Non siamo riusciti a confermare se è partita",
+    "incertoTesto": "Non è comparsa nella posta inviata. Controlla la cartella Inviati di Gmail, poi dicci com'è andata.",
+    "nonInviato": "Non è stata inviata",
+    "nonInviatoDomanda": "Segnarla come non inviata e sbloccare la bozza?",
+    "nonInviatoConferma": "Sì, non è stata inviata",
+    "reinvia": "Invia di nuovo",
+    "reinviaDomanda": "Il primo tentativo potrebbe essere stato consegnato: inviando di nuovo potresti creare un duplicato. Continuare?",
+    "reinviaConferma": "Vai alla conferma",
+    "annullato": {
+      "utente_non_inviato": "Hai segnato il tentativo precedente come non inviato.",
+      "utente_reinvia": "Hai scelto di inviare di nuovo. Rivedi la bozza e conferma un nuovo invio."
+    },
+    "esitiDecisione": {
+      "annullato": "Fatto.",
+      "non_trovato": "Questo invio non esiste più.",
+      "non_incerto": "Ora l'esito è noto: la pagina è stata aggiornata.",
+      "in_verifica": "Stiamo ancora verificando. Potrai decidere tra qualche minuto.",
+      "errore": "Qualcosa è andato storto. Riprova."
+    }
+  },
+  "erroriInvio": {
+    "non_inviato": "L'invio non è stato preso in carico in tempo",
+    "casella_non_pronta": "La casella non ha potuto inviare",
+    "versione_mancante": "La versione salvata non è stata trovata",
+    "busta_modificata": "La bozza è cambiata dopo la conferma",
+    "connettore_non_disponibile": "Il connettore di posta non era disponibile"
+  }
+}

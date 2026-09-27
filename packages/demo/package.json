@@ -1,0 +1,26 @@
+{
+  "name": "@ec/demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "start": "tsx src/avvia.ts"
+  },
+  "dependencies": {
+    "@ec/applicazione": "workspace:*",
+    "@ec/composizione": "workspace:*",
+    "@ec/core": "workspace:*",
+    "@ec/crypto": "workspace:*",
+    "@ec/db": "workspace:*",
+    "@ec/testing": "workspace:*",
+    "better-auth": "1.7.6",
+    "drizzle-orm": "0.45.3",
+    "embedded-postgres": "17.10.0-beta.17",
+    "graphile-worker": "0.18.0",
+    "pg": "^8.23.0",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
+  }
+}

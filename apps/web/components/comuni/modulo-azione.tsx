@@ -58,7 +58,7 @@ export function ModuloAzione({
             {inCorso ? t("azioni.inCorso") : conferma.etichetta}
           </Pulsante>
           <Pulsante variante="fantasma" dimensione={dimensione} disabled={inCorso} onClick={() => setChiedi(false)}>
-            {t("azioni.annulla")}
+            {t("azioni.rinuncia")}
           </Pulsante>
         </>
       ) : (
