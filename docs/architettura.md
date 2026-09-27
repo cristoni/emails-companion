@@ -526,7 +526,13 @@ L'ordine è solo un modo per ridurre i rimaneggiamenti; la correttezza viene dal
 - Ogni azione dell'utente scrive una `correzione` e un `evento_situazione` nella stessa transazione, nel web: conferma, modifica, scarta, completa, riapri, rifiuta collegamento, cambia categoria o lingua, archivia, segna come gestita.
 - Il riconciliatore rilegge i valori effettivi dentro la propria transazione. Poiché il valore effettivo è sempre "correzione prima dell'AI", una correzione concorrente vince comunque.
 - Le correzioni che richiedono lavoro (per esempio la categoria) accodano `riconcilia_utente` o `analizza_email`.
-- **"Rianalizza"** (email singola, elementi aperti, ultimi N giorni) mostra sempre prima la stima del costo.
+- **"Rianalizza"** (email singola, elementi aperti, ultimi N giorni fino a 365) mostra sempre prima la stima del costo:
+  - la stima registra una `richiesta_rianalisi` in stato `stimata` senza chiamare modelli; l'ambito è calcolato rispetto all'istante della richiesta, così stima ed esecuzione vedono la stessa finestra;
+  - la conferma la porta `in_corso` e accoda `rianalizza` (chiave `rianalisi:<richiesta>`), che lavora 25 email per giro e riesegue le funzioni con l'id della richiesta nell'input: è una nuova invocazione intenzionale, non un riuso (§9.5);
+  - un'email è rianalizzata solo quando ogni funzione attesa per la sua categoria effettiva è eseguita da un'invocazione di quella richiesta, oppure è finita in errore dopo un'invocazione fallita della richiesta; le email già rianalizzate vengono saltate;
+  - dopo una pausa, `riprendiRianalisi` riaccoda le richieste `in_corso` insieme alla ripresa normale dell'analisi.
+- **Riconciliatore e correzioni concorrenti**: i collegamenti rifiutati vengono riletti dentro la transazione che applica l'esito, così un rifiuto confermato durante la chiamata al modello vale già. Un'email in entrata la cui categoria effettiva è `news` non genera Attività, anche se l'estrazione era già stata eseguita.
+- **Generazione di riconciliazione**: ogni email ha un contatore `generazione_riconciliazione`, incrementato quando torna `pronta`. Il riconciliatore lo legge all'inizio e segna l'email `riconciliata` solo se il contatore non è cambiato nel frattempo: una rimessa in coda durante la chiamata al modello non va persa.
 
 ## 11. Riepilogo News
 
@@ -539,6 +545,13 @@ L'ordine è solo un modo per ridurre i rimaneggiamenti; la correttezza viene dal
   - l'ora di generazione è mostrata;
   - "Nessuna News nelle ultime 24 ore" compare senza chiamata al modello quando l'insieme è vuoto.
 - **Lingua**: l'hash include la lingua dell'interfaccia, che serve per le voci con fonti in lingue diverse.
+- **Job e chiavi**: due chiavi nella stessa coda `news:<utente>`, così due generazioni non si sovrappongono:
+  - `news:<utente>` per i cambi di appartenenza e per "Aggiorna", con `preserve_run_at`: una nuova chiamata non sposta un job già programmato;
+  - `news_uscita:<utente>` per l'uscita della fonte più vecchia dalla finestra, con `replace`: una rigenerazione programmata tra molte ore non deve bloccare quelle dovute ai cambi.
+- **Eventi che programmano la rigenerazione**: classificazione salvata di un'email in entrata nella finestra che entra o esce dalle News, correzione della categoria, email eliminata, casella scollegata, lingua dell'interfaccia cambiata, ripresa dopo una pausa. La correzione della lingua di una fonte invalida la firma salvata, perché cambia l'input senza cambiare l'insieme.
+- **Limiti**: al massimo 50 email, le più recenti, per generazione; le altre contano tra le "non ancora nel riepilogo". Il riepilogo vuoto si scrive senza chiamare il modello e non conta per il limite dei 30 minuti.
+- **"Aggiorna"**: esegue subito sostituendo l'orario del job e rigenera anche se l'insieme non è cambiato. L'invocazione riusa l'output salvato se modello, Contesto AI e lingua sono gli stessi.
+- **Errori**: gli errori temporanei si riaccodano con attesa crescente; quelli definitivi restano un codice e non si riaccodano, ma `news_non_prima_di` distanzia comunque la generazione successiva, perché ogni cambio che non tocca l'insieme ripeterebbe la stessa chiamata a pagamento.
 
 ## 12. Bozze e invio
 
@@ -548,9 +561,11 @@ L'ordine è solo un modo per ridurre i rimaneggiamenti; la correttezza viene dal
   - ogni destinatario ne era già partecipante.
   
   Le altre email si aggiungono solo se l'utente le seleziona. La schermata di conferma elenca le email effettivamente usate, calcolate dal server.
-- **Destinatari**: calcolati dal codice (mittente o Reply-To e partecipanti dell'email a cui si risponde), mai presi dall'output del modello. Avvisi sulla conferma:
+- **Destinatari**: calcolati dal codice dalle intestazioni, mai presi dall'output del modello. Nella prima versione una risposta va al Reply-To, altrimenti al mittente, senza "rispondi a tutti"; rispondendo a una propria email inviata si scrive ai suoi destinatari originali. Un sollecito va alle persone a cui era stata fatta la richiesta. Gli indirizzi dell'utente sono sempre esclusi. Avvisi sulla conferma:
   - Reply-To di un dominio diverso dal mittente;
   - destinatari nuovi rispetto al thread.
+- **Oggetto e riferimenti**: l'oggetto è `Re: ` seguito dall'oggetto originale senza prefissi, perché il thread del provider lo richiede; l'oggetto eventualmente proposto dal modello non viene usato. `In-Reply-To` e `References` seguono RFC 5322 §3.6.4, conservando in `References` solo i riferimenti più recenti. Il `Message-ID` generato è `<id dell'invio>@<dominio della casella mittente>`.
+- **Casella mittente**: una casella che contiene l'email, è collegata e ha il permesso di invio; a parità, quella a cui l'email è indirizzata.
 - **Versioni**: `genera_bozza` crea una nuova `bozza_versione`, così come ogni modifica dell'utente. Il "sollecito consigliato" non chiama il modello.
 - **Conferma**: in una transazione, la Server Action:
   1. esegue `UPDATE bozza SET stato = 'in_invio' WHERE id = … AND utente_id = … AND versione_corrente = … AND stato = 'modificabile'`, dopo aver verificato `hash_busta`, casella `collegata` e `gmail.send`;
@@ -568,8 +583,9 @@ L'ordine è solo un modo per ridurre i rimaneggiamenti; la correttezza viene dal
   - `confermato` da più di 10 minuti diventa `fallito` ("non inviato"): nuovo invio possibile dopo nuova conferma;
   - `in_invio` oltre timeout e margine diventa `esito_incerto` e accoda `verifica_invio`.
   
-  Tutte le transizioni sono condizionali: un `inviato` tardivo vince su "incerto".
-- **Verifica**: `verifica_invio` cerca nella posta sincronizzata della casella (stesso `Message-ID`, oppure thread + `impronta`), poi con `messages.list` `rfc822msgid:`, per circa 15 minuti. Se non trova nulla l'utente decide: "Non è stato inviato" (annulla e sblocca la bozza) oppure "Invia di nuovo", con avviso di possibile duplicato. Mai nuovi tentativi automatici.
+  Tutte le transizioni sono condizionali: un `inviato` tardivo vince su "incerto". Ogni voce ha una propria transazione: un errore su una voce non ferma le altre, che restano com'erano e vengono riprese al giro successivo.
+- **Abbinamento nella posta sincronizzata**: per ogni email in uscita il riconciliatore cerca un invio dell'app nella stessa casella (id del connettore, `Message-ID` generato, oppure thread + impronta). Se lo trova segna la copia come inviata dall'app, porta l'invio a `inviato` anche da `esito_incerto` e collega l'email alla Situazione con un collegamento deterministico `invio_app` (ruolo `risposta` o `sollecito`), senza chiamare il modello.
+- **Verifica**: `verifica_invio` cerca nella posta sincronizzata della casella (stesso `Message-ID`, oppure thread + `impronta`), poi con `messages.list` `rfc822msgid:`, per circa 15 minuti. Fino alla fine della verifica automatica l'utente non può decidere, perché la copia può ancora comparire e un "non inviato" prematuro aprirebbe la strada a un duplicato. Se non trova nulla l'utente decide: "Non è stato inviato" (annulla e sblocca la bozza) oppure "Invia di nuovo", con avviso di possibile duplicato. Mai nuovi tentativi automatici.
 
 ## 13. Interfaccia
 
@@ -675,3 +691,12 @@ Tailwind CSS 4 con **token semantici** definiti come variabili CSS in `globals.c
 - **Migrazioni**: sono un **passo di rilascio** (`pnpm db:migrate`, comando di pre-deploy di Railway), sotto un lock consultivo: prima Drizzle, poi graphile-worker. Il worker all'avvio verifica che lo schema sia aggiornato e altrimenti non parte. La webapp non migra mai; le migrazioni sono additive, così la versione precedente della webapp continua a funzionare durante il rilascio.
 - **Railway**: `RAILWAY_DEPLOYMENT_DRAINING_SECONDS` superiore al job più lungo (l'invio ha timeout rigido), Node 24 fissato, uscita IPv6 attivata oppure session pooler.
 - **Backup e ripristino**: backup gestiti da Supabase; procedura di ripristino e rotazione della chiave principale documentate in `docs/deploy.md`.
+
+## 17. Limiti noti
+
+Lacune accettate per ora, da chiudere prima di un uso più ampio del pilota:
+
+- **Bozze**: lo stato della generazione (in corso, fallita, in pausa) non ha colonne proprie, quindi l'interfaccia lo deduce dall'ultima invocazione; i ritentativi di `genera_bozza` non hanno un limite; l'utente non può ancora aggiungere email di contesto a mano.
+- **Rianalisi**: l'ambito "elementi aperti" è ricalcolato a ogni giro e può cambiare mentre la richiesta è in corso; il `Retry-After` del fornitore non arriva fino al job, che usa un'attesa crescente propria; dopo una pausa `attese_risposte` riparte senza l'id della richiesta e può quindi riusare l'output precedente.
+- **Vista operativa**: il marcatore "completata dall'AI" dei 7 giorni e la riapertura di una Situazione conclusa sono gestiti solo in parte; `vistaHome` calcola le aree in memoria e va ottimizzata prima di caselle molto grandi.
+- **Accesso**: il flusso OAuth non verifica ancora `email_verified` dell'account Google.

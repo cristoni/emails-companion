@@ -69,6 +69,17 @@ Prese durante la definizione dell'architettura; sostituiscono le corrispondenti 
 - Il **Riepilogo News** viene rigenerato quando cambiano le email incluse, attendendo 10 minuti per raggrupparle e al massimo ogni 30 minuti, oltre che con il comando "Aggiorna". Mostra l'ora dell'ultimo aggiornamento e quante email nuove non vi sono ancora incluse. Senza News compare "Nessuna News nelle ultime 24 ore", senza chiamare il modello.
 - Le **bozze** vengono generate solo su richiesta ("Proponi risposta", "Proponi sollecito"). Per le Attese scadute l'app segnala un "sollecito consigliato" senza generare testo. Le bozze restano nell'app; l'invio richiede la conferma esplicita della versione esatta della bozza e un esito incerto viene mostrato all'utente, mai ritentato alla cieca.
 
+### 2.2 Decisioni di prodotto del 27 settembre 2026
+
+Prese durante la realizzazione di riepilogo, bozze e rianalisi.
+
+- **Destinatari delle risposte**: nella prima versione una risposta va al Reply-To dell'email, altrimenti al mittente, **senza "rispondi a tutti"**. Rispondendo a una propria email inviata si scrive ai suoi destinatari originali; un sollecito va alle persone a cui era stata fatta la richiesta. I destinatari sono sempre calcolati dall'app, mai proposti dall'AI, e la conferma avvisa se il Reply-To appartiene a un dominio diverso dal mittente o se compaiono destinatari nuovi.
+- **Oggetto delle risposte**: "Re: " seguito dall'oggetto originale, perché Gmail raggruppa il thread anche in base all'oggetto. L'utente può modificarlo nella bozza.
+- **Contesto delle bozze**: l'email a cui si risponde, il suo thread nella casella mittente e le altre email della Situazione con un collegamento confermato, nella stessa casella, di cui ogni destinatario era già partecipante. La schermata di conferma elenca le email effettivamente usate.
+- **Esito incerto di un invio**: finché la verifica automatica (circa 15 minuti) può ancora trovare la copia inviata, l'utente non può dichiarare "non inviato". Se l'email inviata compare nella posta sincronizzata, l'invio risulta riuscito e l'email si collega alla Situazione senza chiamare l'AI.
+- **Riepilogo News**: considera al massimo le 50 News più recenti; le altre contano tra quelle "non ancora nel riepilogo". Dopo un errore definitivo del modello non viene ritentato da solo, ma resta rispettato l'intervallo minimo di 30 minuti; "Aggiorna" è sempre immediato.
+- **Rianalisi**: gli ultimi N giorni arrivano al massimo a 365. La stima non chiama modelli e l'ambito è fissato al momento della stima; dopo la conferma la rianalisi prosegue a blocchi e riprende da sola dopo una pausa. Un'email spostata nelle News non genera Attività, anche se l'estrazione era già avvenuta.
+
 ## 3. Concetti funzionali
 
 | Concetto | Significato |
