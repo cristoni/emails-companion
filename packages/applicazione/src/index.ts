@@ -16,3 +16,4 @@ export * from "./rianalisi/rianalizza";
 export * from "./bozze";
 export * from "./viste";
 export * from "./correzioni";
+export * from "./web";
