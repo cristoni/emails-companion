@@ -43,7 +43,7 @@ export async function vistaHome(dip: DipendenzeViste, ctx: ContestoUtente): Prom
           : null,
         stima: c.stima,
       })),
-    news: await riepilogoNews(dip, ctx),
+    news: await vistaRiepilogoNews(dip, ctx),
   };
 }
 
@@ -121,8 +121,8 @@ export async function avvisi(dip: DipendenzeViste, ctx: ContestoUtente, caselle:
   return risultato;
 }
 
-/** Riepilogo News (§11) dal modulo che lo genera: appartenenza esatta all'istante della consultazione. */
-async function riepilogoNews(dip: DipendenzeViste, ctx: ContestoUtente): Promise<VistaNewsDto> {
+/** Riepilogo News (§11) dal modulo che lo genera: appartenenza esatta all'istante della consultazione. Usato da home e `/news`. */
+export async function vistaRiepilogoNews(dip: DipendenzeViste, ctx: ContestoUtente): Promise<VistaNewsDto> {
   const v = await vistaNews(dip, ctx);
   return {
     vuoto: v.vuoto,

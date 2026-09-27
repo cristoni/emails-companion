@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { CheckCircle2, Circle } from "lucide-react";
 import { DIRETTIVE_PREDEFINITE } from "@ec/ai";
+import { statoOnboarding } from "@ec/applicazione";
 import { caselle, impostazioni, sincronizzazione } from "@ec/db";
 import { comeUtente } from "@/lib/server/sessione";
 import { Avviso } from "@/components/ui/avviso";
@@ -21,11 +22,12 @@ export default async function PaginaOnboarding() {
       chiave: await impostazioni.infoChiave(ctx),
       contesto: await impostazioni.contestoCorrente(ctx),
       caselle: await Promise.all(elenco.map(async (c) => ({ casella: c, sync: await sincronizzazione.leggi(ctx, c.id) }))),
+      stato: await statoOnboarding(dip, ctx),
     };
   });
   const chiaveOk = dati.chiave?.stato === "valida";
-  const importazioniDecise = dati.caselle.every(({ sync }) => sync && !["da_stimare", "stimata"].includes(sync.faseImportazione));
-  const completo = dati.consenso && chiaveOk && importazioniDecise;
+  const importazioniDecise = dati.stato.importazioniDaDecidere.length === 0;
+  const completo = dati.stato.completo;
 
   const Passo = ({ fatto, titolo, children }: { fatto: boolean; titolo: string; children: React.ReactNode }) => (
     <Scheda className="p-5">
@@ -108,9 +110,13 @@ export default async function PaginaOnboarding() {
       </Passo>
 
       <div className="flex justify-end">
-        <Link href="/" aria-disabled={!completo} className={classiPulsante(completo ? "primario" : "secondario")}>
-          {completo ? t("vaiHome") : t("vaiHomeComunque")}
-        </Link>
+        {dati.stato.essenziale ? (
+          <Link href="/" className={classiPulsante(completo ? "primario" : "secondario")}>
+            {completo ? t("vaiHome") : t("vaiHomeComunque")}
+          </Link>
+        ) : (
+          <p className="text-sm text-text-muted">{t("requisitiHome")}</p>
+        )}
       </div>
     </div>
   );

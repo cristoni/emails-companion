@@ -1,0 +1,53 @@
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import type { EvidenzaDto } from "@ec/applicazione";
+import { TestoSemplice } from "./testo-semplice";
+
+/**
+ * Evidenze di un'affermazione dell'AI: ogni citazione porta all'email da cui deriva e dice se è stata
+ * trovata alla lettera nel testo, così ogni affermazione resta verificabile.
+ */
+export function ElencoEvidenze({ evidenze, className }: { evidenze: readonly EvidenzaDto[]; className?: string }) {
+  const t = useTranslations("comuni.fonte");
+  if (evidenze.length === 0) return null;
+  return (
+    <ul className={className ?? "space-y-2"} aria-label={t("evidenza")}>
+      {evidenze.map((e, i) => (
+        <li key={`${e.emailId}-${i}`} className="rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm">
+          <TestoSemplice come="blockquote" testo={`“${e.citazione}”`} className="text-text" />
+          <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-text-muted">
+            <span className="inline-flex items-center gap-1">
+              {e.verificata ? <CheckCircle2 className="size-3.5 text-accent-strong" aria-hidden /> : <AlertTriangle className="size-3.5 text-urgent" aria-hidden />}
+              {t(e.verificata ? "verificata" : "nonVerificata")}
+            </span>
+            <Link href={`/mail/${e.emailId}`} className="text-accent-strong underline-offset-4 hover:underline">
+              {t("apri")}
+            </Link>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Link a un'email della posta sincronizzata, dove si trovano l'originale e il link al provider. */
+export function LinkEmail({ emailId, children, className }: { emailId: string; children?: React.ReactNode; className?: string }) {
+  const t = useTranslations("comuni.fonte");
+  return (
+    <Link href={`/mail/${emailId}`} className={className ?? "text-accent-strong underline-offset-4 hover:underline"}>
+      {children ?? t("apri")}
+    </Link>
+  );
+}
+
+/** Link all'email nel provider (per esempio Gmail), in una nuova scheda e senza referrer. */
+export function LinkProvider({ href, children, className }: { href: string | null; children?: React.ReactNode; className?: string }) {
+  const t = useTranslations("comuni.fonte");
+  if (!href) return null;
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className ?? "text-accent-strong underline-offset-4 hover:underline"}>
+      {children ?? t("apriNelProvider")}
+    </a>
+  );
+}

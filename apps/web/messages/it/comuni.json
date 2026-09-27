@@ -1,0 +1,178 @@
+{
+  "base": {
+    "rilevato": "Rilevato nell'email",
+    "dedotto": "Dedotto",
+    "rilevatoAiuto": "L'email lo dice esplicitamente; la citazione mostra dove.",
+    "dedottoAiuto": "L'AI lo ha dedotto: l'email non lo dice alla lettera."
+  },
+  "proposta": "Proposta AI",
+  "propostaAiuto": "Proposto dall'AI e non ancora confermato da te.",
+  "aree": {
+    "urgente": "Urgente",
+    "risposte_arrivate": "Risposte arrivate",
+    "da_fare": "Da fare",
+    "in_attesa": "In attesa"
+  },
+  "categorie": {
+    "news": "News e informazioni secondarie",
+    "operativa": "Richiede attenzione",
+    "informativa": "Informativa"
+  },
+  "priorita": {
+    "alta": "Priorità alta",
+    "media": "Priorità media",
+    "bassa": "Priorità bassa"
+  },
+  "funzioni": {
+    "classificazione_priorita": "Classificazione e priorità",
+    "estrazione_attivita": "Estrazione attività",
+    "attese_risposte": "Gestione attese e risposte",
+    "riepilogo_news": "Riepilogo News",
+    "bozze_assistite": "Bozze assistite"
+  },
+  "statiCasella": {
+    "collegata": "Collegata",
+    "permessi_incompleti": "Permessi incompleti",
+    "da_ricollegare": "Da ricollegare",
+    "scollegamento_in_corso": "Scollegamento in corso",
+    "scollegata": "Scollegata"
+  },
+  "fasiImportazione": {
+    "da_stimare": "Stima dell'importazione iniziale in corso",
+    "stimata": "Importazione iniziale in attesa della tua conferma",
+    "confermata": "Importazione iniziale confermata",
+    "rifiutata": "Importazione iniziale rinviata",
+    "in_corso": "Importazione iniziale in corso",
+    "completata": "Importazione iniziale completata",
+    "errore": "Importazione iniziale interrotta da un errore"
+  },
+  "motiviPausa": {
+    "consenso_mancante": "Non hai ancora accettato l'informativa",
+    "chiave_mancante": "Nessuna chiave OpenRouter salvata",
+    "chiave_non_valida": "La chiave OpenRouter non è valida",
+    "credito_esaurito": "La chiave OpenRouter ha esaurito il credito",
+    "modello_incompatibile": "Il modello scelto non supporta output strutturato con Zero Data Retention",
+    "modello_non_disponibile": "Il modello scelto non è disponibile",
+    "pausa_manuale": "Hai messo in pausa l'analisi AI"
+  },
+  "statiAnalisi": {
+    "da_analizzare": "Da analizzare",
+    "in_pausa": "Analisi in pausa",
+    "errore": "Analisi non riuscita",
+    "analizzata": "Analizzata",
+    "non_prevista": "Non analizzata"
+  },
+  "statiFunzione": {
+    "da_eseguire": "Da eseguire",
+    "in_pausa": "In pausa",
+    "eseguita": "Eseguita",
+    "non_necessaria": "Non necessaria",
+    "errore": "Errore"
+  },
+  "valutazioni": {
+    "completa": "Risposta completa",
+    "parziale": "Risposta parziale",
+    "non_pertinente": "Non pertinente"
+  },
+  "statiAttesa": {
+    "aperta": "Aperta",
+    "parziale": "Risposta parziale",
+    "soddisfatta": "Soddisfatta",
+    "annullata": "Annullata"
+  },
+  "statiElemento": {
+    "proposta": "Proposta AI",
+    "confermata": "Confermata",
+    "completata": "Completata",
+    "scartata": "Scartata",
+    "superata": "Non più trovata"
+  },
+  "statiCollegamento": {
+    "proposto": "Collegamento proposto",
+    "confermato": "Collegamento confermato",
+    "rifiutato": "Collegamento rifiutato"
+  },
+  "originiCollegamento": {
+    "thread": "Stesso thread",
+    "intestazioni": "Intestazioni di risposta",
+    "invio_app": "Inviata da questa app",
+    "ai": "Collegata dall'AI",
+    "utente": "Collegata da te"
+  },
+  "ruoliCollegamento": {
+    "origine": "Origine",
+    "risposta": "Risposta",
+    "sollecito": "Sollecito",
+    "contesto": "Contesto"
+  },
+  "motiviUrgenza": {
+    "utente": "L'hai segnata come urgente",
+    "email_urgente": "L'email è urgente",
+    "attivita_urgente": "Un'attività è urgente",
+    "scadenza_vicina": "Una scadenza cade entro 48 ore"
+  },
+  "direzioni": {
+    "entrata": "Ricevuta",
+    "uscita": "Inviata",
+    "interna": "Interna"
+  },
+  "cartelle": {
+    "in_arrivo": "Posta in arrivo",
+    "inviata": "Inviata",
+    "spam": "Spam",
+    "cestino": "Cestino",
+    "bozza": "Bozza",
+    "chat": "Chat",
+    "archiviata": "Archiviata"
+  },
+  "statiInvio": {
+    "confermato": "Invio confermato",
+    "in_invio": "Invio in corso",
+    "inviato": "Inviata",
+    "fallito": "Non inviata",
+    "esito_incerto": "Esito incerto",
+    "annullato": "Annullato"
+  },
+  "esiti": {
+    "ok": "Salvato",
+    "nessuna_modifica": "Niente da modificare",
+    "non_trovato": "Questo elemento non esiste più",
+    "non_trovata": "Questo elemento non esiste più",
+    "non_valido": "Il valore non è valido",
+    "errore": "Qualcosa non ha funzionato. Riprova."
+  },
+  "errori": {
+    "autorizzazione_revocata": "L'accesso alla casella è stato revocato",
+    "permessi_insufficienti": "I permessi della casella non bastano",
+    "limite_frequenza": "Il provider ha chiesto di rallentare",
+    "temporaneo": "Errore temporaneo",
+    "cursore_scaduto": "Serve una risincronizzazione completa",
+    "timeout_invio": "L'invio è andato in timeout",
+    "chiave_non_valida": "La chiave OpenRouter non è valida",
+    "credito_esaurito": "Credito esaurito sulla chiave OpenRouter",
+    "limite_chiave": "La chiave OpenRouter ha raggiunto il suo limite",
+    "budget_in_volo": "Troppe richieste in corso",
+    "moderazione": "Il fornitore ha rifiutato il contenuto",
+    "modello_incompatibile": "Il modello non è compatibile",
+    "timeout": "Il modello non ha risposto in tempo",
+    "risposta_non_valida": "Il modello ha restituito una risposta non valida",
+    "sconosciuto": "Errore imprevisto"
+  },
+  "fonte": {
+    "apri": "Apri email",
+    "apriOriginale": "Apri originale",
+    "apriNelProvider": "Apri in Gmail",
+    "evidenza": "Evidenza",
+    "verificata": "Citazione trovata nell'email",
+    "nonVerificata": "Citazione non trovata nell'email"
+  },
+  "azioni": {
+    "inCorso": "In corso…",
+    "annulla": "Annulla",
+    "conferma": "Conferma",
+    "chiudi": "Chiudi"
+  },
+  "tempo": {
+    "mai": "Mai"
+  }
+}

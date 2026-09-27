@@ -81,7 +81,7 @@ export async function elencoPosta(
         categoria: valori.categoria,
         urgente: valori.urgente,
         allegati: e.nomiAllegati,
-        caselle: [...new Map(proprie.map((c) => [c.casellaId, { casellaId: c.casellaId, indirizzo: perId.get(c.casellaId) ?? "" }])).values()],
+        caselle: [...new Map(proprie.map((c) => [c.casellaId, { casellaId: c.casellaId, indirizzo: perId.get(c.casellaId)?.indirizzo ?? "" }])).values()],
         analisi: statoAnalisi(stati.get(id)),
       },
     ];
@@ -94,7 +94,7 @@ export async function elencoPosta(
  * Lettura di un'email (§13 `/mail/[id]`): testo normalizzato, classificazione con valori effettivi,
  * motivazione ed evidenze, copie con cartelle, Situazioni collegate e lingua con la sua fonte.
  */
-export async function vistaEmail(_dip: DipendenzeViste, ctx: ContestoUtente, emailId: string): Promise<VistaEmailDto | null> {
+export async function vistaEmail(dip: DipendenzeViste, ctx: ContestoUtente, emailId: string): Promise<VistaEmailDto | null> {
   if (!UUID.test(emailId)) return null;
   const e = await posta.leggi(ctx, emailId, true);
   if (!e) return null;
@@ -163,7 +163,7 @@ export async function vistaEmail(_dip: DipendenzeViste, ctx: ContestoUtente, ema
           }
         : null,
     correzioni: correzioniDto(correzioni, soggetto),
-    copie: copie.map((c) => copiaDto(c, perId)),
+    copie: copie.map((c) => copiaDto(c, perId, dip.connettori)),
     situazioni,
     analisi: (stati.get(emailId) ?? [])
       .map((s) => ({ funzione: s.funzione as FunzioneAI, stato: s.stato, motivo: s.motivo }))

@@ -118,4 +118,9 @@ export interface ConnettorePosta {
 export interface FabbricaConnettori {
   /** Connettore per una casella; le credenziali sono risolte dall'infrastruttura. */
   per(casellaId: string): Promise<ConnettorePosta>;
+  /**
+   * Link all'email nel provider costruito dai soli identificativi, senza caricare credenziali: le viste
+   * lo calcolano per ogni copia. null se il connettore non ne prevede uno.
+   */
+  linkOriginale(connettore: string, indirizzo: string, idConnettore: string, threadConnettore: string | null): string | null;
 }

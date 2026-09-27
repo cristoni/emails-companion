@@ -227,6 +227,10 @@ export class FabbricaConnettoriFinta implements FabbricaConnettori {
     return c;
   }
 
+  linkOriginale(_connettore: string, indirizzo: string, idConnettore: string): string | null {
+    return `https://mail.finta.test/${encodeURIComponent(indirizzo)}#${encodeURIComponent(idConnettore)}`;
+  }
+
   async per(casellaId: string): Promise<ConnettorePosta> {
     const indirizzo = await this.risolviIndirizzo(casellaId);
     if (!indirizzo) throw new ErroreConnettore("autorizzazione_revocata");

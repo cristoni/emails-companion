@@ -1,5 +1,6 @@
 import { operativo, posta, type ContestoUtente } from "@ec/db";
 import type { Dipendenze } from "../dipendenze";
+import type { FabbricaConnettori } from "@ec/core/porte";
 import {
   calcolaSituazioni,
   correzioniDto,
@@ -110,7 +111,7 @@ export async function vistaSituazione(dip: DipendenzeViste, ctx: ContestoUtente,
     correzioni: correzioniDto(correzioni, { tipo: "collegamento", id: c.id }),
   }));
 
-  const [fonti, spiegazioni, eventi] = await Promise.all([fontiDi(ctx, calc), percheDi(ctx, calc), operativo.eventi(ctx, calc.situazione.id)]);
+  const [fonti, spiegazioni, eventi] = await Promise.all([fontiDi(dip, ctx, calc), percheDi(ctx, calc), operativo.eventi(ctx, calc.situazione.id)]);
   const { vista, situazione } = calc;
   return {
     id: situazione.id,
@@ -156,21 +157,22 @@ function gestitaIl(calc: SituazioneCalcolata): string | null {
   return isoOpzionale(calc.situazione.gestitaIl);
 }
 
-export function copiaDto(copia: CopiaInVista, perId: ReadonlyMap<string, string>): CopiaDto {
+export function copiaDto(copia: CopiaInVista, perId: ReadonlyMap<string, CasellaInVista>, connettori: Pick<FabbricaConnettori, "linkOriginale">): CopiaDto {
+  const casella = perId.get(copia.casellaId);
   return {
     casellaId: copia.casellaId,
-    indirizzo: perId.get(copia.casellaId) ?? "",
+    indirizzo: casella?.indirizzo ?? "",
     idConnettore: copia.idConnettore,
     thread: copia.thread,
     cartelle: copia.cartelle,
     origineInvio: copia.origineInvio,
     eliminataNelProvider: copia.eliminataNelProvider,
-    linkOriginale: null,
+    linkOriginale: casella && !copia.eliminataNelProvider ? connettori.linkOriginale(casella.connettore, casella.indirizzo, copia.idConnettore, copia.thread) : null,
   };
 }
 
 /** Email da cui derivano la Situazione e i suoi elementi, in ordine cronologico, con le loro copie. */
-async function fontiDi(ctx: ContestoUtente, calc: SituazioneCalcolata): Promise<FonteDto[]> {
+async function fontiDi(dip: DipendenzeViste, ctx: ContestoUtente, calc: SituazioneCalcolata): Promise<FonteDto[]> {
   const ids = new Set<string>(calc.emailIds);
   for (const a of calc.attivita) {
     ids.add(a.emailSorgenteId);
@@ -188,7 +190,7 @@ async function fontiDi(ctx: ContestoUtente, calc: SituazioneCalcolata): Promise<
   return email
     .sort((a, b) => a.ricevutaIl.getTime() - b.ricevutaIl.getTime() || (a.id < b.id ? -1 : 1))
     .map((e) => {
-      const proprie = copie.filter((c) => c.emailId === e.id).map((c) => copiaDto(c, perId));
+      const proprie = copie.filter((c) => c.emailId === e.id).map((c) => copiaDto(c, perId, dip.connettori));
       return {
         emailId: e.id,
         direzione: e.direzione,
@@ -204,8 +206,8 @@ async function fontiDi(ctx: ContestoUtente, calc: SituazioneCalcolata): Promise<
     });
 }
 
-export function indirizziCaselle(caselle: readonly CasellaInVista[]): Map<string, string> {
-  return new Map(caselle.map((c) => [c.id, c.indirizzo]));
+export function indirizziCaselle(caselle: readonly CasellaInVista[]): Map<string, CasellaInVista> {
+  return new Map(caselle.map((c) => [c.id, c]));
 }
 
 async function percheDi(ctx: ContestoUtente, calc: SituazioneCalcolata): Promise<PercheDto[]> {

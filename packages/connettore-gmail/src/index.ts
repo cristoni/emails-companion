@@ -1,4 +1,4 @@
-export { ConnettoreGmail, type OpzioniConnettoreGmail } from "./connettore";
+export { ConnettoreGmail, linkGmail, type OpzioniConnettoreGmail } from "./connettore";
 export {
   creaClientGmail,
   type ClientGmail,

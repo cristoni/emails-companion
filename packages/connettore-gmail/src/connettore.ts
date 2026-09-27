@@ -59,6 +59,11 @@ function query(filtro: FiltroElenco): string | null {
   return parti.join(" ");
 }
 
+/** Link all'email nell'interfaccia web di Gmail, per l'account della casella. */
+export function linkGmail(indirizzo: string, idConnettore: string): string {
+  return `https://mail.google.com/mail/?authuser=${encodeURIComponent(indirizzo)}#all/${encodeURIComponent(idConnettore)}`;
+}
+
 export class ConnettoreGmail implements ConnettorePosta {
   readonly capacita: CapacitaConnettore;
   readonly #client: ClientGmail;
@@ -220,7 +225,7 @@ export class ConnettoreGmail implements ConnettorePosta {
   }
 
   linkOriginale(idConnettore: string, _threadConnettore?: string | null): string {
-    return `https://mail.google.com/mail/?authuser=${encodeURIComponent(this.#indirizzo)}#all/${encodeURIComponent(idConnettore)}`;
+    return linkGmail(this.#indirizzo, idConnettore);
   }
 
   #leggi<T>(operazione: (client: ClientGmail) => Promise<T>): Promise<T> {

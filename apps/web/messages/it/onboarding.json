@@ -61,5 +61,6 @@
       "completata": "Importazione completata",
       "errore": "Importazione non riuscita"
     }
-  }
+  },
+  "requisitiHome": "Accetta l'informativa e salva una chiave OpenRouter per aprire la home."
 }

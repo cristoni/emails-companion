@@ -1,0 +1,178 @@
+{
+  "base": {
+    "rilevato": "Found in email",
+    "dedotto": "Inferred",
+    "rilevatoAiuto": "The email states this explicitly; the quoted evidence shows where.",
+    "dedottoAiuto": "The AI inferred this: it is not stated word for word in the email."
+  },
+  "proposta": "AI suggestion",
+  "propostaAiuto": "Suggested by the AI and not yet confirmed by you.",
+  "aree": {
+    "urgente": "Urgent",
+    "risposte_arrivate": "Replies",
+    "da_fare": "To do",
+    "in_attesa": "Waiting on"
+  },
+  "categorie": {
+    "news": "News & FYI",
+    "operativa": "Needs attention",
+    "informativa": "Informational"
+  },
+  "priorita": {
+    "alta": "High priority",
+    "media": "Medium priority",
+    "bassa": "Low priority"
+  },
+  "funzioni": {
+    "classificazione_priorita": "Classification and priority",
+    "estrazione_attivita": "Action extraction",
+    "attese_risposte": "Waiting items and replies",
+    "riepilogo_news": "News digest",
+    "bozze_assistite": "Assisted drafts"
+  },
+  "statiCasella": {
+    "collegata": "Connected",
+    "permessi_incompleti": "Missing permissions",
+    "da_ricollegare": "Needs reconnecting",
+    "scollegamento_in_corso": "Disconnecting",
+    "scollegata": "Disconnected"
+  },
+  "fasiImportazione": {
+    "da_stimare": "Estimating the initial import",
+    "stimata": "Initial import waiting for your confirmation",
+    "confermata": "Initial import confirmed",
+    "rifiutata": "Initial import postponed",
+    "in_corso": "Initial import in progress",
+    "completata": "Initial import completed",
+    "errore": "Initial import stopped by an error"
+  },
+  "motiviPausa": {
+    "consenso_mancante": "You haven't accepted the privacy notice yet",
+    "chiave_mancante": "No OpenRouter key is saved",
+    "chiave_non_valida": "The OpenRouter key is not valid",
+    "credito_esaurito": "The OpenRouter key has no credit left",
+    "modello_incompatibile": "The chosen model does not support structured output with Zero Data Retention",
+    "modello_non_disponibile": "The chosen model is not available",
+    "pausa_manuale": "You paused AI analysis"
+  },
+  "statiAnalisi": {
+    "da_analizzare": "Waiting for analysis",
+    "in_pausa": "Analysis paused",
+    "errore": "Analysis failed",
+    "analizzata": "Analysed",
+    "non_prevista": "Not analysed"
+  },
+  "statiFunzione": {
+    "da_eseguire": "Pending",
+    "in_pausa": "Paused",
+    "eseguita": "Done",
+    "non_necessaria": "Not needed",
+    "errore": "Error"
+  },
+  "valutazioni": {
+    "completa": "Complete reply",
+    "parziale": "Partial reply",
+    "non_pertinente": "Not relevant"
+  },
+  "statiAttesa": {
+    "aperta": "Open",
+    "parziale": "Partially answered",
+    "soddisfatta": "Resolved",
+    "annullata": "Cancelled"
+  },
+  "statiElemento": {
+    "proposta": "AI suggestion",
+    "confermata": "Confirmed",
+    "completata": "Done",
+    "scartata": "Dismissed",
+    "superata": "No longer found"
+  },
+  "statiCollegamento": {
+    "proposto": "Suggested link",
+    "confermato": "Confirmed link",
+    "rifiutato": "Rejected link"
+  },
+  "originiCollegamento": {
+    "thread": "Same thread",
+    "intestazioni": "Reply headers",
+    "invio_app": "Sent from this app",
+    "ai": "Linked by the AI",
+    "utente": "Linked by you"
+  },
+  "ruoliCollegamento": {
+    "origine": "Origin",
+    "risposta": "Reply",
+    "sollecito": "Follow-up",
+    "contesto": "Context"
+  },
+  "motiviUrgenza": {
+    "utente": "You marked it urgent",
+    "email_urgente": "The email is urgent",
+    "attivita_urgente": "An action is urgent",
+    "scadenza_vicina": "A deadline is within 48 hours"
+  },
+  "direzioni": {
+    "entrata": "Received",
+    "uscita": "Sent",
+    "interna": "Internal"
+  },
+  "cartelle": {
+    "in_arrivo": "Inbox",
+    "inviata": "Sent",
+    "spam": "Spam",
+    "cestino": "Trash",
+    "bozza": "Draft",
+    "chat": "Chat",
+    "archiviata": "Archived"
+  },
+  "statiInvio": {
+    "confermato": "Send confirmed",
+    "in_invio": "Sending",
+    "inviato": "Sent",
+    "fallito": "Not sent",
+    "esito_incerto": "Unknown outcome",
+    "annullato": "Cancelled"
+  },
+  "esiti": {
+    "ok": "Saved",
+    "nessuna_modifica": "Nothing to change",
+    "non_trovato": "This item no longer exists",
+    "non_trovata": "This item no longer exists",
+    "non_valido": "The value is not valid",
+    "errore": "Something went wrong. Try again."
+  },
+  "errori": {
+    "autorizzazione_revocata": "Access to the mailbox was revoked",
+    "permessi_insufficienti": "The mailbox permissions are not enough",
+    "limite_frequenza": "The provider asked us to slow down",
+    "temporaneo": "Temporary error",
+    "cursore_scaduto": "Full resync needed",
+    "timeout_invio": "Sending timed out",
+    "chiave_non_valida": "The OpenRouter key is not valid",
+    "credito_esaurito": "No credit left on the OpenRouter key",
+    "limite_chiave": "The OpenRouter key reached its limit",
+    "budget_in_volo": "Too many requests in progress",
+    "moderazione": "The provider refused the content",
+    "modello_incompatibile": "The model is not compatible",
+    "timeout": "The model did not answer in time",
+    "risposta_non_valida": "The model returned an invalid answer",
+    "sconosciuto": "Unexpected error"
+  },
+  "fonte": {
+    "apri": "Open email",
+    "apriOriginale": "Open original",
+    "apriNelProvider": "Open in Gmail",
+    "evidenza": "Evidence",
+    "verificata": "Quote found in the email",
+    "nonVerificata": "Quote not found in the email"
+  },
+  "azioni": {
+    "inCorso": "Working…",
+    "annulla": "Undo",
+    "conferma": "Confirm",
+    "chiudi": "Close"
+  },
+  "tempo": {
+    "mai": "Never"
+  }
+}

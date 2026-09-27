@@ -174,7 +174,7 @@ describe("home: una card per Situazione", () => {
     expect(attivita.evidenze[0]?.verificata).toBe(true);
     expect(attivita.correzioni.map((c) => c.campo).sort()).toEqual(["descrizione", "scadenza"]);
     expect(dettaglio!.fonti).toHaveLength(1);
-    expect(dettaglio!.fonti[0]!.caselle[0]).toMatchObject({ indirizzo: "anna@esempio.it", linkOriginale: null });
+    expect(dettaglio!.fonti[0]!.caselle[0]).toMatchObject({ indirizzo: "anna@esempio.it", linkOriginale: "https://mail.finta.test/anna%40esempio.it#m1" });
     expect(dettaglio!.perche.find((p) => p.soggetto.tipo === "attivita")?.funzione).toBe("estrazione_attivita");
   });
 });

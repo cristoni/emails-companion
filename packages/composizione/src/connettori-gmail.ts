@@ -1,6 +1,7 @@
 import {
   ConnettoreGmail,
   creaAuthPerCasella,
+  linkGmail,
   creaClientGmail,
   revocaToken,
   rinnovaAccesso,
@@ -22,6 +23,10 @@ export class FabbricaConnettoriGmail implements FabbricaConnettori {
     this.#oauth = opzioni.oauth;
     this.#topic = opzioni.topicNotifiche;
     this.#orologio = opzioni.orologio;
+  }
+
+  linkOriginale(connettore: string, indirizzo: string, idConnettore: string): string | null {
+    return connettore === "gmail" ? linkGmail(indirizzo, idConnettore) : null;
   }
 
   async per(casellaId: string): Promise<ConnettorePosta> {

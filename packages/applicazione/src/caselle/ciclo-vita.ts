@@ -1,4 +1,4 @@
-import { caselle, eliminazione, indirizzi, sincronizzazione } from "@ec/db";
+import { caselle, eliminazione, impostazioni, indirizzi, sincronizzazione, type ContestoUtente } from "@ec/db";
 import type { Dipendenze } from "../dipendenze";
 import { programmaRiepilogoNews } from "../news/riepilogo";
 
@@ -28,6 +28,15 @@ export async function scollegaCasella(dip: Dipendenze, utenteId: string, casella
     await programmaRiepilogoNews(dip, ctx);
     await ctx.coda.accoda("riconcilia_utente", { utenteId }, { chiave: `riconcilia:${utenteId}`, coda: `utente:${utenteId}`, modalitaChiave: "preserve_run_at" });
   });
+}
+
+/**
+ * "Elimina account" dalla webapp: ferma subito l'analisi (nessuna nuova spesa sulla chiave) e lascia al
+ * worker scollegamento delle caselle e cancellazione. La webapp chiude poi la sessione.
+ */
+export async function richiediEliminazioneAccount(dip: Pick<Dipendenze, "orologio">, ctx: ContestoUtente): Promise<void> {
+  await impostazioni.aggiornaPreferenze(ctx, { pausaManuale: true }, dip.orologio.ora());
+  await ctx.coda.accoda("elimina_account", { utenteId: ctx.utenteId }, { chiave: `elimina_account:${ctx.utenteId}`, coda: `utente:${ctx.utenteId}` });
 }
 
 /** Eliminazione dell'account: scollega ogni casella, poi cancella l'utente e la sua chiave dati. */

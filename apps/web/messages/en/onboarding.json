@@ -61,5 +61,6 @@
       "completata": "Import completed",
       "errore": "Import failed"
     }
-  }
+  },
+  "requisitiHome": "Accept the privacy notice and save an OpenRouter key to open the home page."
 }
