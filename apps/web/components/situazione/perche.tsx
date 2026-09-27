@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2, CircleHelp } from "lucide-react";
 import type { EvidenzaDto, PercheDto, UrgenzaEmailOrigineDto, VistaSituazioneDto } from "@ec/applicazione";
+import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { ancora, linguaDi, type ContestoDettaglio } from "./comuni";
@@ -132,12 +133,15 @@ function Citazioni({ evidenze, contesto }: { evidenze: readonly EvidenzaDto[]; c
             <AlertTriangle className="mt-0.5 size-3 shrink-0 text-urgent" aria-hidden />
           )}
           <span className="sr-only">{tf(e.verificata ? "verificata" : "nonVerificata")}</span>
-          <TestoSemplice
-            come="blockquote"
-            testo={`“${e.citazione}”`}
-            lingua={linguaDi(contesto, e.emailId)}
-            className="line-clamp-3 min-w-0 rounded-sm bg-accent-soft/60 px-1 text-text"
-          />
+          <div className="min-w-0 space-y-0.5">
+            <TestoSemplice
+              come="blockquote"
+              testo={`“${e.citazione}”`}
+              lingua={linguaDi(contesto, e.emailId)}
+              className="line-clamp-3 rounded-sm bg-accent-soft/60 px-1 text-text"
+            />
+            <LinkEmail emailId={e.emailId} className="px-1 text-accent-strong underline-offset-4 hover:underline" />
+          </div>
         </li>
       ))}
       {altre > 0 ? <li className="text-text-muted">{t("altreCitazioni", { numero: altre })}</li> : null}

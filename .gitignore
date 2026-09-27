@@ -29,3 +29,4 @@ Thumbs.db
 
 # generato da Next a ogni avvio
 apps/web/next-env.d.ts
+.playwright-mcp/

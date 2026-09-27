@@ -74,7 +74,9 @@ export function BarraLaterale({
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted hover:bg-surface hover:text-text"
           >
-            {resolvedTheme === "dark" ? <Sun className="size-4" aria-hidden /> : <Moon className="size-4" aria-hidden />}
+            {/* Icona decisa dal CSS: il server non conosce il tema, e un'icona scelta in render causerebbe un errore di idratazione. */}
+            <Sun className="hidden size-4 dark:block" aria-hidden />
+            <Moon className="size-4 dark:hidden" aria-hidden />
             {etichette.tema}
           </button>
           <button

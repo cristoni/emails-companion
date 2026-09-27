@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { startTransition, useActionState, useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Categoria } from "@ec/core/dominio";
 import { testoCodice } from "@/components/comuni/codici";
@@ -8,6 +8,18 @@ import type { AzioneModulo, StatoAzione } from "@/components/comuni/modulo-azion
 import { Aiuto, Etichetta, Input, Selezione } from "@/components/ui/campi";
 import { cn } from "@/components/ui/cn";
 import { Pulsante } from "@/components/ui/pulsante";
+
+/**
+ * Invio senza `<form action>`: dopo un'azione React 19 reimposta il modulo, e un select controllato
+ * tornerebbe alla prima opzione mentre lo stato indica il valore scelto.
+ */
+function inviaSenzaReset(esegui: (dati: FormData) => void) {
+  return (evento: React.FormEvent<HTMLFormElement>) => {
+    evento.preventDefault();
+    const dati = new FormData(evento.currentTarget);
+    startTransition(() => esegui(dati));
+  };
+}
 
 /** Esito di una correzione come testo tradotto: mai il codice grezzo. */
 function Esito({ stato, messaggi = {} }: { stato: StatoAzione; messaggi?: Record<string, string> }) {
@@ -44,7 +56,7 @@ export function ModuloCategoria({
   }
   const [stato, esegui, inCorso] = useActionState(azione, undefined);
   return (
-    <form action={esegui} className="space-y-1.5">
+    <form onSubmit={inviaSenzaReset(esegui)} className="space-y-1.5">
       <input type="hidden" name="email" value={emailId} />
       <Etichetta htmlFor={id}>
         {t("nuovaCategoria")}
@@ -97,7 +109,7 @@ export function ModuloLingua({
   }
   const [stato, esegui, inCorso] = useActionState(azione, undefined);
   return (
-    <form action={esegui} className="space-y-2">
+    <form onSubmit={inviaSenzaReset(esegui)} className="space-y-2">
       <input type="hidden" name="email" value={emailId} />
       <div className="space-y-1.5">
         <Etichetta htmlFor={idScelta}>

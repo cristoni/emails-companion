@@ -41,6 +41,11 @@ Ogni elemento rimanda ai messaggi pertinenti: può collegare una o più email e 
 - Si possono collegare più caselle di posta; Google è il primo sistema supportato e altri connettori verranno aggiunti senza cambiare le funzionalità.
 - Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify.
 
+## Sviluppo locale
+
+- `pnpm demo` avvia l'app in modalità finta, senza Google né OpenRouter: Postgres incorporato, un utente e una casella sintetici con la pipeline già eseguita, web e worker su http://localhost:3100. `pnpm demo:browser` apre un browser già autenticato.
+- `pnpm test` esegue i test unitari e di scenario; `pnpm test:e2e` i test Playwright contro l'ambiente demo. Dettagli in [docs/deploy.md](docs/deploy.md) §8.
+
 ## Documentazione
 
 - [PROJECT.md](PROJECT.md): specifica di prodotto e decisioni prese.

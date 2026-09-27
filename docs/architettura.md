@@ -664,7 +664,7 @@ Tailwind CSS 4 con **token semantici** definiti come variabili CSS in `globals.c
   - casella già collegata da un altro utente.
 - **Fake del modello**: con script per funzione. Una variante avversaria restituisce alias sconosciuti, citazioni inventate, JSON non valido, istruzioni di invio e false chiusure.
 - **Contratti degli adattatori**: pochi test a livello HTTP per Gmail e OpenRouter con intercettazione delle richieste. Verificano la forma della richiesta (vincoli ZDR, `require_parameters`, modello configurato, `max_completion_tokens`) e la mappatura degli errori.
-- **E2E Playwright** in modalità finta (`APP_MODE=fake`, database incorporato sintetico). La sessione viene creata nel setup di Playwright con il plugin di test di Better Auth, **senza alcuna route HTTP di accesso di prova**. Verificano che:
+- **E2E Playwright** in modalità finta (`APP_MODE=fake`, database incorporato sintetico). La sessione viene creata da `pnpm demo` (pacchetto `packages/demo`, avviato da Playwright come `webServer`) con un'istanza di Better Auth riservata alla demo e il suo plugin di test, **senza alcuna route HTTP di accesso di prova** e senza strumenti di test nella webapp. Verificano che:
   - ogni affermazione apra la propria fonte;
   - le correzioni siano possibili dove servono;
   - la chiave non compaia mai in pagine e risposte;
@@ -700,3 +700,6 @@ Lacune accettate per ora, da chiudere prima di un uso più ampio del pilota:
 - **Rianalisi**: l'ambito "elementi aperti" è ricalcolato a ogni giro e può cambiare mentre la richiesta è in corso; il `Retry-After` del fornitore non arriva fino al job, che usa un'attesa crescente propria; dopo una pausa `attese_risposte` riparte senza l'id della richiesta e può quindi riusare l'output precedente.
 - **Vista operativa**: il marcatore "completata dall'AI" dei 7 giorni e la riapertura di una Situazione conclusa sono gestiti solo in parte; `vistaHome` calcola le aree in memoria e va ottimizzata prima di caselle molto grandi.
 - **Accesso**: il flusso OAuth non verifica ancora `email_verified` dell'account Google.
+- **Bozze**: una bozza senza Situazione (chiesta da un'email collegata solo come proposta) non ha un collegamento `invio_app` dopo l'invio; la generazione è associata alla bozza per email e istante, non per richiesta, quindi due bozze sulla stessa email possono mostrare l'una lo stato dell'altra; le modifiche non salvate si perdono navigando all'interno dell'app.
+- **Home**: la card non mostra ancora il segnale di Attività completata dall'AI per 7 giorni né lo stato parziale di un'Attesa; gli avvisi non includono le pause del modello non ancora registrate (che invece `/status` e `/settings` mostrano).
+- **Posta**: la categoria di un'email non ancora classificata non si può correggere; la priorità non è correggibile.

@@ -49,9 +49,11 @@ test.describe("con la sessione dell'utente demo", () => {
     const documento = await page.goto("/onboarding");
     expect(documento?.status()).toBe(200);
     expect(new URL(page.url()).pathname).toBe("/onboarding");
-    const salvata = messaggio("en", "onboarding", "chiave.salvata")
+    // La lingua è quella salvata dall'utente demo, che altri test o prove manuali possono aver cambiato.
+    const lingua = (await page.locator("html").getAttribute("lang")) === "it" ? "it" : "en";
+    const salvata = messaggio(lingua, "onboarding", "chiave.salvata")
       .replace("{cifre}", chiave.slice(-4))
-      .replace("{stato}", messaggio("en", "onboarding", "chiave.stati.valida"));
+      .replace("{stato}", messaggio(lingua, "onboarding", "chiave.stati.valida"));
     await expect(page.getByText(salvata)).toBeVisible();
     await page.waitForLoadState("networkidle");
 
