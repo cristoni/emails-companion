@@ -107,7 +107,8 @@
       "ok": "Fatto.",
       "gia_decisa": "L’importazione è già partita o è cambiata. La pagina ne mostra lo stato attuale.",
       "non_trovata": "Questa casella non è più collegata.",
-      "non_valido": "La richiesta non è valida. Ricarica la pagina."
+      "non_valido": "La richiesta non è valida. Ricarica la pagina.",
+      "casella_non_pronta": "Ricollega o autorizza questa casella prima di avviare l’importazione."
     }
   },
   "chiave": {

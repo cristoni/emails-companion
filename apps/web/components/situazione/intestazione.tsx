@@ -75,7 +75,7 @@ export function IntestazioneSituazione({
         </Metadato>
         {stato.scadenzaPiuVicina ? (
           <Metadato etichetta={t("scadenzaPiuVicina")}>
-            <Istante iso={stato.scadenzaPiuVicina} stile="data" />
+            <Istante iso={stato.scadenzaPiuVicina} stile="giorno" />
           </Metadato>
         ) : null}
         {stato.prioritaMassima ? <Metadato etichetta={t("priorita")}>{testoCodice(tc, "priorita", stato.prioritaMassima)}</Metadato> : null}

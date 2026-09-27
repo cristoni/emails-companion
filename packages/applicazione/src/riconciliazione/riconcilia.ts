@@ -41,7 +41,9 @@ export async function riconciliaUtente(dip: Dipendenze, utenteId: string): Promi
   for (; fatte < EMAIL_PER_GIRO; fatte++) {
     const [prossima] = await dip.unita.perUtente(utenteId, (ctx) => riconciliazione.pronte(ctx, 1));
     if (!prossima) return fatte;
-    await riconciliaEmail(dip, utenteId, prossima.id);
+    // Un'email rinviata resta pronta: riprenderla subito ripeterebbe la chiamata al modello e l'accodamento
+    // immediato qui sotto cancellerebbe l'attesa decisa per il nuovo tentativo.
+    if ((await riconciliaEmail(dip, utenteId, prossima.id)) === "rinviata") return fatte;
   }
   await dip.unita.perUtente(utenteId, (ctx) =>
     ctx.coda.accoda("riconcilia_utente", { utenteId }, { ...opzioniRiconciliazione(utenteId), modalitaChiave: "replace" }),
@@ -239,7 +241,7 @@ async function preparaAtteseRisposte(ctx: ContestoUtente, c: Contesto, situazion
 }
 
 /** Riconciliazione di una singola email (§10): idempotente, può essere ripetuta dalla convergenza. */
-export async function riconciliaEmail(dip: Dipendenze, utenteId: string, emailId: string): Promise<void> {
+export async function riconciliaEmail(dip: Dipendenze, utenteId: string, emailId: string): Promise<"fatta" | "rinviata"> {
   const preparazione = await dip.unita.perUtente(utenteId, async (ctx) => {
     const c = await caricaContesto(dip, ctx, emailId);
     if (!c) return null;
@@ -250,7 +252,7 @@ export async function riconciliaEmail(dip: Dipendenze, utenteId: string, emailId
     if (c.email.direzione === "entrata" && situazioni.length === 0) return { c, input: null };
     return { c, input: await preparaAtteseRisposte(ctx, c, situazioni) };
   });
-  if (!preparazione) return;
+  if (!preparazione) return "fatta";
   const { c, input } = preparazione;
 
   let output: OutputAtteseRisposte | null = null;
@@ -273,7 +275,7 @@ export async function riconciliaEmail(dip: Dipendenze, utenteId: string, emailId
       await dip.unita.perUtente(utenteId, (ctx) =>
         ctx.coda.accoda("riconcilia_utente", { utenteId }, { ...opzioniRiconciliazione(utenteId), modalitaChiave: "replace", esegui: new Date(dip.orologio.ora().getTime() + esito.dopoMs) }),
       );
-      return;
+      return "rinviata";
     } else {
       statoAttese = esito.tipo === "in_pausa" ? "in_pausa" : "errore";
       motivo = esito.tipo === "in_pausa" ? esito.motivo : esito.codice;
@@ -285,6 +287,7 @@ export async function riconciliaEmail(dip: Dipendenze, utenteId: string, emailId
     await posta.impostaStatoFunzione(ctx, emailId, "attese_risposte", statoAttese, dip.orologio.ora(), motivo, analisiAtteseId);
     await riconciliazione.segnaRiconciliata(ctx, emailId, c.generazione, dip.orologio.ora());
   });
+  return "fatta";
 }
 
 async function applica(

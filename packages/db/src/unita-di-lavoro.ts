@@ -74,17 +74,24 @@ export function mettiInFilaLeQuery(tx: Transazione): () => void {
   if (!client || typeof client.query !== "function") return () => {};
   const originale = client.query as Interrogazione;
   let coda: Promise<unknown> = Promise.resolve();
+  let chiusa = false;
   const inFila: Interrogazione = (...argomenti) => {
     // Solo la forma con promessa usata da Drizzle; callback e oggetti con submit passano invariati.
     const conCallback = argomenti.some((a) => typeof a === "function");
     const inviabile = typeof (argomenti[0] as { submit?: unknown } | undefined)?.submit === "function";
     if (conCallback || inviabile) return originale.apply(client, argomenti);
-    const risultato = coda.then(() => originale.apply(client, argomenti));
+    // Dopo la chiusura (COMMIT o ROLLBACK in arrivo, client restituito al pool) una query ancora in fila non
+    // deve partire: finirebbe fuori dalla transazione, magari dentro quella di un'altra richiesta.
+    const risultato = coda.then(() => {
+      if (chiusa) throw new Error("query_dopo_la_transazione");
+      return originale.apply(client, argomenti);
+    });
     coda = risultato.catch(() => undefined);
     return risultato;
   };
   client.query = inFila;
   return () => {
+    chiusa = true;
     client.query = originale;
   };
 }

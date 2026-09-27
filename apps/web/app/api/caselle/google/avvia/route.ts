@@ -13,6 +13,9 @@ export async function GET(richiesta: NextRequest) {
   const utente = await utenteCorrente();
   if (!utente) return NextResponse.redirect(new URL("/sign-in", richiesta.url));
   const casellaId = richiesta.nextUrl.searchParams.get("casella");
+  if (casellaId !== null && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(casellaId)) {
+    return NextResponse.redirect(new URL("/settings?esito=casella_non_trovata", richiesta.url));
+  }
   const { dip } = await composizione();
   const esistente = casellaId ? await dip.unita.perUtente(utente.id, (ctx) => caselle.leggi(ctx, casellaId)) : null;
   if (casellaId && (!esistente || esistente.stato === "scollegata" || esistente.stato === "scollegamento_in_corso")) {

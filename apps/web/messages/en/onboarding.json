@@ -42,7 +42,12 @@
     "spiegazione": "Tell the assistant what matters to you: important senders, what counts as urgent, what is just News & FYI. These are the default directives; edit them freely.",
     "etichetta": "Your directives",
     "salva": "Save AI context",
-    "salvato": "Saved."
+    "salvato": "Saved.",
+    "esiti": {
+      "troppo_lungo": "The AI context can be at most 20,000 characters. Shorten it and save again.",
+      "vuoto": "Write at least one directive, or keep the default ones.",
+      "errore": "Something went wrong. Try again."
+    }
   },
   "importazione": {
     "titolo": "Initial import",

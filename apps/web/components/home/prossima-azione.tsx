@@ -50,7 +50,7 @@ export function ProssimaAzione({ azione, lingua }: { azione: ProssimaAzioneDto; 
             {azione.scadenza ? (
               <span className="inline-flex items-center gap-1">
                 <Clock className="size-3.5" aria-hidden />
-                {tCard("scadenza")} <Istante iso={azione.scadenza} stile="data" />
+                {tCard("scadenza")} <Istante iso={azione.scadenza} stile="giorno" />
               </span>
             ) : null}
           </p>
@@ -68,7 +68,7 @@ export function ProssimaAzione({ azione, lingua }: { azione: ProssimaAzioneDto; 
             {azione.destinatari.length > 0 ? <span className="break-words">{t("sollecitoA", { destinatari: elenco(azione.destinatari) })}</span> : null}
             {azione.dataAttesa ? (
               <span>
-                {t("attesaEntro")} <Istante iso={azione.dataAttesa} stile="data" />
+                {t("attesaEntro")} <Istante iso={azione.dataAttesa} stile="giorno" />
               </span>
             ) : null}
           </p>
@@ -86,7 +86,7 @@ export function ProssimaAzione({ azione, lingua }: { azione: ProssimaAzioneDto; 
           <TestoSemplice testo={azione.oggetto} lingua={lingua} className="text-text" />
           {azione.dataAttesa ? (
             <p className="text-xs text-text-muted">
-              {t("attesaEntro")} <Istante iso={azione.dataAttesa} stile="data" />
+              {t("attesaEntro")} <Istante iso={azione.dataAttesa} stile="giorno" />
             </p>
           ) : null}
         </div>

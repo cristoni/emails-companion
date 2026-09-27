@@ -8,6 +8,13 @@
       "when": 1790468190236,
       "tag": "0000_iniziale",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790475673109,
+      "tag": "0001_auth_account_senza_token",
+      "breakpoints": true
     }
   ]
 }

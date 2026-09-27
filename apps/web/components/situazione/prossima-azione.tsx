@@ -57,7 +57,7 @@ function Contenuto({ azione, vista, contesto }: { azione: ProssimaAzioneDto; vis
           <div className="flex flex-wrap items-center gap-3 text-sm">
             {azione.scadenza ? (
               <span className="text-text-muted">
-                {t("scadenza")} <Istante iso={azione.scadenza} stile="data" className="font-medium text-text" />
+                {t("scadenza")} <Istante iso={azione.scadenza} stile="giorno" className="font-medium text-text" />
               </span>
             ) : null}
             <Distintivo tono="neutro">{testoCodice(tc, "priorita", azione.priorita)}</Distintivo>
@@ -83,7 +83,7 @@ function Contenuto({ azione, vista, contesto }: { azione: ProssimaAzioneDto; vis
             ) : null}
             {azione.dataAttesa ? (
               <span className="text-text-muted">
-                {t("attesaEntro")} <Istante iso={azione.dataAttesa} stile="data" className="font-medium text-text" />
+                {t("attesaEntro")} <Istante iso={azione.dataAttesa} stile="giorno" className="font-medium text-text" />
               </span>
             ) : null}
             <a href={`#${ancora.attesa(azione.attesaId)}`} className={collegamento}>

@@ -68,7 +68,14 @@ export async function registraConsensoGoogle(
   });
 
   if (esito.tipo === "collegata" && esito.nuova && esito.stato !== "da_ricollegare") {
-    await inizializzaSincronizzazione(dip, unita, utenteId, esito.casellaId, await cursoreIniziale(esito.casellaId));
+    try {
+      await inizializzaSincronizzazione(dip, unita, utenteId, esito.casellaId, await cursoreIniziale(esito.casellaId));
+    } catch {
+      // Il consenso è salvato: sarà la sincronizzazione a inizializzare la casella, con i suoi ritentativi.
+      await unita.perUtente(utenteId, (ctx) =>
+        ctx.coda.accoda("sincronizza_casella", { utenteId, casellaId: esito.casellaId }, { chiave: `sync:${esito.casellaId}`, coda: `casella:${esito.casellaId}`, modalitaChiave: "replace" }),
+      );
+    }
   }
   return esito;
 }
@@ -83,11 +90,12 @@ export async function inizializzaSincronizzazione(
 ) {
   const riferimento = dip.orologio.ora();
   await unita.perUtente(utenteId, async (ctx) => {
-    await sincronizzazione.inizializza(ctx, casellaId, {
+    const inizializzata = await sincronizzazione.inizializza(ctx, casellaId, {
       cursore: cursore ?? "",
       riferimento,
       ...finestreImportazione(dip as Dipendenze, riferimento),
     });
+    if (!inizializzata) return;
     await ctx.coda.accoda("stima_importazione", { utenteId, casellaId }, { coda: `casella:${casellaId}` });
     await ctx.coda.accoda("rinnova_watch_e_alias", { utenteId, casellaId }, { chiave: `watch:${casellaId}` });
   });

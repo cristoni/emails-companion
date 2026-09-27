@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sql } from "drizzle-orm";
+import { impostazioni } from "@ec/db";
 import { creaScenario, type Scenario } from "./support/scenario";
 
 let s: Scenario;
@@ -34,5 +35,27 @@ describe("unità di lavoro", () => {
     ).rejects.toThrow();
     const dopo = await s.perUtente(utente, (ctx) => ctx.tx.execute(sql`select 3 as n`));
     expect((dopo as unknown as { rows: { n: number }[] }).rows[0]!.n).toBe(3);
+  });
+
+  it("se il lavoro fallisce, le query ancora in fila non vengono eseguite fuori dalla transazione", async () => {
+    const utente = await s.creaUtente("anna@esempio.it");
+    const prima = await s.perUtente(utente, (ctx) => impostazioni.preferenze(ctx));
+    await expect(
+      s.perUtente(utente, (ctx) =>
+        Promise.all([
+          ctx.tx.execute(sql`select pg_sleep(0.05)`),
+          ctx.tx.execute(
+            sql`insert into preferenze_utente (utente_id, fuso_orario, aggiornate_il) values (${utente}, 'Pacific/Auckland', now())
+                on conflict (utente_id) do update set fuso_orario = excluded.fuso_orario`,
+          ),
+          // Un errore che non viene dal database: il lavoro fallisce mentre le query sono ancora in fila.
+          new Promise((_, rifiuta) => setTimeout(() => rifiuta(new Error("errore_del_caso_d_uso")), 10)),
+        ]),
+      ),
+    ).rejects.toThrow();
+    // Lascia il tempo a eventuali query rimaste in fila di partire sul client restituito al pool.
+    await new Promise((fine) => setTimeout(fine, 300));
+    const dopo = await s.perUtente(utente, (ctx) => impostazioni.preferenze(ctx));
+    expect(dopo.fusoOrario).toBe(prima.fusoOrario);
   });
 });

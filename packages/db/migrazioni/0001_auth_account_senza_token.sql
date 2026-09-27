@@ -1,0 +1,1 @@
+ALTER TABLE "auth_account" ADD CONSTRAINT "auth_account_senza_token_ck" CHECK ("auth_account"."access_token" IS NULL AND "auth_account"."refresh_token" IS NULL AND "auth_account"."id_token" IS NULL AND "auth_account"."password" IS NULL);

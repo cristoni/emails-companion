@@ -107,7 +107,8 @@
       "ok": "Done.",
       "gia_decisa": "This import has already started or changed. The page shows its current state.",
       "non_trovata": "This mailbox is no longer connected.",
-      "non_valido": "The request isn’t valid. Reload the page."
+      "non_valido": "The request isn’t valid. Reload the page.",
+      "casella_non_pronta": "Reconnect or authorise this mailbox before starting the import."
     }
   },
   "chiave": {

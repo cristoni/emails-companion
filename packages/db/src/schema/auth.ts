@@ -1,4 +1,5 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { boolean, check, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 /**
  * Tabelle di Better Auth (nomi dei modelli rimappati). Le colonne dei token di
@@ -43,7 +44,13 @@ export const authAccount = pgTable("auth_account", {
   password: text(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-}).enableRLS();
+}, (t) => [
+  // Garanzia nel database: qualunque percorso di Better Auth provi a salvare un token, la scrittura fallisce.
+  check(
+    "auth_account_senza_token_ck",
+    sql`${t.accessToken} IS NULL AND ${t.refreshToken} IS NULL AND ${t.idToken} IS NULL AND ${t.password} IS NULL`,
+  ),
+]).enableRLS();
 
 export const authVerifica = pgTable("auth_verifica", {
   id: text().primaryKey(),

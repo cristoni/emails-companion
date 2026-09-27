@@ -108,6 +108,8 @@ export function EditorBozza({
             name="oggetto"
             value={testo.oggetto}
             onChange={(e) => setTesto((x) => ({ ...x, oggetto: e.target.value }))}
+            // Durante il salvataggio il testo non cambia: la versione salvata deve coincidere con quella mostrata.
+            readOnly={inCorso}
             maxLength={limiti.oggetto}
             lang={lingua ?? undefined}
             dir="auto"
@@ -124,6 +126,8 @@ export function EditorBozza({
             name="corpo"
             value={testo.corpo}
             onChange={(e) => setTesto((x) => ({ ...x, corpo: e.target.value }))}
+            readOnly={inCorso}
+            aria-busy={inCorso}
             maxLength={limiti.corpo}
             lang={lingua ?? undefined}
             dir="auto"

@@ -60,7 +60,7 @@ export function CardSituazione({ card }: { card: CardSituazioneDto }) {
               {t("scadenza")}
             </dt>
             <dd className="text-text">
-              <Istante iso={card.scadenzaPiuVicina} stile="data_ora" />
+              <Istante iso={card.scadenzaPiuVicina} stile="giorno" />
             </dd>
           </div>
         ) : null}

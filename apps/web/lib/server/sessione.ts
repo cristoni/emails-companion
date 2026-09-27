@@ -1,16 +1,20 @@
 import "server-only";
+import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ContestoUtente } from "@ec/db";
 import { ottieniAuth } from "./auth";
 import { composizione } from "./composizione";
 
-/** Utente della sessione: da richiamare in ogni pagina, Server Action e route (il proxy non autorizza). */
-export async function utenteCorrente(): Promise<{ id: string; email: string; nome: string } | null> {
+/**
+ * Utente della sessione: da richiamare in ogni pagina, Server Action e route (il proxy non autorizza).
+ * Una sola lettura per richiesta anche se layout, pagina e componenti la chiedono più volte.
+ */
+export const utenteCorrente = cache(async (): Promise<{ id: string; email: string; nome: string } | null> => {
   const auth = await ottieniAuth();
   const sessione = await auth.api.getSession({ headers: await headers() });
   return sessione ? { id: sessione.user.id, email: sessione.user.email, nome: sessione.user.name } : null;
-}
+});
 
 export async function richiediUtente() {
   const utente = await utenteCorrente();

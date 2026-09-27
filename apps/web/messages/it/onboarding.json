@@ -42,7 +42,12 @@
     "spiegazione": "Spiega all'assistente cosa conta per te: mittenti importanti, cosa è urgente, cosa è solo News e informazioni. Queste sono le direttive predefinite; modificale liberamente.",
     "etichetta": "Le tue direttive",
     "salva": "Salva il Contesto AI",
-    "salvato": "Salvato."
+    "salvato": "Salvato.",
+    "esiti": {
+      "troppo_lungo": "Il Contesto AI può avere al massimo 20.000 caratteri. Accorcialo e salva di nuovo.",
+      "vuoto": "Scrivi almeno una direttiva, oppure tieni quelle predefinite.",
+      "errore": "Qualcosa non ha funzionato. Riprova."
+    }
   },
   "importazione": {
     "titolo": "Importazione iniziale",

@@ -43,12 +43,17 @@ export function ModuloContesto({ iniziale }: { iniziale: string }) {
   return (
     <form action={azione} className="space-y-2">
       <Etichetta htmlFor="contesto">{t("etichetta")}</Etichetta>
-      <AreaTesto id="contesto" name="contesto" defaultValue={iniziale} rows={12} />
+      <AreaTesto id="contesto" name="contesto" defaultValue={iniziale} rows={12} maxLength={20_000} />
       <div className="flex items-center gap-3">
         <Pulsante type="submit" variante="primario" disabled={inCorso}>
           {t("salva")}
         </Pulsante>
         {stato?.esito === "ok" ? <span className="text-accent-strong">{t("salvato")}</span> : null}
+        {stato && stato.esito !== "ok" ? (
+          <span role="status" className="text-danger">
+            {t(stato.esito === "troppo_lungo" || stato.esito === "vuoto" ? `esiti.${stato.esito}` : "esiti.errore")}
+          </span>
+        ) : null}
       </div>
     </form>
   );

@@ -11,6 +11,7 @@ import {
 import { serializzazioneCanonica, type FunzioneAI, type MotivoPausa } from "@ec/core/dominio";
 import { analisi, impostazioni, type ContestoUtente } from "@ec/db";
 import { createHash } from "node:crypto";
+import type { UtilizzoModello } from "@ec/core/porte";
 import { MINUTO_MS, type Dipendenze } from "../dipendenze";
 import { dataNelFuso } from "./per-modello";
 
@@ -70,6 +71,10 @@ export async function invocaFunzione<F extends FunzioneAI>(dip: Dipendenze, uten
       .update(
         serializzazioneCanonica({
           funzione: r.funzione,
+          // Il risultato salvato contiene id già risolti: email e tabella degli alias entrano nell'hash, così
+          // due email con gli stessi campi visibili al modello non condividono mai un'analisi.
+          email: r.emailId,
+          tabella: r.tabella,
           dati: r.dati,
           modello: c.modello,
           prompt: def.versionePrompt,
@@ -128,7 +133,9 @@ export async function invocaFunzione<F extends FunzioneAI>(dip: Dipendenze, uten
     maxTokenUscita: def.maxTokenUscita,
   });
   let validato = esito.ok ? validaOutput(r.funzione, esito.output) : null;
+  let utilizzoPrecedente: UtilizzoModello | null = null;
   if (esito.ok && validato && !validato.ok) {
+    utilizzoPrecedente = esito.utilizzo;
     esito = await dip.modelli.invoca({
       funzione: r.funzione,
       modello: fase1.modello,
@@ -141,6 +148,10 @@ export async function invocaFunzione<F extends FunzioneAI>(dip: Dipendenze, uten
       maxTokenUscita: def.maxTokenUscita,
     });
     validato = esito.ok ? validaOutput(r.funzione, esito.output) : null;
+    // Anche la risposta scartata è stata pagata: il consumo registrato somma i due tentativi.
+    esito = esito.ok
+      ? { ...esito, utilizzo: sommaUtilizzo(utilizzoPrecedente, esito.utilizzo)! }
+      : { ...esito, utilizzo: sommaUtilizzo(utilizzoPrecedente, esito.utilizzo) };
   }
   const ora = dip.orologio.ora();
 
@@ -161,6 +172,21 @@ export async function invocaFunzione<F extends FunzioneAI>(dip: Dipendenze, uten
     analisi.completa(ctx, claim.id, { grezzo: validato.output, risolto: risolto.output }, esito.utilizzo, ora),
   );
   return { tipo: "ok", analisiId: claim.id, output: risolto.output };
+}
+
+/** Somma il consumo di più tentativi della stessa invocazione; modello e generazione sono quelli dell'ultimo. */
+export function sommaUtilizzo(a: UtilizzoModello | null, b: UtilizzoModello | null): UtilizzoModello | null {
+  if (!a) return b;
+  if (!b) return a;
+  return {
+    modelloServito: b.modelloServito,
+    fornitore: b.fornitore ?? a.fornitore,
+    tokenIngresso: a.tokenIngresso + b.tokenIngresso,
+    tokenUscita: a.tokenUscita + b.tokenUscita,
+    costo: a.costo === null && b.costo === null ? null : (a.costo ?? 0) + (b.costo ?? 0),
+    idGenerazione: b.idGenerazione ?? a.idGenerazione,
+    latenzaMs: a.latenzaMs + b.latenzaMs,
+  };
 }
 
 function risolvi<F extends FunzioneAI>(r: RichiestaInvocazione<F>, analisiId: string, grezzo: unknown): EsitoInvocazione<F> {

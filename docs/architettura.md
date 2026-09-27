@@ -36,7 +36,9 @@ Browser ──HTTPS──▶ apps/web (Next.js 16, Vercel fra1)
 - **Connessioni al database**:
   - la webapp usa il *transaction pooler* di Supabase (porta 6543, niente `.prepare()`, parametri SQL con cast espliciti);
   - il worker usa il *session pooler* (porta 5432, serve per LISTEN/NOTIFY);
-  - le migrazioni usano la connessione diretta o il session pooler, come passo di rilascio (§16).
+  - le migrazioni usano la connessione diretta o il session pooler, come passo di rilascio (§16);
+  - ogni processo ha due pool: quello delle transazioni e uno piccolo (2 connessioni) riservato alle chiavi dati per utente. Una transazione tiene la sua connessione mentre cifra, e la lettura a freddo di una chiave dati ne usa un'altra: con un solo pool, transazioni concorrenti potrebbero occuparlo tutto e attendere per sempre;
+  - dentro una transazione le query lanciate insieme sono messe in fila in un solo punto (`UnitaDiLavoro`); quelle ancora in fila quando la transazione si chiude vengono rifiutate, mai eseguite sul client restituito al pool.
   - SSL: niente `sslmode` nell'URL; si usa `ssl: { ca }` con il certificato di Supabase.
 - **Notifiche Gmail**: se configurato, `users.watch` sul topic Pub/Sub del progetto Google Cloud che possiede il client OAuth, consumato dal worker con una *pull subscription* (nessun endpoint pubblico da autenticare). Il polling resta sempre attivo come rete di sicurezza (§7).
 
@@ -699,7 +701,8 @@ Lacune accettate per ora, da chiudere prima di un uso più ampio del pilota:
 - **Bozze**: lo stato della generazione (in corso, fallita, in pausa) non ha colonne proprie, quindi l'interfaccia lo deduce dall'ultima invocazione; i ritentativi di `genera_bozza` non hanno un limite; l'utente non può ancora aggiungere email di contesto a mano.
 - **Rianalisi**: l'ambito "elementi aperti" è ricalcolato a ogni giro e può cambiare mentre la richiesta è in corso; il `Retry-After` del fornitore non arriva fino al job, che usa un'attesa crescente propria; dopo una pausa `attese_risposte` riparte senza l'id della richiesta e può quindi riusare l'output precedente.
 - **Vista operativa**: il marcatore "completata dall'AI" dei 7 giorni e la riapertura di una Situazione conclusa sono gestiti solo in parte; `vistaHome` calcola le aree in memoria e va ottimizzata prima di caselle molto grandi.
-- **Accesso**: il flusso OAuth non verifica ancora `email_verified` dell'account Google.
+- **Accesso**: il flusso OAuth non verifica ancora `email_verified` dell'account Google. I percorsi di Better Auth che collegano account o leggono e rinnovano token sono disattivati, un hook azzera i token anche negli aggiornamenti e un vincolo del database rifiuta qualunque token in `auth_account`.
+- **Invii**: se la copia inviata compare dopo che l'utente ha scelto "Non è stato inviato", non viene più abbinata all'invio annullato; l'avviso di possibile duplicato su "Invia di nuovo" resta l'unica protezione.
 - **Bozze**: una bozza senza Situazione (chiesta da un'email collegata solo come proposta) non ha un collegamento `invio_app` dopo l'invio; la generazione è associata alla bozza per email e istante, non per richiesta, quindi due bozze sulla stessa email possono mostrare l'una lo stato dell'altra; le modifiche non salvate si perdono navigando all'interno dell'app.
 - **Home**: la card non mostra ancora il segnale di Attività completata dall'AI per 7 giorni né lo stato parziale di un'Attesa; gli avvisi non includono le pause del modello non ancora registrate (che invece `/status` e `/settings` mostrano).
 - **Posta**: la categoria di un'email non ancora classificata non si può correggere; la priorità non è correggibile.

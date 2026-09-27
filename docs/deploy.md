@@ -36,6 +36,7 @@ Per ciascun progetto:
    - webapp: *transaction pooler* (porta 6543);
    - worker: *session pooler* (porta 5432), oppure connessione diretta con IPv6 attivo su Railway;
    - migrazioni: connessione diretta o session pooler.
+   - ogni processo apre al massimo 2 connessioni in più per le chiavi dati, oltre al proprio pool: tenerne conto nel limite di connessioni del piano Supabase.
 5. **Backup**: annotare la ritenzione dei backup gestiti e riportarla nell'informativa: i dati cancellati possono restare nei backup fino alla loro scadenza.
 
 ## 3. Chiavi di cifratura

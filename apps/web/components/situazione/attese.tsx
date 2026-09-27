@@ -103,7 +103,7 @@ function SchedaAttesa({ attesa: a, collegamenti, contesto }: { attesa: AttesaDto
             <span className="break-all font-mono text-xs">{a.destinatari.map(formattaIndirizzo).join(", ")}</span>
           </Metadato>
         ) : null}
-        <Metadato etichetta={t("attesaEntro")}>{a.dataAttesa ? <Istante iso={a.dataAttesa} stile="data" /> : <span className="text-text-muted">{t("senzaData")}</span>}</Metadato>
+        <Metadato etichetta={t("attesaEntro")}>{a.dataAttesa ? <Istante iso={a.dataAttesa} stile="giorno" /> : <span className="text-text-muted">{t("senzaData")}</span>}</Metadato>
         <Metadato etichetta={t("richiesta")}>
           <LinkEmail emailId={a.emailRichiestaId}>{t("apriRichiesta")}</LinkEmail>
         </Metadato>

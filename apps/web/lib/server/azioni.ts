@@ -3,10 +3,14 @@ import type { StatoAzione } from "@/components/comuni/modulo-azione";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Testo da un FormData, tagliato alla lunghezza massima: mai fidarsi della dimensione inviata dal browser. */
+/**
+ * Testo da un FormData con gli a capo normalizzati (i moduli li inviano come CRLF, mentre maxLength e i
+ * contatori del browser li contano come un carattere), tagliato alla lunghezza massima: mai fidarsi della
+ * dimensione inviata dal browser.
+ */
 export function leggiTesto(dati: FormData, nome: string, massimo = 1000): string {
   const valore = dati.get(nome);
-  return typeof valore === "string" ? valore.slice(0, massimo) : "";
+  return typeof valore === "string" ? valore.replace(/\r\n?/g, "\n").slice(0, massimo) : "";
 }
 
 /** Id da un FormData: null se non è un UUID, così un valore malformato non arriva al database. */

@@ -33,7 +33,7 @@ import { comeUtente } from "@/lib/server/sessione";
 
 type Lavoro = Parameters<typeof comeUtente<EsitoCorrezione>>[0];
 
-const MASSIMO_CORREZIONI = 20;
+const MASSIMO_CORREZIONI = 200;
 const DESCRIZIONE_MASSIMA = 1000;
 
 async function esegui(lavoro: Lavoro): Promise<StatoAzione> {
@@ -172,14 +172,13 @@ export async function rifiutaCollegamentoAzione(_: StatoAzione, dati: FormData):
 /** Annulla le correzioni indicate (id separati da virgole, come restituiti da un'azione o elencati nel DTO). */
 export async function annullaCorrezioniAzione(_: StatoAzione, dati: FormData): Promise<StatoAzione> {
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const ids = [
-    ...new Set(
-      leggiTesto(dati, "correzioni", (36 + 1) * MASSIMO_CORREZIONI)
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => UUID.test(id)),
-    ),
-  ].slice(0, MASSIMO_CORREZIONI);
+  const voci = leggiTesto(dati, "correzioni", (36 + 1) * (MASSIMO_CORREZIONI + 1))
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  // Oltre il limite si rifiuta tutto: annullarne solo una parte e rispondere "ok" ingannerebbe l'utente.
+  if (voci.length > MASSIMO_CORREZIONI) return { esito: "non_valido" };
+  const ids = [...new Set(voci.filter((id) => UUID.test(id)))];
   if (ids.length === 0) return { esito: "non_trovato" };
   return esegui((ctx, dip) => annullaCorrezioni(dip, ctx, ids));
 }

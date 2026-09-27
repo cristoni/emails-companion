@@ -4,6 +4,7 @@ import { GIORNO_MS, MINUTO_MS, type Dipendenze } from "../dipendenze";
 import { prossimoTentativo } from "../ritentativi";
 import { acquisisciCopia } from "./acquisizione";
 import { programmaRiepilogoNews } from "../news/riepilogo";
+import { inizializzaSincronizzazione } from "../caselle/consenso";
 
 const STATI_SINCRONIZZABILI = ["collegata", "permessi_incompleti"] as const;
 const MASSIMO_RECUPERO_MS = 90 * GIORNO_MS;
@@ -12,6 +13,7 @@ export type EsitoSincronizzazione =
   | { tipo: "ok"; acquisite: number }
   | { tipo: "rinviata"; finoA: Date }
   | { tipo: "non_sincronizzabile" }
+  | { tipo: "inizializzata" }
   | { tipo: "errore"; codice: string };
 
 /** Opzioni di accodamento per la sincronizzazione di una casella (debounce per casella, coda seriale). */
@@ -28,8 +30,9 @@ export async function sincronizzaCasella(dip: Dipendenze, utenteId: string, case
   const preparazione = await dip.unita.perUtente(utenteId, async (ctx) => {
     const c = await caselle.leggi(ctx, casellaId);
     const stato = await sincronizzazione.leggi(ctx, casellaId);
-    if (!c || !stato || !STATI_SINCRONIZZABILI.includes(c.stato as (typeof STATI_SINCRONIZZABILI)[number])) return null;
+    if (!c || !STATI_SINCRONIZZABILI.includes(c.stato as (typeof STATI_SINCRONIZZABILI)[number])) return null;
     if (c.stato === "permessi_incompleti" && !c.scopeConcessi.some((s) => s.endsWith("gmail.readonly"))) return null;
+    if (!stato) return { daInizializzare: true } as const;
     if (stato.nonPrimaDi && stato.nonPrimaDi > ora) {
       await ctx.coda.accoda("sincronizza_casella", { utenteId, casellaId }, opzioniSincronizzazione(casellaId, stato.nonPrimaDi, "replace"));
       return { rinviata: stato.nonPrimaDi } as const;
@@ -37,6 +40,13 @@ export async function sincronizzaCasella(dip: Dipendenze, utenteId: string, case
     return { casella: c, cursore: stato.cursore, cursoreProvvisorio: stato.cursoreProvvisorio, ultimaSyncOk: stato.ultimaSyncOk, stato } as const;
   });
   if (!preparazione) return { tipo: "non_sincronizzabile" };
+  if ("daInizializzare" in preparazione) {
+    // Casella autorizzata senza stato di sincronizzazione (primo consenso senza refresh token, oppure cursore
+    // iniziale non letto): si inizializza qui, e un errore del connettore fa ripetere il job.
+    const connettore = await dip.connettori.per(casellaId);
+    await inizializzaSincronizzazione(dip, dip.unita, utenteId, casellaId, await connettore.cursoreAttuale());
+    return { tipo: "inizializzata" };
+  }
   if ("rinviata" in preparazione && preparazione.rinviata) return { tipo: "rinviata", finoA: preparazione.rinviata };
   if (!("casella" in preparazione)) return { tipo: "non_sincronizzabile" };
 

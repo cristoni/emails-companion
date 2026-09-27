@@ -13,6 +13,14 @@ import { composizione } from "./composizione";
  * successivi non scrivono token (`updateAccountOnSignIn: false`); le nuove autorizzazioni passano
  * dal flusso OAuth proprio della webapp.
  */
+const TOKEN_NULLI = {
+  accessToken: null,
+  refreshToken: null,
+  idToken: null,
+  accessTokenExpiresAt: null,
+  refreshTokenExpiresAt: null,
+};
+
 function creaAuth(dip: Awaited<ReturnType<typeof composizione>>["dip"], connessione: Awaited<ReturnType<typeof composizione>>["connessione"]) {
   return betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
@@ -29,6 +37,29 @@ function creaAuth(dip: Awaited<ReturnType<typeof composizione>>["dip"], connessi
     accountLinking: { enabled: true },
   },
   session: { cookieCache: { enabled: false } },
+  // Solo accesso con Google, sessione e uscita. Gli altri percorsi scriverebbero o leggerebbero i token del
+  // provider (collegamento, rinnovo, lettura) o cambierebbero l'account fuori dai flussi dell'app.
+  disabledPaths: [
+    "/link-social",
+    "/unlink-account",
+    "/get-access-token",
+    "/refresh-token",
+    "/account-info",
+    "/list-accounts",
+    "/delete-user",
+    "/delete-user/callback",
+    "/update-user",
+    "/change-email",
+    "/sign-up/email",
+    "/sign-in/email",
+    "/sign-in/username",
+    "/send-verification-email",
+    "/verify-email",
+    "/request-password-reset",
+    "/reset-password",
+    "/change-password",
+    "/verify-password",
+  ],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -40,16 +71,14 @@ function creaAuth(dip: Awaited<ReturnType<typeof composizione>>["dip"], connessi
   },
   databaseHooks: {
     account: {
+      // Nessun aggiornamento può scrivere token in chiaro: i token vivono solo cifrati nelle credenziali della casella.
+      update: {
+        before: async (account) => ({ data: { ...account, ...TOKEN_NULLI } }),
+      },
       create: {
         before: async (account) => {
           if (account.providerId !== "google") return;
-          const tokenNulli = {
-            accessToken: null,
-            refreshToken: null,
-            idToken: null,
-            accessTokenExpiresAt: null,
-            refreshTokenExpiresAt: null,
-          };
+          const tokenNulli = TOKEN_NULLI;
           if (!account.accessToken) return { data: { ...account, ...tokenNulli } };
           const [utente] = await connessione.db.select({ email: authUtente.email }).from(authUtente).where(eq(authUtente.id, account.userId));
           if (!utente) throw new Error("utente_non_trovato");

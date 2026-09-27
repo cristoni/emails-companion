@@ -15,7 +15,7 @@ import type { VistaStatoDto } from "../viste/tipi";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export type EsitoDecisioneImportazione = "ok" | "gia_decisa" | "non_trovata";
+export type EsitoDecisioneImportazione = "ok" | "gia_decisa" | "non_trovata" | "casella_non_pronta";
 
 /**
  * Conferma o rinvio dell'Importazione iniziale da `/settings`. Una casella che per questo utente non
@@ -30,6 +30,8 @@ export async function decidiImportazioneImpostazioni(
 ): Promise<EsitoDecisioneImportazione> {
   const casella = UUID.test(casellaId) ? await caselle.leggi(ctx, casellaId) : null;
   if (!casella || casella.stato === "scollegata" || casella.stato === "scollegamento_in_corso") return "non_trovata";
+  // Senza accesso completo l'importazione non potrebbe leggere la posta: prima Ricollega o Autorizza.
+  if (scelta === "conferma" && casella.stato !== "collegata") return "casella_non_pronta";
   const fatto = scelta === "conferma" ? await confermaImportazione(dip, ctx, casellaId) : await rifiutaImportazione(dip, ctx, casellaId);
   return fatto ? "ok" : "gia_decisa";
 }

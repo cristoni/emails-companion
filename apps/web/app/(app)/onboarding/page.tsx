@@ -90,7 +90,7 @@ export default async function PaginaOnboarding() {
             {sync?.faseImportazione === "stimata" || sync?.faseImportazione === "rifiutata" ? (
               <form action={decidiImportazioneAzione} className="flex gap-2">
                 <input type="hidden" name="casella" value={casella.id} />
-                <button name="scelta" value="conferma" className={classiPulsante("primario", "sm")} disabled={!chiaveOk || !dati.consenso}>
+                <button name="scelta" value="conferma" className={classiPulsante("primario", "sm")} disabled={!chiaveOk || !dati.consenso || casella.stato !== "collegata"}>
                   {t("importazione.conferma")}
                 </button>
                 {sync.faseImportazione === "stimata" ? (

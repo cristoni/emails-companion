@@ -259,8 +259,8 @@ export const sincronizzazione = {
     ctx: ContestoUtente,
     casellaId: string,
     dati: { cursore: string; riferimento: Date; finestraRicevuteDa: Date; finestraInviateDa: Date },
-  ): Promise<void> {
-    await ctx.tx
+  ): Promise<boolean> {
+    const inserite = await ctx.tx
       .insert(sincronizzazioneCasella)
       .values({
         casellaId,
@@ -272,7 +272,9 @@ export const sincronizzazione = {
         finestraInviateDa: dati.finestraInviateDa,
         aggiornataIl: dati.riferimento,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning({ casellaId: sincronizzazioneCasella.casellaId });
+    return inserite.length > 0;
   },
 
   async leggi(ctx: ContestoUtente, casellaId: string): Promise<StatoSincronizzazione | null> {
@@ -316,7 +318,8 @@ export const sincronizzazione = {
     return tx
       .select({ casellaId: casella.id, utenteId: casella.utenteId })
       .from(casella)
-      .innerJoin(sincronizzazioneCasella, eq(sincronizzazioneCasella.casellaId, casella.id))
+      // Anche una casella autorizzata senza stato di sincronizzazione è dovuta: la sincronizzazione la inizializza.
+      .leftJoin(sincronizzazioneCasella, eq(sincronizzazioneCasella.casellaId, casella.id))
       .where(
         and(
           inArray(casella.stato, ["collegata", "permessi_incompleti"]),

@@ -40,7 +40,8 @@ test("ogni Situazione porta alle sue email, e ogni evidenza all'email da cui è 
 test("una correzione della categoria vale subito ed è annullabile", async ({ page }) => {
   await page.goto("/news");
   const titolo = page.locator('[id^="news-oggetto-"]').first();
-  await expect(titolo).toBeVisible();
+  // La posta sintetica della demo ha la data del suo primo avvio: dopo 24 ore non ci sono più News.
+  test.skip((await titolo.count()) === 0, "nessuna News nelle ultime 24 ore: rigenerare la demo con pnpm demo:reset");
   const emailId = (await titolo.getAttribute("id"))!.replace("news-oggetto-", "");
 
   await page.goto(`/mail/${emailId}`);
@@ -52,13 +53,16 @@ test("una correzione della categoria vale subito ed è annullabile", async ({ pa
 
   await categoria.selectOption("informativa");
   await categoria.locator("xpath=ancestor::form").getByRole("button", { name: messaggio(l, "posta", "classificazione.salva") }).click();
-  await expect(annulla).toBeVisible();
-  await expect(categoria).toHaveValue("informativa");
-  await page.goto("/news");
-  await expect(page.locator(`[id="news-oggetto-${emailId}"]`)).toHaveCount(0);
-
-  await page.goto(`/mail/${emailId}`);
-  await annulla.click();
+  try {
+    await expect(annulla).toBeVisible();
+    await expect(categoria).toHaveValue("informativa");
+    await page.goto("/news");
+    await expect(page.locator(`[id="news-oggetto-${emailId}"]`)).toHaveCount(0);
+  } finally {
+    // Anche se una verifica fallisce, il database della demo torna com'era.
+    await page.goto(`/mail/${emailId}`);
+    if (await annulla.count()) await annulla.click();
+  }
   await expect(annulla).toHaveCount(0);
   await expect(categoria).toHaveValue("news");
   await page.goto("/news");

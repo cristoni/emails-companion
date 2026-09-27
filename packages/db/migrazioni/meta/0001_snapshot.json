@@ -1,0 +1,4627 @@
+{
+  "id": "7e0136c5-c16e-402d-8378-9b39d23782a7",
+  "prevId": "a6844b8f-3ddf-4202-9cc9-bb3171885a97",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.auth_account": {
+      "name": "auth_account",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token_expires_at": {
+          "name": "access_token_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token_expires_at": {
+          "name": "refresh_token_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "auth_account_user_id_auth_utente_id_fk": {
+          "name": "auth_account_user_id_auth_utente_id_fk",
+          "tableFrom": "auth_account",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "auth_account_senza_token_ck": {
+          "name": "auth_account_senza_token_ck",
+          "value": "\"auth_account\".\"access_token\" IS NULL AND \"auth_account\".\"refresh_token\" IS NULL AND \"auth_account\".\"id_token\" IS NULL AND \"auth_account\".\"password\" IS NULL"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.auth_sessione": {
+      "name": "auth_sessione",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "auth_sessione_user_id_auth_utente_id_fk": {
+          "name": "auth_sessione_user_id_auth_utente_id_fk",
+          "tableFrom": "auth_sessione",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "auth_sessione_token_unique": {
+          "name": "auth_sessione_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.auth_utente": {
+      "name": "auth_utente",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "auth_utente_email_unique": {
+          "name": "auth_utente_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.auth_verifica": {
+      "name": "auth_verifica",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.analisi_ai": {
+      "name": "analisi_ai",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "funzione": {
+          "name": "funzione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modello_richiesto": {
+          "name": "modello_richiesto",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modello_servito": {
+          "name": "modello_servito",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fornitore": {
+          "name": "fornitore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "versione_prompt": {
+          "name": "versione_prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contesto_ai_versione": {
+          "name": "contesto_ai_versione",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lingua": {
+          "name": "lingua",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash_input_indice": {
+          "name": "hash_input_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "output_cifrato": {
+          "name": "output_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "errore": {
+          "name": "errore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_ingresso": {
+          "name": "token_ingresso",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_uscita": {
+          "name": "token_uscita",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "costo": {
+          "name": "costo",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latenza_ms": {
+          "name": "latenza_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_generazione": {
+          "name": "id_generazione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "richiesta_rianalisi_id": {
+          "name": "richiesta_rianalisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avviata_il": {
+          "name": "avviata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completata_il": {
+          "name": "completata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "analisi_ai_claim_uq": {
+          "name": "analisi_ai_claim_uq",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "funzione",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "hash_input_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"analisi_ai\".\"stato\" IN ('in_corso','completata')",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "analisi_ai_email_idx": {
+          "name": "analisi_ai_email_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "email_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "analisi_ai_consumo_idx": {
+          "name": "analisi_ai_consumo_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "funzione",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "avviata_il",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "analisi_ai_utente_id_auth_utente_id_fk": {
+          "name": "analisi_ai_utente_id_auth_utente_id_fk",
+          "tableFrom": "analisi_ai",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "analisi_ai_utente_id_uq": {
+          "name": "analisi_ai_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.attesa": {
+      "name": "attesa",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_richiesta_id": {
+          "name": "email_richiesta_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destinatari_cifrati": {
+          "name": "destinatari_cifrati",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destinatari_indici": {
+          "name": "destinatari_indici",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "oggetto_cifrato": {
+          "name": "oggetto_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data_attesa": {
+          "name": "data_attesa",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_attesa_citazione_cifrata": {
+          "name": "data_attesa_citazione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ciclo": {
+          "name": "ciclo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "base": {
+          "name": "base",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "attesa_situazione_idx": {
+          "name": "attesa_situazione_idx",
+          "columns": [
+            {
+              "expression": "situazione_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "attesa_destinatari_gin": {
+          "name": "attesa_destinatari_gin",
+          "columns": [
+            {
+              "expression": "destinatari_indici",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "attesa_utente_id_auth_utente_id_fk": {
+          "name": "attesa_utente_id_auth_utente_id_fk",
+          "tableFrom": "attesa",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "attesa_situazione_fk": {
+          "name": "attesa_situazione_fk",
+          "tableFrom": "attesa",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "attesa_email_fk": {
+          "name": "attesa_email_fk",
+          "tableFrom": "attesa",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_richiesta_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "attesa_utente_id_uq": {
+          "name": "attesa_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        },
+        "attesa_slot_uq": {
+          "name": "attesa_slot_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email_richiesta_id",
+            "slot"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.attesa_requisito": {
+      "name": "attesa_requisito",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attesa_id": {
+          "name": "attesa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descrizione_cifrata": {
+          "name": "descrizione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ordine": {
+          "name": "ordine",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "attesa_requisito_utente_id_auth_utente_id_fk": {
+          "name": "attesa_requisito_utente_id_auth_utente_id_fk",
+          "tableFrom": "attesa_requisito",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "attesa_requisito_attesa_fk": {
+          "name": "attesa_requisito_attesa_fk",
+          "tableFrom": "attesa_requisito",
+          "tableTo": "attesa",
+          "columnsFrom": [
+            "utente_id",
+            "attesa_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "attesa_requisito_utente_id_uq": {
+          "name": "attesa_requisito_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.attivita": {
+      "name": "attivita",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_sorgente_id": {
+          "name": "email_sorgente_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descrizione_cifrata": {
+          "name": "descrizione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scadenza": {
+          "name": "scadenza",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scadenza_citazione_cifrata": {
+          "name": "scadenza_citazione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "priorita": {
+          "name": "priorita",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "urgente": {
+          "name": "urgente",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "base": {
+          "name": "base",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completata_da": {
+          "name": "completata_da",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email_completamento_id": {
+          "name": "email_completamento_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completata_il": {
+          "name": "completata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "attivita_situazione_idx": {
+          "name": "attivita_situazione_idx",
+          "columns": [
+            {
+              "expression": "situazione_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "attivita_utente_id_auth_utente_id_fk": {
+          "name": "attivita_utente_id_auth_utente_id_fk",
+          "tableFrom": "attivita",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "attivita_situazione_fk": {
+          "name": "attivita_situazione_fk",
+          "tableFrom": "attivita",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "attivita_email_fk": {
+          "name": "attivita_email_fk",
+          "tableFrom": "attivita",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_sorgente_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "attivita_utente_id_uq": {
+          "name": "attivita_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        },
+        "attivita_slot_uq": {
+          "name": "attivita_slot_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email_sorgente_id",
+            "slot"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.bozza": {
+      "name": "bozza",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "casella_id": {
+          "name": "casella_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_risposta_id": {
+          "name": "email_risposta_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attesa_id": {
+          "name": "attesa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'modificabile'"
+        },
+        "versione_corrente": {
+          "name": "versione_corrente",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bozza_utente_id_auth_utente_id_fk": {
+          "name": "bozza_utente_id_auth_utente_id_fk",
+          "tableFrom": "bozza",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "bozza_casella_fk": {
+          "name": "bozza_casella_fk",
+          "tableFrom": "bozza",
+          "tableTo": "casella",
+          "columnsFrom": [
+            "utente_id",
+            "casella_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "bozza_situazione_fk": {
+          "name": "bozza_situazione_fk",
+          "tableFrom": "bozza",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "bozza_utente_id_uq": {
+          "name": "bozza_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "bozza_stato_ck": {
+          "name": "bozza_stato_ck",
+          "value": "\"bozza\".\"stato\" IN ('modificabile','in_invio','inviata')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.bozza_versione": {
+      "name": "bozza_versione",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bozza_id": {
+          "name": "bozza_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "versione": {
+          "name": "versione",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destinatari_cifrati": {
+          "name": "destinatari_cifrati",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "oggetto_cifrato": {
+          "name": "oggetto_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "corpo_cifrato": {
+          "name": "corpo_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash_busta": {
+          "name": "hash_busta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origine": {
+          "name": "origine",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_contesto": {
+          "name": "email_contesto",
+          "type": "uuid[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::uuid[]"
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bozza_versione_utente_id_auth_utente_id_fk": {
+          "name": "bozza_versione_utente_id_auth_utente_id_fk",
+          "tableFrom": "bozza_versione",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "bozza_versione_bozza_fk": {
+          "name": "bozza_versione_bozza_fk",
+          "tableFrom": "bozza_versione",
+          "tableTo": "bozza",
+          "columnsFrom": [
+            "utente_id",
+            "bozza_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "bozza_versione_uq": {
+          "name": "bozza_versione_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "bozza_id",
+            "versione"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.casella": {
+      "name": "casella",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "connettore": {
+          "name": "connettore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "indirizzo_cifrato": {
+          "name": "indirizzo_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "indirizzo_globale": {
+          "name": "indirizzo_globale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_esterno_globale": {
+          "name": "account_esterno_globale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scope_concessi": {
+          "name": "scope_concessi",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "ultimo_errore": {
+          "name": "ultimo_errore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collegata_il": {
+          "name": "collegata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "scollegata_il": {
+          "name": "scollegata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "casella_account_esclusivo_uq": {
+          "name": "casella_account_esclusivo_uq",
+          "columns": [
+            {
+              "expression": "connettore",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "account_esterno_globale",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"casella\".\"stato\" <> 'scollegata' AND \"casella\".\"account_esterno_globale\" IS NOT NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "casella_indirizzo_globale_idx": {
+          "name": "casella_indirizzo_globale_idx",
+          "columns": [
+            {
+              "expression": "indirizzo_globale",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "casella_utente_id_auth_utente_id_fk": {
+          "name": "casella_utente_id_auth_utente_id_fk",
+          "tableFrom": "casella",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "casella_utente_id_uq": {
+          "name": "casella_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "casella_stato_ck": {
+          "name": "casella_stato_ck",
+          "value": "\"casella\".\"stato\" IN ('collegata','permessi_incompleti','da_ricollegare','scollegamento_in_corso','scollegata')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.chiave_openrouter": {
+      "name": "chiave_openrouter",
+      "schema": "",
+      "columns": {
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chiave_cifrata": {
+          "name": "chiave_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ultime_cifre": {
+          "name": "ultime_cifre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "etichetta": {
+          "name": "etichetta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "limite_residuo": {
+          "name": "limite_residuo",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verificata_il": {
+          "name": "verificata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "chiave_openrouter_utente_id_auth_utente_id_fk": {
+          "name": "chiave_openrouter_utente_id_auth_utente_id_fk",
+          "tableFrom": "chiave_openrouter",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.chiave_utente": {
+      "name": "chiave_utente",
+      "schema": "",
+      "columns": {
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "dek_cifrata": {
+          "name": "dek_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "versione_kek": {
+          "name": "versione_kek",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "chiave_utente_utente_id_auth_utente_id_fk": {
+          "name": "chiave_utente_utente_id_auth_utente_id_fk",
+          "tableFrom": "chiave_utente",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.classificazione_email": {
+      "name": "classificazione_email",
+      "schema": "",
+      "columns": {
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "categoria": {
+          "name": "categoria",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "urgente": {
+          "name": "urgente",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "base_urgenza": {
+          "name": "base_urgenza",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "priorita": {
+          "name": "priorita",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivazione_cifrata": {
+          "name": "motivazione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titolo_situazione_cifrato": {
+          "name": "titolo_situazione_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "descrizione_situazione_cifrata": {
+          "name": "descrizione_situazione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "classificazione_email_utente_id_auth_utente_id_fk": {
+          "name": "classificazione_email_utente_id_auth_utente_id_fk",
+          "tableFrom": "classificazione_email",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "classificazione_email_fk": {
+          "name": "classificazione_email_fk",
+          "tableFrom": "classificazione_email",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "classificazione_email_utente_uq": {
+          "name": "classificazione_email_utente_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "email_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.collegamento": {
+      "name": "collegamento",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origine": {
+          "name": "origine",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ruolo": {
+          "name": "ruolo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confidenza": {
+          "name": "confidenza",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "collegamento_situazione_idx": {
+          "name": "collegamento_situazione_idx",
+          "columns": [
+            {
+              "expression": "situazione_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "collegamento_utente_id_auth_utente_id_fk": {
+          "name": "collegamento_utente_id_auth_utente_id_fk",
+          "tableFrom": "collegamento",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "collegamento_email_fk": {
+          "name": "collegamento_email_fk",
+          "tableFrom": "collegamento",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "collegamento_situazione_fk": {
+          "name": "collegamento_situazione_fk",
+          "tableFrom": "collegamento",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "collegamento_utente_id_uq": {
+          "name": "collegamento_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        },
+        "collegamento_coppia_uq": {
+          "name": "collegamento_coppia_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email_id",
+            "situazione_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.consenso_utente": {
+      "name": "consenso_utente",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "versione_informativa": {
+          "name": "versione_informativa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accettato_il": {
+          "name": "accettato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "consenso_utente_utente_id_auth_utente_id_fk": {
+          "name": "consenso_utente_utente_id_auth_utente_id_fk",
+          "tableFrom": "consenso_utente",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "consenso_utente_versione_uq": {
+          "name": "consenso_utente_versione_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "versione_informativa"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.contesto_ai": {
+      "name": "contesto_ai",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numero": {
+          "name": "numero",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "testo_cifrato": {
+          "name": "testo_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "contesto_ai_utente_id_auth_utente_id_fk": {
+          "name": "contesto_ai_utente_id_auth_utente_id_fk",
+          "tableFrom": "contesto_ai",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "contesto_ai_numero_uq": {
+          "name": "contesto_ai_numero_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "numero"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.correzione": {
+      "name": "correzione",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "soggetto_tipo": {
+          "name": "soggetto_tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attivita_id": {
+          "name": "attivita_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attesa_id": {
+          "name": "attesa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "risposta_id": {
+          "name": "risposta_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collegamento_id": {
+          "name": "collegamento_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "campo": {
+          "name": "campo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valore_cifrato": {
+          "name": "valore_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valore_precedente_cifrato": {
+          "name": "valore_precedente_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "revocata_il": {
+          "name": "revocata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "correzione_utente_idx": {
+          "name": "correzione_utente_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "creata_il",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "correzione_utente_id_auth_utente_id_fk": {
+          "name": "correzione_utente_id_auth_utente_id_fk",
+          "tableFrom": "correzione",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "correzione_situazione_fk": {
+          "name": "correzione_situazione_fk",
+          "tableFrom": "correzione",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "correzione_attivita_fk": {
+          "name": "correzione_attivita_fk",
+          "tableFrom": "correzione",
+          "tableTo": "attivita",
+          "columnsFrom": [
+            "utente_id",
+            "attivita_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "correzione_attesa_fk": {
+          "name": "correzione_attesa_fk",
+          "tableFrom": "correzione",
+          "tableTo": "attesa",
+          "columnsFrom": [
+            "utente_id",
+            "attesa_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "correzione_risposta_fk": {
+          "name": "correzione_risposta_fk",
+          "tableFrom": "correzione",
+          "tableTo": "risposta_arrivata",
+          "columnsFrom": [
+            "utente_id",
+            "risposta_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "correzione_email_fk": {
+          "name": "correzione_email_fk",
+          "tableFrom": "correzione",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "correzione_collegamento_fk": {
+          "name": "correzione_collegamento_fk",
+          "tableFrom": "correzione",
+          "tableTo": "collegamento",
+          "columnsFrom": [
+            "utente_id",
+            "collegamento_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "correzione_un_soggetto_ck": {
+          "name": "correzione_un_soggetto_ck",
+          "value": "num_nonnulls(\"correzione\".\"situazione_id\", \"correzione\".\"attivita_id\", \"correzione\".\"attesa_id\", \"correzione\".\"risposta_id\", \"correzione\".\"email_id\", \"correzione\".\"collegamento_id\") = 1"
+        },
+        "correzione_tipo_ck": {
+          "name": "correzione_tipo_ck",
+          "value": "\"correzione\".\"soggetto_tipo\" IN ('situazione','attivita','attesa','risposta','email','collegamento')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.credenziale_casella": {
+      "name": "credenziale_casella",
+      "schema": "",
+      "columns": {
+        "casella_id": {
+          "name": "casella_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_token_cifrato": {
+          "name": "refresh_token_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token_cifrato": {
+          "name": "access_token_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scadenza_accesso": {
+          "name": "scadenza_accesso",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generazione": {
+          "name": "generazione",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "credenziale_casella_utente_id_auth_utente_id_fk": {
+          "name": "credenziale_casella_utente_id_auth_utente_id_fk",
+          "tableFrom": "credenziale_casella",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "credenziale_casella_fk": {
+          "name": "credenziale_casella_fk",
+          "tableFrom": "credenziale_casella",
+          "tableTo": "casella",
+          "columnsFrom": [
+            "utente_id",
+            "casella_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.email": {
+      "name": "email",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message_id_indice": {
+          "name": "message_id_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mittente_indice": {
+          "name": "mittente_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash_contenuto_indice": {
+          "name": "hash_contenuto_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "direzione": {
+          "name": "direzione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mittente_cifrato": {
+          "name": "mittente_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destinatari_cifrati": {
+          "name": "destinatari_cifrati",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destinatari_indici": {
+          "name": "destinatari_indici",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "dominio_mittente_indice": {
+          "name": "dominio_mittente_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "oggetto_cifrato": {
+          "name": "oggetto_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "testo_cifrato": {
+          "name": "testo_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anteprima_cifrata": {
+          "name": "anteprima_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "in_reply_to_indice": {
+          "name": "in_reply_to_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "references_indici": {
+          "name": "references_indici",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "nomi_allegati_cifrati": {
+          "name": "nomi_allegati_cifrati",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ricevuta_il": {
+          "name": "ricevuta_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lingua": {
+          "name": "lingua",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fonte_lingua": {
+          "name": "fonte_lingua",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "solo_per_risposte": {
+          "name": "solo_per_risposte",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "stato_riconciliazione": {
+          "name": "stato_riconciliazione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'in_attesa'"
+        },
+        "generazione_riconciliazione": {
+          "name": "generazione_riconciliazione",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "riconciliata_il": {
+          "name": "riconciliata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "email_logica_uq": {
+          "name": "email_logica_uq",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "message_id_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "mittente_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "hash_contenuto_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"email\".\"message_id_indice\" IS NOT NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "email_ricevuta_idx": {
+          "name": "email_ricevuta_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "ricevuta_il",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "email_message_id_idx": {
+          "name": "email_message_id_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "message_id_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "email_in_reply_to_idx": {
+          "name": "email_in_reply_to_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "in_reply_to_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "email_riconciliazione_idx": {
+          "name": "email_riconciliazione_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "stato_riconciliazione",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "email_references_gin": {
+          "name": "email_references_gin",
+          "columns": [
+            {
+              "expression": "references_indici",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "email_destinatari_gin": {
+          "name": "email_destinatari_gin",
+          "columns": [
+            {
+              "expression": "destinatari_indici",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "email_utente_id_auth_utente_id_fk": {
+          "name": "email_utente_id_auth_utente_id_fk",
+          "tableFrom": "email",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "email_utente_id_uq": {
+          "name": "email_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "email_direzione_ck": {
+          "name": "email_direzione_ck",
+          "value": "\"email\".\"direzione\" IN ('entrata','uscita','interna')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.email_copia": {
+      "name": "email_copia",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "casella_id": {
+          "name": "casella_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_connettore": {
+          "name": "id_connettore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "thread_connettore": {
+          "name": "thread_connettore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cartelle": {
+          "name": "cartelle",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "etichette": {
+          "name": "etichette",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "origine_invio": {
+          "name": "origine_invio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "eliminata_nel_provider": {
+          "name": "eliminata_nel_provider",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "acquisita_il": {
+          "name": "acquisita_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "email_copia_thread_idx": {
+          "name": "email_copia_thread_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "casella_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "thread_connettore",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "email_copia_email_idx": {
+          "name": "email_copia_email_idx",
+          "columns": [
+            {
+              "expression": "email_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "email_copia_utente_id_auth_utente_id_fk": {
+          "name": "email_copia_utente_id_auth_utente_id_fk",
+          "tableFrom": "email_copia",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "email_copia_casella_fk": {
+          "name": "email_copia_casella_fk",
+          "tableFrom": "email_copia",
+          "tableTo": "casella",
+          "columnsFrom": [
+            "utente_id",
+            "casella_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "email_copia_email_fk": {
+          "name": "email_copia_email_fk",
+          "tableFrom": "email_copia",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "email_copia_connettore_uq": {
+          "name": "email_copia_connettore_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "casella_id",
+            "id_connettore"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.evento_situazione": {
+      "name": "evento_situazione",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attore": {
+          "name": "attore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "riferimenti": {
+          "name": "riferimenti",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "dettagli_cifrati": {
+          "name": "dettagli_cifrati",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creato_il": {
+          "name": "creato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "evento_situazione_idx": {
+          "name": "evento_situazione_idx",
+          "columns": [
+            {
+              "expression": "situazione_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "creato_il",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "evento_situazione_utente_id_auth_utente_id_fk": {
+          "name": "evento_situazione_utente_id_auth_utente_id_fk",
+          "tableFrom": "evento_situazione",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evento_situazione_fk": {
+          "name": "evento_situazione_fk",
+          "tableFrom": "evento_situazione",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.evidenza": {
+      "name": "evidenza",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classificazione_email_id": {
+          "name": "classificazione_email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "situazione_id": {
+          "name": "situazione_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attivita_id": {
+          "name": "attivita_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attesa_id": {
+          "name": "attesa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "risposta_id": {
+          "name": "risposta_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "requisito_id": {
+          "name": "requisito_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "campo": {
+          "name": "campo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "base": {
+          "name": "base",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "citazione_cifrata": {
+          "name": "citazione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inizio": {
+          "name": "inizio",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fine": {
+          "name": "fine",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verificata": {
+          "name": "verificata",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "evidenza_attivita_idx": {
+          "name": "evidenza_attivita_idx",
+          "columns": [
+            {
+              "expression": "attivita_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "evidenza_attesa_idx": {
+          "name": "evidenza_attesa_idx",
+          "columns": [
+            {
+              "expression": "attesa_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "evidenza_risposta_idx": {
+          "name": "evidenza_risposta_idx",
+          "columns": [
+            {
+              "expression": "risposta_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "evidenza_classificazione_idx": {
+          "name": "evidenza_classificazione_idx",
+          "columns": [
+            {
+              "expression": "classificazione_email_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "evidenza_utente_id_auth_utente_id_fk": {
+          "name": "evidenza_utente_id_auth_utente_id_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evidenza_email_fk": {
+          "name": "evidenza_email_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evidenza_classificazione_fk": {
+          "name": "evidenza_classificazione_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "classificazione_email",
+          "columnsFrom": [
+            "utente_id",
+            "classificazione_email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "email_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evidenza_situazione_fk": {
+          "name": "evidenza_situazione_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "situazione",
+          "columnsFrom": [
+            "utente_id",
+            "situazione_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evidenza_attivita_fk": {
+          "name": "evidenza_attivita_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "attivita",
+          "columnsFrom": [
+            "utente_id",
+            "attivita_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evidenza_attesa_fk": {
+          "name": "evidenza_attesa_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "attesa",
+          "columnsFrom": [
+            "utente_id",
+            "attesa_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "evidenza_risposta_fk": {
+          "name": "evidenza_risposta_fk",
+          "tableFrom": "evidenza",
+          "tableTo": "risposta_arrivata",
+          "columnsFrom": [
+            "utente_id",
+            "risposta_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "evidenza_un_soggetto_ck": {
+          "name": "evidenza_un_soggetto_ck",
+          "value": "num_nonnulls(\"evidenza\".\"classificazione_email_id\", \"evidenza\".\"situazione_id\", \"evidenza\".\"attivita_id\", \"evidenza\".\"attesa_id\", \"evidenza\".\"risposta_id\") = 1"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.impostazione_modello": {
+      "name": "impostazione_modello",
+      "schema": "",
+      "columns": {
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "funzione": {
+          "name": "funzione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modello": {
+          "name": "modello",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ok'"
+        },
+        "verificata_il": {
+          "name": "verificata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "impostazione_modello_utente_id_auth_utente_id_fk": {
+          "name": "impostazione_modello_utente_id_auth_utente_id_fk",
+          "tableFrom": "impostazione_modello",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "impostazione_modello_utente_id_funzione_pk": {
+          "name": "impostazione_modello_utente_id_funzione_pk",
+          "columns": [
+            "utente_id",
+            "funzione"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.indirizzo_utente": {
+      "name": "indirizzo_utente",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "casella_id": {
+          "name": "casella_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "indirizzo_indice": {
+          "name": "indirizzo_indice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "indirizzo_cifrato": {
+          "name": "indirizzo_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origine": {
+          "name": "origine",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "indirizzo_utente_indice_idx": {
+          "name": "indirizzo_utente_indice_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "indirizzo_indice",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "indirizzo_utente_utente_id_auth_utente_id_fk": {
+          "name": "indirizzo_utente_utente_id_auth_utente_id_fk",
+          "tableFrom": "indirizzo_utente",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "indirizzo_utente_casella_fk": {
+          "name": "indirizzo_utente_casella_fk",
+          "tableFrom": "indirizzo_utente",
+          "tableTo": "casella",
+          "columnsFrom": [
+            "utente_id",
+            "casella_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "indirizzo_utente_uq": {
+          "name": "indirizzo_utente_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "casella_id",
+            "indirizzo_indice"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.invio": {
+      "name": "invio",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bozza_id": {
+          "name": "bozza_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "versione": {
+          "name": "versione",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash_busta": {
+          "name": "hash_busta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message_id": {
+          "name": "message_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "impronta": {
+          "name": "impronta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inizio_invio": {
+          "name": "inizio_invio",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_connettore": {
+          "name": "id_connettore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thread_connettore": {
+          "name": "thread_connettore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "errore": {
+          "name": "errore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confermato_il": {
+          "name": "confermato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "inviato_il": {
+          "name": "inviato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "invio_attivo_uq": {
+          "name": "invio_attivo_uq",
+          "columns": [
+            {
+              "expression": "bozza_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"invio\".\"stato\" IN ('confermato','in_invio','inviato','esito_incerto')",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "invio_stato_idx": {
+          "name": "invio_stato_idx",
+          "columns": [
+            {
+              "expression": "stato",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "aggiornato_il",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "invio_utente_id_auth_utente_id_fk": {
+          "name": "invio_utente_id_auth_utente_id_fk",
+          "tableFrom": "invio",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invio_bozza_fk": {
+          "name": "invio_bozza_fk",
+          "tableFrom": "invio",
+          "tableTo": "bozza",
+          "columnsFrom": [
+            "utente_id",
+            "bozza_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "invio_stato_ck": {
+          "name": "invio_stato_ck",
+          "value": "\"invio\".\"stato\" IN ('confermato','in_invio','inviato','fallito','esito_incerto','annullato')"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.pausa_ai": {
+      "name": "pausa_ai",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "funzione": {
+          "name": "funzione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'*'"
+        },
+        "motivo": {
+          "name": "motivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dal": {
+          "name": "dal",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "prossima_verifica": {
+          "name": "prossima_verifica",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pausa_ai_utente_id_auth_utente_id_fk": {
+          "name": "pausa_ai_utente_id_auth_utente_id_fk",
+          "tableFrom": "pausa_ai",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "pausa_ai_uq": {
+          "name": "pausa_ai_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "funzione",
+            "motivo"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.preferenze_utente": {
+      "name": "preferenze_utente",
+      "schema": "",
+      "columns": {
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "lingua": {
+          "name": "lingua",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'en'"
+        },
+        "tema": {
+          "name": "tema",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'sistema'"
+        },
+        "fuso_orario": {
+          "name": "fuso_orario",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'UTC'"
+        },
+        "pausa_manuale": {
+          "name": "pausa_manuale",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "aggiornate_il": {
+          "name": "aggiornate_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "preferenze_utente_utente_id_auth_utente_id_fk": {
+          "name": "preferenze_utente_utente_id_auth_utente_id_fk",
+          "tableFrom": "preferenze_utente",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.requisito_soddisfatto": {
+      "name": "requisito_soddisfatto",
+      "schema": "",
+      "columns": {
+        "risposta_id": {
+          "name": "risposta_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requisito_id": {
+          "name": "requisito_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "requisito_soddisfatto_utente_id_auth_utente_id_fk": {
+          "name": "requisito_soddisfatto_utente_id_auth_utente_id_fk",
+          "tableFrom": "requisito_soddisfatto",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "requisito_soddisfatto_risposta_fk": {
+          "name": "requisito_soddisfatto_risposta_fk",
+          "tableFrom": "requisito_soddisfatto",
+          "tableTo": "risposta_arrivata",
+          "columnsFrom": [
+            "utente_id",
+            "risposta_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "requisito_soddisfatto_requisito_fk": {
+          "name": "requisito_soddisfatto_requisito_fk",
+          "tableFrom": "requisito_soddisfatto",
+          "tableTo": "attesa_requisito",
+          "columnsFrom": [
+            "utente_id",
+            "requisito_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "requisito_soddisfatto_risposta_id_requisito_id_pk": {
+          "name": "requisito_soddisfatto_risposta_id_requisito_id_pk",
+          "columns": [
+            "risposta_id",
+            "requisito_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.richiesta_rianalisi": {
+      "name": "richiesta_rianalisi",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ambito": {
+          "name": "ambito",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stima": {
+          "name": "stima",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "richiesta_rianalisi_utente_id_auth_utente_id_fk": {
+          "name": "richiesta_rianalisi_utente_id_auth_utente_id_fk",
+          "tableFrom": "richiesta_rianalisi",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.riepilogo_news": {
+      "name": "riepilogo_news",
+      "schema": "",
+      "columns": {
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "firma_insieme": {
+          "name": "firma_insieme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "voci_cifrate": {
+          "name": "voci_cifrate",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finestra_fine": {
+          "name": "finestra_fine",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "generato_il": {
+          "name": "generato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "riepilogo_news_utente_id_auth_utente_id_fk": {
+          "name": "riepilogo_news_utente_id_auth_utente_id_fk",
+          "tableFrom": "riepilogo_news",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.risposta_arrivata": {
+      "name": "risposta_arrivata",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attesa_id": {
+          "name": "attesa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origine": {
+          "name": "origine",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato_collegamento": {
+          "name": "stato_collegamento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confidenza": {
+          "name": "confidenza",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valutazione": {
+          "name": "valutazione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivazione_cifrata": {
+          "name": "motivazione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revisione": {
+          "name": "revisione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'da_vedere'"
+        },
+        "arrivata_il": {
+          "name": "arrivata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "risposta_arrivata_utente_id_auth_utente_id_fk": {
+          "name": "risposta_arrivata_utente_id_auth_utente_id_fk",
+          "tableFrom": "risposta_arrivata",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "risposta_arrivata_attesa_fk": {
+          "name": "risposta_arrivata_attesa_fk",
+          "tableFrom": "risposta_arrivata",
+          "tableTo": "attesa",
+          "columnsFrom": [
+            "utente_id",
+            "attesa_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "risposta_arrivata_email_fk": {
+          "name": "risposta_arrivata_email_fk",
+          "tableFrom": "risposta_arrivata",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "risposta_arrivata_utente_id_uq": {
+          "name": "risposta_arrivata_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        },
+        "risposta_arrivata_coppia_uq": {
+          "name": "risposta_arrivata_coppia_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "attesa_id",
+            "email_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.sincronizzazione_casella": {
+      "name": "sincronizzazione_casella",
+      "schema": "",
+      "columns": {
+        "casella_id": {
+          "name": "casella_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cursore": {
+          "name": "cursore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cursore_provvisorio": {
+          "name": "cursore_provvisorio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fase_importazione": {
+          "name": "fase_importazione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'da_stimare'"
+        },
+        "riferimento_importazione": {
+          "name": "riferimento_importazione",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finestra_ricevute_da": {
+          "name": "finestra_ricevute_da",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finestra_inviate_da": {
+          "name": "finestra_inviate_da",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "stima": {
+          "name": "stima",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "importazione_confermata_il": {
+          "name": "importazione_confermata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avanzamento": {
+          "name": "avanzamento",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ultima_sync_ok": {
+          "name": "ultima_sync_ok",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ultima_notifica": {
+          "name": "ultima_notifica",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scadenza_watch": {
+          "name": "scadenza_watch",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "non_prima_di": {
+          "name": "non_prima_di",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "errori_consecutivi": {
+          "name": "errori_consecutivi",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "ultimo_errore": {
+          "name": "ultimo_errore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sincronizzazione_casella_utente_id_auth_utente_id_fk": {
+          "name": "sincronizzazione_casella_utente_id_auth_utente_id_fk",
+          "tableFrom": "sincronizzazione_casella",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "sincronizzazione_casella_fk": {
+          "name": "sincronizzazione_casella_fk",
+          "tableFrom": "sincronizzazione_casella",
+          "tableTo": "casella",
+          "columnsFrom": [
+            "utente_id",
+            "casella_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.situazione": {
+      "name": "situazione",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_origine_id": {
+          "name": "email_origine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "titolo_cifrato": {
+          "name": "titolo_cifrato",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descrizione_cifrata": {
+          "name": "descrizione_cifrata",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lingua": {
+          "name": "lingua",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assorbita_in": {
+          "name": "assorbita_in",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gestita_il": {
+          "name": "gestita_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archiviata_il": {
+          "name": "archiviata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ultima_attivita": {
+          "name": "ultima_attivita",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "creata_il": {
+          "name": "creata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "aggiornata_il": {
+          "name": "aggiornata_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "situazione_attivita_idx": {
+          "name": "situazione_attivita_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "ultima_attivita",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "situazione_utente_id_auth_utente_id_fk": {
+          "name": "situazione_utente_id_auth_utente_id_fk",
+          "tableFrom": "situazione",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "situazione_email_origine_fk": {
+          "name": "situazione_email_origine_fk",
+          "tableFrom": "situazione",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_origine_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "situazione_utente_id_uq": {
+          "name": "situazione_utente_id_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "id"
+          ]
+        },
+        "situazione_origine_uq": {
+          "name": "situazione_origine_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "utente_id",
+            "email_origine_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.stato_elaborazione_utente": {
+      "name": "stato_elaborazione_utente",
+      "schema": "",
+      "columns": {
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "riconciliazione_non_prima_di": {
+          "name": "riconciliazione_non_prima_di",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "riconciliazione_errori": {
+          "name": "riconciliazione_errori",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "riconciliazione_errore": {
+          "name": "riconciliazione_errore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "news_non_prima_di": {
+          "name": "news_non_prima_di",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "news_errori": {
+          "name": "news_errori",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "news_errore": {
+          "name": "news_errore",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stato_elaborazione_utente_utente_id_auth_utente_id_fk": {
+          "name": "stato_elaborazione_utente_utente_id_auth_utente_id_fk",
+          "tableFrom": "stato_elaborazione_utente",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.stato_funzione_email": {
+      "name": "stato_funzione_email",
+      "schema": "",
+      "columns": {
+        "email_id": {
+          "name": "email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "funzione": {
+          "name": "funzione",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "utente_id": {
+          "name": "utente_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stato": {
+          "name": "stato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivo": {
+          "name": "motivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "analisi_id": {
+          "name": "analisi_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aggiornato_il": {
+          "name": "aggiornato_il",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "stato_funzione_email_stato_idx": {
+          "name": "stato_funzione_email_stato_idx",
+          "columns": [
+            {
+              "expression": "utente_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "funzione",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "stato",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "stato_funzione_email_utente_id_auth_utente_id_fk": {
+          "name": "stato_funzione_email_utente_id_auth_utente_id_fk",
+          "tableFrom": "stato_funzione_email",
+          "tableTo": "auth_utente",
+          "columnsFrom": [
+            "utente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stato_funzione_email_fk": {
+          "name": "stato_funzione_email_fk",
+          "tableFrom": "stato_funzione_email",
+          "tableTo": "email",
+          "columnsFrom": [
+            "utente_id",
+            "email_id"
+          ],
+          "columnsTo": [
+            "utente_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "stato_funzione_email_email_id_funzione_pk": {
+          "name": "stato_funzione_email_email_id_funzione_pk",
+          "columns": [
+            "email_id",
+            "funzione"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

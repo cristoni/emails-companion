@@ -31,7 +31,15 @@ export async function componi(cfg: ConfigurazioneAmbiente, opzioni: OpzioniCompo
     ...(cfg.databaseCa ? { ca: cfg.databaseCa } : {}),
     massimo: opzioni.massimoConnessioni ?? 5,
   });
-  const cassaforte = new CassaforteBusta({ ...cfg.chiavi, deposito: depositoChiaviDb(connessione.db) });
+  // Le transazioni tengono la loro connessione mentre cifrano; se la chiave dati dell'utente non è in cache
+  // va letta con un'altra connessione. Con un solo pool, transazioni concorrenti potrebbero occuparlo tutto
+  // e attendere per sempre la lettura delle chiavi: il deposito ha quindi un pool proprio.
+  const connessioneChiavi = connetti({
+    connectionString: cfg.databaseUrl,
+    ...(cfg.databaseCa ? { ca: cfg.databaseCa } : {}),
+    massimo: 2,
+  });
+  const cassaforte = new CassaforteBusta({ ...cfg.chiavi, deposito: depositoChiaviDb(connessioneChiavi.db) });
   const unita = new UnitaDiLavoro({ db: connessione.db, cassaforte, coda: opzioni.coda });
   const orologio = orologioDiSistema;
   const finta = cfg.modalita === "finta" && !opzioni.connettori ? await modalitaFinta(unita, orologio) : null;
@@ -58,7 +66,14 @@ export async function componi(cfg: ConfigurazioneAmbiente, opzioni: OpzioniCompo
     lingua,
     configurazione: { ...CONFIGURAZIONE_PREDEFINITA, notifichePushAttive: Boolean(cfg.pubsub) },
   };
-  return { dip, connessione, chiudi: () => connessione.chiudi() };
+  return {
+    dip,
+    connessione,
+    chiudi: async () => {
+      await connessione.chiudi();
+      await connessioneChiavi.chiudi();
+    },
+  };
 }
 
 /**

@@ -34,6 +34,8 @@ export async function GET(richiesta: Request, contesto: { params: Promise<{ id: 
   const utente = await utenteCorrente();
   if (!utente) return new Response(null, { status: 401 });
   const { id } = await contesto.params;
+  // Un id malformato è "non trovato": non arriva mai a una colonna uuid del database.
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return new Response(null, { status: 404 });
   const immagini = new URL(richiesta.url).searchParams.get("immagini") === "1";
   const { dip } = await composizione();
 

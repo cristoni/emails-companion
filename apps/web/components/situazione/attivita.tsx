@@ -70,7 +70,7 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
           <CalendarClock className="size-4 text-text-muted" aria-hidden />
           {a.scadenza ? (
             <span>
-              <span className="text-text-muted">{t("scadenza")}</span> <Istante iso={a.scadenza} stile="data" className="font-medium" />
+              <span className="text-text-muted">{t("scadenza")}</span> <Istante iso={a.scadenza} stile="giorno" className="font-medium" />
             </span>
           ) : (
             <span className="text-text-muted">{t("scadenzaNonLetta")}</span>
