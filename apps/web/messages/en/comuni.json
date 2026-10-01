@@ -164,7 +164,8 @@
     "apriNelProvider": "Open in Gmail",
     "evidenza": "Evidence",
     "verificata": "Quote found in the email",
-    "nonVerificata": "Quote not found in the email"
+    "nonVerificata": "Quote not found in the email",
+    "mostraNelTesto": "Show in the text"
   },
   "azioni": {
     "inCorso": "Working…",

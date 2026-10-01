@@ -8,7 +8,16 @@ import { TestoSemplice } from "./testo-semplice";
  * Evidenze di un'affermazione dell'AI: ogni citazione porta all'email da cui deriva e dice se è stata
  * trovata alla lettera nel testo, così ogni affermazione resta verificabile.
  */
-export function ElencoEvidenze({ evidenze, className }: { evidenze: readonly EvidenzaDto[]; className?: string }) {
+export function ElencoEvidenze({
+  evidenze,
+  className,
+  emailCorrente,
+}: {
+  evidenze: readonly EvidenzaDto[];
+  className?: string;
+  /** Sulla pagina di un'email, le citazioni tratte da quella email portano al suo testo invece di ricaricare la pagina. */
+  emailCorrente?: string;
+}) {
   const t = useTranslations("comuni.fonte");
   if (evidenze.length === 0) return null;
   return (
@@ -21,8 +30,8 @@ export function ElencoEvidenze({ evidenze, className }: { evidenze: readonly Evi
               {e.verificata ? <CheckCircle2 className="size-3.5 text-accent-strong" aria-hidden /> : <AlertTriangle className="size-3.5 text-urgent" aria-hidden />}
               {t(e.verificata ? "verificata" : "nonVerificata")}
             </span>
-            <Link href={`/mail/${e.emailId}`} className="text-accent-strong underline-offset-4 hover:underline">
-              {t("apri")}
+            <Link href={e.emailId === emailCorrente ? `/mail/${e.emailId}#testo` : `/mail/${e.emailId}`} className="text-accent-strong underline-offset-4 hover:underline">
+              {t(e.emailId === emailCorrente ? "mostraNelTesto" : "apri")}
             </Link>
           </div>
         </li>
@@ -32,10 +41,10 @@ export function ElencoEvidenze({ evidenze, className }: { evidenze: readonly Evi
 }
 
 /** Link a un'email della posta sincronizzata, dove si trovano l'originale e il link al provider. */
-export function LinkEmail({ emailId, children, className }: { emailId: string; children?: React.ReactNode; className?: string }) {
+export function LinkEmail({ emailId, children, className, title }: { emailId: string; children?: React.ReactNode; className?: string; title?: string }) {
   const t = useTranslations("comuni.fonte");
   return (
-    <Link href={`/mail/${emailId}`} className={className ?? "text-accent-strong underline-offset-4 hover:underline"}>
+    <Link href={`/mail/${emailId}`} title={title} className={className ?? "text-accent-strong underline-offset-4 hover:underline"}>
       {children ?? t("apri")}
     </Link>
   );

@@ -164,7 +164,8 @@
     "apriNelProvider": "Apri in Gmail",
     "evidenza": "Evidenza",
     "verificata": "Citazione trovata nell'email",
-    "nonVerificata": "Citazione non trovata nell'email"
+    "nonVerificata": "Citazione non trovata nell'email",
+    "mostraNelTesto": "Mostra nel testo"
   },
   "azioni": {
     "inCorso": "In corso…",
