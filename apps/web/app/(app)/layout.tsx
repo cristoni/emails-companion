@@ -8,6 +8,12 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   const t = await getTranslations("navigazione");
   return (
     <div className="flex min-h-dvh">
+      <a
+        href="#contenuto"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:rounded-lg focus:bg-surface-raised focus:px-3 focus:py-2 focus:shadow-[var(--shadow-card)]"
+      >
+        {t("salta")}
+      </a>
       <BarraLaterale
         email={utente.email}
         voci={[
@@ -19,9 +25,9 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
           { href: "/status", etichetta: t("stato"), icona: "stato" },
           { href: "/settings", etichetta: t("impostazioni"), icona: "impostazioni" },
         ]}
-        etichette={{ esci: t("esci"), tema: t("tema"), menu: t("menu"), chiudi: t("chiudi"), navigazione: t("navigazione") }}
+        etichette={{ esci: t("esci"), temaScuro: t("temaScuro"), temaChiaro: t("temaChiaro"), menu: t("menu"), chiudi: t("chiudi"), navigazione: t("navigazione") }}
       />
-      <main className="min-w-0 flex-1 px-4 pt-20 pb-10 sm:px-8 lg:px-12 lg:pt-8">
+      <main id="contenuto" tabIndex={-1} className="min-w-0 flex-1 px-4 pt-20 pb-10 outline-none sm:px-8 lg:px-12 lg:pt-8">
         <div className="mx-auto w-full max-w-5xl">{children}</div>
       </main>
       <AggiornamentoAutomatico />

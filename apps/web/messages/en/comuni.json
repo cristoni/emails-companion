@@ -9,7 +9,7 @@
   "propostaAiuto": "Suggested by the AI and not yet confirmed by you.",
   "aree": {
     "urgente": "Urgent",
-    "risposte_arrivate": "Replies",
+    "risposte_arrivate": "New replies",
     "da_fare": "To do",
     "in_attesa": "Waiting on"
   },
@@ -107,8 +107,8 @@
   },
   "motiviUrgenza": {
     "utente": "You marked it urgent",
-    "email_urgente": "The email is urgent",
-    "attivita_urgente": "An action is urgent",
+    "email_urgente": "Flagged urgent by the AI",
+    "attivita_urgente": "An action has high priority",
     "scadenza_vicina": "A deadline is within 48 hours"
   },
   "direzioni": {

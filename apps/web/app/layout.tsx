@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono-app", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Emails Companion",
+  title: { default: "Emails Companion", template: "%s · Emails Companion" },
   description: "An AI-first mail client centred on what you need to do.",
   robots: { index: false, follow: false },
 };

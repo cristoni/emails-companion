@@ -10,8 +10,9 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return <input className={cn(BASE, "h-9", className)} {...props} />;
 }
 
-export function AreaTesto({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(BASE, "min-h-32 font-mono text-[13px] leading-relaxed", className)} {...props} />;
+/** Area di testo in sans, adatta a testo da leggere (bozze, direttive); `codice` usa il monospazio. */
+export function AreaTesto({ className, codice = false, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { codice?: boolean }) {
+  return <textarea className={cn(BASE, "min-h-32 text-sm leading-relaxed", codice && "font-mono text-[13px]", className)} {...props} />;
 }
 
 export function Selezione({ className, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {

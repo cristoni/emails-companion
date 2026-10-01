@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Activity, Home, Inbox, LogOut, Menu, Moon, Newspaper, Settings, Sun, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/components/ui/cn";
@@ -37,22 +37,37 @@ export function BarraLaterale({
   email: string;
   voci: Voce[];
   vociSistema: Voce[];
-  etichette: { esci: string; tema: string; menu: string; chiudi: string; navigazione: string };
+  etichette: { esci: string; temaScuro: string; temaChiaro: string; menu: string; chiudi: string; navigazione: string };
 }) {
   const percorso = usePathname();
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [aperta, setAperta] = useState(false);
+  const pulsanteMenu = useRef<HTMLButtonElement>(null);
+  const pulsanteChiudi = useRef<HTMLButtonElement>(null);
   const attiva = (href: string) => (href === "/" ? percorso === "/" || percorso.startsWith("/situations") : percorso.startsWith(href));
   const chiudi = () => setAperta(false);
 
+  // Cambiando pagina il menu si chiude.
+  useEffect(() => setAperta(false), [percorso]);
+
+  // Menu aperto: fuoco sulla X, Esc per chiudere, pagina sotto inerte e ferma; alla chiusura il fuoco torna al pulsante.
   useEffect(() => {
     if (!aperta) return;
+    const contenuto = [document.querySelector("main"), document.getElementById("barra-superiore")];
+    pulsanteChiudi.current?.focus();
+    contenuto.forEach((e) => e?.setAttribute("inert", ""));
+    document.documentElement.classList.add("overflow-hidden");
     const suTasto = (e: KeyboardEvent) => {
       if (e.key === "Escape") setAperta(false);
     };
     window.addEventListener("keydown", suTasto);
-    return () => window.removeEventListener("keydown", suTasto);
+    return () => {
+      window.removeEventListener("keydown", suTasto);
+      contenuto.forEach((e) => e?.removeAttribute("inert"));
+      document.documentElement.classList.remove("overflow-hidden");
+      pulsanteMenu.current?.focus({ preventScroll: true });
+    };
   }, [aperta]);
 
   const voce = (v: Voce) => {
@@ -66,7 +81,7 @@ export function BarraLaterale({
         aria-current={corrente ? "page" : undefined}
         className={cn(
           "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-          corrente ? "bg-accent-soft font-medium text-accent-strong" : "text-text-muted hover:bg-surface hover:text-text",
+          corrente ? "bg-accent-soft font-medium text-accent-strong" : "text-text-muted hover:bg-text/5 hover:text-text",
         )}
       >
         <Icona className="size-4" aria-hidden />
@@ -77,8 +92,9 @@ export function BarraLaterale({
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-surface/90 px-4 backdrop-blur lg:hidden">
+      <header id="barra-superiore" className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-surface/90 px-4 backdrop-blur lg:hidden">
         <button
+          ref={pulsanteMenu}
           type="button"
           aria-label={etichette.menu}
           aria-expanded={aperta}
@@ -91,18 +107,26 @@ export function BarraLaterale({
         <Marchio />
       </header>
 
-      {aperta ? <div aria-hidden className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={chiudi} /> : null}
+      {aperta ? <div aria-hidden className="fixed inset-0 z-40 bg-black/40 lg:hidden dark:bg-black/70" onClick={chiudi} /> : null}
 
       <aside
         id="barra-laterale"
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border bg-surface-muted px-3 py-5 transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:translate-x-0",
-          aperta ? "translate-x-0 shadow-xl lg:shadow-none" : "-translate-x-full",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-y-auto border-r border-border bg-surface-muted px-3 py-5 transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:translate-x-0",
+          // Da chiuso, su schermi stretti, esce anche dall'ordine di tabulazione e dall'albero di accessibilità.
+          // `visibility` si anima solo in chiusura: in apertura il menu è subito visibile e può ricevere il fuoco.
+          aperta ? "translate-x-0 shadow-xl lg:shadow-none" : "-translate-x-full max-lg:invisible max-lg:transition-[transform,visibility]",
         )}
       >
         <div className="mb-6 flex items-center justify-between px-3">
           <Marchio onClick={chiudi} />
-          <button type="button" aria-label={etichette.chiudi} onClick={chiudi} className="rounded-lg p-1.5 text-text-muted hover:bg-surface hover:text-text lg:hidden">
+          <button
+            ref={pulsanteChiudi}
+            type="button"
+            aria-label={etichette.chiudi}
+            onClick={chiudi}
+            className="rounded-lg p-1.5 text-text-muted hover:bg-text/5 hover:text-text lg:hidden"
+          >
             <X className="size-4" aria-hidden />
           </button>
         </div>
@@ -120,12 +144,13 @@ export function BarraLaterale({
           <button
             type="button"
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted hover:bg-surface hover:text-text"
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted hover:bg-text/5 hover:text-text"
           >
             {/* Icona decisa dal CSS: il server non conosce il tema, e un'icona scelta in render causerebbe un errore di idratazione. */}
             <Sun className="hidden size-4 dark:block" aria-hidden />
             <Moon className="size-4 dark:hidden" aria-hidden />
-            {etichette.tema}
+            <span className="dark:hidden">{etichette.temaScuro}</span>
+            <span className="hidden dark:inline">{etichette.temaChiaro}</span>
           </button>
           <button
             type="button"
@@ -133,7 +158,7 @@ export function BarraLaterale({
               await authClient.signOut();
               router.push("/sign-in");
             }}
-            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted hover:bg-surface hover:text-text"
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted hover:bg-text/5 hover:text-text"
           >
             <LogOut className="size-4" aria-hidden />
             {etichette.esci}

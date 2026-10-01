@@ -5,8 +5,10 @@
   "stato": "Stato",
   "impostazioni": "Impostazioni",
   "esci": "Esci",
-  "tema": "Cambia tema",
   "menu": "Apri menu",
   "chiudi": "Chiudi menu",
-  "navigazione": "Navigazione principale"
+  "navigazione": "Navigazione principale",
+  "temaScuro": "Tema scuro",
+  "temaChiaro": "Tema chiaro",
+  "salta": "Vai al contenuto"
 }

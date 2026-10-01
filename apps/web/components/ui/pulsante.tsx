@@ -7,7 +7,7 @@ const VARIANTI = {
   pericolo: "border border-danger/40 bg-danger-soft text-danger hover:border-danger",
 } as const;
 
-const DIMENSIONI = { sm: "h-8 px-3 text-sm", md: "h-9 px-4 text-sm", lg: "h-11 px-5" } as const;
+const DIMENSIONI = { sm: "h-9 px-3 text-sm sm:h-8", md: "h-9 px-4 text-sm", lg: "h-11 px-5" } as const;
 
 export type VariantePulsante = keyof typeof VARIANTI;
 

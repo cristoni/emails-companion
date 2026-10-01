@@ -5,8 +5,10 @@
   "stato": "Status",
   "impostazioni": "Settings",
   "esci": "Sign out",
-  "tema": "Toggle theme",
   "menu": "Open menu",
   "chiudi": "Close menu",
-  "navigazione": "Main navigation"
+  "navigazione": "Main navigation",
+  "temaScuro": "Dark theme",
+  "temaChiaro": "Light theme",
+  "salta": "Skip to content"
 }

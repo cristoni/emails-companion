@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import type { EvidenzaDto } from "@ec/applicazione";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { TestoSemplice } from "./testo-semplice";
 
 /**
@@ -23,14 +24,14 @@ export function ElencoEvidenze({
   return (
     <ul className={className ?? "space-y-2"} aria-label={t("evidenza")}>
       {evidenze.map((e, i) => (
-        <li key={`${e.emailId}-${i}`} className="rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm">
+        <li key={`${e.emailId}-${i}`} className="border-l-2 border-border-strong py-0.5 pl-3 text-sm">
           <TestoSemplice come="blockquote" testo={`“${e.citazione}”`} className="text-text" />
           <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-text-muted">
             <span className="inline-flex items-center gap-1">
               {e.verificata ? <CheckCircle2 className="size-3.5 text-accent-strong" aria-hidden /> : <AlertTriangle className="size-3.5 text-urgent" aria-hidden />}
               {t(e.verificata ? "verificata" : "nonVerificata")}
             </span>
-            <Link href={e.emailId === emailCorrente ? `/mail/${e.emailId}#testo` : `/mail/${e.emailId}`} className="text-accent-strong underline-offset-4 hover:underline">
+            <Link href={e.emailId === emailCorrente ? `/mail/${e.emailId}#testo` : `/mail/${e.emailId}`} className={CLASSE_LINK}>
               {t(e.emailId === emailCorrente ? "mostraNelTesto" : "apri")}
             </Link>
           </div>
@@ -44,7 +45,7 @@ export function ElencoEvidenze({
 export function LinkEmail({ emailId, children, className, title }: { emailId: string; children?: React.ReactNode; className?: string; title?: string }) {
   const t = useTranslations("comuni.fonte");
   return (
-    <Link href={`/mail/${emailId}`} title={title} className={className ?? "text-accent-strong underline-offset-4 hover:underline"}>
+    <Link href={`/mail/${emailId}`} title={title} className={className ?? CLASSE_LINK}>
       {children ?? t("apri")}
     </Link>
   );
@@ -55,7 +56,7 @@ export function LinkProvider({ href, children, className }: { href: string | nul
   const t = useTranslations("comuni.fonte");
   if (!href) return null;
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={className ?? "text-accent-strong underline-offset-4 hover:underline"}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className ?? CLASSE_LINK}>
       {children ?? t("apriNelProvider")}
     </a>
   );

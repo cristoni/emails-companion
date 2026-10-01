@@ -107,8 +107,8 @@
   },
   "motiviUrgenza": {
     "utente": "L'hai segnata come urgente",
-    "email_urgente": "L'email è urgente",
-    "attivita_urgente": "Un'attività è urgente",
+    "email_urgente": "Segnalata urgente dall'AI",
+    "attivita_urgente": "Un'attività ha priorità alta",
     "scadenza_vicina": "Una scadenza cade entro 48 ore"
   },
   "direzioni": {
