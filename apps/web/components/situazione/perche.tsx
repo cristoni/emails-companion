@@ -21,18 +21,18 @@ interface Affermazione {
 }
 
 /**
- * Pannello "Perché?", a comparsa e chiuso all'apertura: per ogni analisi dell'AI che sostiene un'affermazione della pagina mostra la Funzione
- * AI, il modello richiesto e quello servito, la versione del Contesto AI e la data, con i rimandi alle
- * affermazioni che ne derivano e le prime citazioni che le sostengono (tutte sono accanto all'elemento).
+ * Pannello "Perché?", a comparsa e chiuso all'apertura: per ogni analisi dell'AI che sostiene un'affermazione
+ * della pagina mostra prima le affermazioni che ne derivano, con le prime citazioni che le sostengono (tutte
+ * sono accanto all'elemento), poi in una riga attenuata Funzione AI, modello, versione del Contesto AI e data.
  */
 export function PannelloPerche({
   vista,
-  origine,
+  urgenze,
   contesto,
 }: {
   vista: VistaSituazioneDto;
-  /** Evidenze dell'urgenza dell'email d'origine, l'unica classificazione di cui la pagina ha le citazioni. */
-  origine: UrgenzaEmailOrigineDto | null;
+  /** Urgenza dell'email d'origine e di quella che rende urgente la Situazione: le classificazioni di cui la pagina ha le citazioni. */
+  urgenze: readonly UrgenzaEmailOrigineDto[];
   contesto: ContestoDettaglio;
 }) {
   const t = useTranslations("situazione.perche");
@@ -56,7 +56,7 @@ export function PannelloPerche({
         ) : (
           <ul className="space-y-3">
             {[...gruppi.entries()].map(([analisiId, voci]) => (
-              <VocePerche key={analisiId} voci={voci} vista={vista} origine={origine} contesto={contesto} />
+              <VocePerche key={analisiId} voci={voci} vista={vista} urgenze={urgenze} contesto={contesto} />
             ))}
           </ul>
         )}
@@ -79,55 +79,70 @@ export function PulsantePerche() {
 function VocePerche({
   voci,
   vista,
-  origine,
+  urgenze,
   contesto,
 }: {
   voci: PercheDto[];
   vista: VistaSituazioneDto;
-  origine: UrgenzaEmailOrigineDto | null;
+  urgenze: readonly UrgenzaEmailOrigineDto[];
   contesto: ContestoDettaglio;
 }) {
   const t = useTranslations("situazione.perche");
   const tc = useTranslations("comuni");
   const p = voci[0]!;
-  const affermazioni = voci.map((v) => affermazione(v, vista, origine, contesto, t));
+  const affermazioni = voci.map((v) => affermazione(v, vista, urgenze, contesto, t));
   const funzione = `funzioni.${p.funzione}`;
+  // Il modello scelto e quello servito si distinguono solo se differiscono o se il secondo non è registrato.
+  const unModello = p.modelloServito !== null && p.modelloServito === p.modelloRichiesto;
 
   return (
     <li
       id={ancora.perche(p.analisiId)}
       tabIndex={-1}
-      className="scroll-mt-6 space-y-2 rounded-lg border border-border bg-surface-raised p-3 text-sm outline-none target:ring-2 target:ring-accent/50"
+      className="scroll-mt-6 space-y-2.5 rounded-lg border border-border bg-surface-raised p-3 text-sm outline-none target:ring-2 target:ring-accent/50"
     >
-      <p className="font-medium">{tc.has(funzione) ? tc(funzione) : t("funzioneGenerica")}</p>
-      <dl className="space-y-1 text-xs">
-        <Riga etichetta={t("modelloRichiesto")}>
-          <span className="break-all font-mono">{p.modelloRichiesto}</span>
-        </Riga>
-        <Riga etichetta={t("modelloServito")}>
-          {p.modelloServito ? <span className="break-all font-mono">{p.modelloServito}</span> : <span className="text-text-muted">{t("nonRegistrato")}</span>}
-        </Riga>
-        <Riga etichetta={t("contesto")}>
-          {p.contestoAiVersione !== null ? t("versione", { numero: p.contestoAiVersione }) : <span className="text-text-muted">{t("direttivePredefinite")}</span>}
-        </Riga>
-        <Riga etichetta={t("data")}>
-          <Istante iso={p.completataIl} stile="data_ora" />
-        </Riga>
-      </dl>
-      <div className="space-y-1 border-t border-border pt-2">
-        <p className="text-xs text-text-muted">{t("sostiene")}</p>
-        <ul className="space-y-1">
-          {affermazioni.map((a) => (
-            <li key={a.chiave} className="space-y-1 text-xs">
-              <a href={a.href} className="group block rounded px-1 py-0.5 hover:bg-surface-muted">
-                <span className="font-medium text-accent-strong group-hover:underline">{a.etichetta}</span>
-                {a.testo ? <TestoSemplice come="span" testo={` · ${a.testo}`} lingua={a.lingua} className="line-clamp-2 text-text-muted" /> : null}
-              </a>
-              {a.evidenze.length > 0 ? <Citazioni evidenze={a.evidenze} contesto={contesto} /> : null}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul className="space-y-2.5">
+        {affermazioni.map((a) => (
+          <li key={a.chiave} className="space-y-1.5">
+            <a href={a.href} className="group block rounded px-1 py-0.5 hover:bg-surface-muted">
+              <span className="block font-medium text-accent-strong group-hover:underline">{a.etichetta}</span>
+              {a.testo ? <TestoSemplice come="span" testo={a.testo} lingua={a.lingua} className="line-clamp-2 text-text-muted" /> : null}
+            </a>
+            {a.evidenze.length > 0 ? <Citazioni evidenze={a.evidenze} contesto={contesto} /> : null}
+          </li>
+        ))}
+      </ul>
+      <p className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 border-t border-border pt-2 text-xs text-text-muted">
+        <span>{tc.has(funzione) ? tc(funzione) : t("funzioneGenerica")}</span>
+        <span aria-hidden>·</span>
+        {unModello ? (
+          <span>
+            <span className="sr-only">{t("modello")}: </span>
+            <span title={t("modello")} className="break-all font-mono text-text">
+              {p.modelloServito}
+            </span>
+          </span>
+        ) : (
+          <>
+            <span>
+              {t("modelloRichiesto")} <span className="break-all font-mono text-text">{p.modelloRichiesto}</span>
+            </span>
+            <span aria-hidden>·</span>
+            <span>
+              {t("modelloServito")}{" "}
+              {p.modelloServito ? <span className="break-all font-mono text-text">{p.modelloServito}</span> : t("nonRegistrato")}
+            </span>
+          </>
+        )}
+        <span aria-hidden>·</span>
+        <span>{p.contestoAiVersione !== null ? t("versione", { numero: p.contestoAiVersione }) : t("direttivePredefinite")}</span>
+        {p.completataIl ? (
+          <>
+            <span aria-hidden>·</span>
+            <Istante iso={p.completataIl} stile="data_ora" />
+          </>
+        ) : null}
+      </p>
     </li>
   );
 }
@@ -139,7 +154,7 @@ function Citazioni({ evidenze, contesto }: { evidenze: readonly EvidenzaDto[]; c
   const mostrate = evidenze.slice(0, CITAZIONI_PER_AFFERMAZIONE);
   const altre = evidenze.length - mostrate.length;
   return (
-    <ul className="space-y-1 pl-1" aria-label={tf("evidenza")}>
+    <ul className="space-y-1 pl-1 text-[13px]" aria-label={tf("evidenza")}>
       {mostrate.map((e, i) => (
         <li key={`${e.emailId}-${i}`} className="flex items-start gap-1.5">
           {e.verificata ? (
@@ -164,20 +179,11 @@ function Citazioni({ evidenze, contesto }: { evidenze: readonly EvidenzaDto[]; c
   );
 }
 
-function Riga({ etichetta, children }: { etichetta: string; children: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-2">
-      <dt className="text-text-muted">{etichetta}</dt>
-      <dd>{children}</dd>
-    </div>
-  );
-}
-
 /** Affermazione a cui rimanda una voce del pannello, con un estratto del testo e l'ancora dell'elemento. */
 function affermazione(
   p: PercheDto,
   vista: VistaSituazioneDto,
-  origine: UrgenzaEmailOrigineDto | null,
+  urgenze: readonly UrgenzaEmailOrigineDto[],
   contesto: ContestoDettaglio,
   t: (chiave: string) => string,
 ): Affermazione {
@@ -188,7 +194,7 @@ function affermazione(
       return { chiave, etichetta: t("soggetti.situazione"), testo: vista.situazione.titolo, lingua: vista.situazione.lingua, href: "#titolo-situazione", evidenze: [] };
     case "classificazione": {
       const fonte = contesto.fonti.get(id);
-      const evidenze = origine?.emailId === id ? origine.evidenze : [];
+      const evidenze = urgenze.find((u) => u.emailId === id)?.evidenze ?? [];
       return { chiave, etichetta: t("soggetti.classificazione"), testo: fonte?.oggetto ?? null, lingua: linguaDi(contesto, id), href: `#${ancora.email(id)}`, evidenze };
     }
     case "attivita": {

@@ -1,96 +1,125 @@
 import { useFormatter, useTranslations } from "next-intl";
-import { Link2 } from "lucide-react";
-import type { CollegamentoDto, VistaSituazioneDto } from "@ec/applicazione";
+import { ArrowDown, CheckCircle2, Link2 } from "lucide-react";
+import type { CollegamentoDto, RispostaDto } from "@ec/applicazione";
 import { testoCodice } from "@/components/comuni/codici";
 import { DistintivoProposta } from "@/components/comuni/distintivi";
 import { LinkEmail } from "@/components/comuni/evidenze";
-import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
-import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { cn } from "@/components/ui/cn";
 import { Distintivo } from "@/components/ui/distintivo";
 import { confermaElementoAzione, rifiutaCollegamentoAzione } from "@/app/(app)/situations/[id]/azioni";
-import { ancora, CorrezioniElemento, formattaIndirizzo, LinkPerche, linguaDi, Sezione, type ContestoDettaglio } from "./comuni";
+import { ancora, CorrezioniElemento, LinkPerche, type ContestoDettaglio } from "./comuni";
 import { correzioniDelRifiuto } from "./correzioni-collegate";
 
-/** Collegamenti delle email alla Situazione: come sono stati stabiliti, stato, confidenza e correzioni. */
-export function SezioneCollegamenti({ vista, contesto }: { vista: VistaSituazioneDto; contesto: ContestoDettaglio }) {
-  const t = useTranslations("situazione.collegamenti");
-  const proposti = vista.collegamenti.filter((c) => c.stato === "proposto").length;
-  const risposte = vista.attese.flatMap((a) => a.risposte);
-  return (
-    <Sezione id="collegamenti" titolo={t("titolo")} descrizione={t("descrizione")} conteggio={vista.collegamenti.length}>
-      {proposti > 0 ? <p className="text-sm text-text-muted">{t("proposti", { numero: proposti })}</p> : null}
-      <ul className="divide-y divide-border overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-raised">
-        {vista.collegamenti.map((c) => (
-          <VoceCollegamento key={c.id} collegamento={c} extra={correzioniDelRifiuto(risposte, c)} contesto={contesto} />
-        ))}
-      </ul>
-    </Sezione>
-  );
+/** Il collegamento dell'email d'origine non si rifiuta: è la Situazione stessa (il caso d'uso risponde non_valido). */
+export function eOrigine(c: CollegamentoDto, contesto: ContestoDettaglio): boolean {
+  return c.ruolo === "origine" || c.emailId === contesto.emailOrigineId;
 }
 
-function VoceCollegamento({ collegamento: c, extra, contesto }: { collegamento: CollegamentoDto; extra: Record<string, string[]>; contesto: ContestoDettaglio }) {
+/**
+ * Stato del collegamento di un'email alla Situazione, dentro la sua scheda tra le email: come è stata
+ * collegata, conferma o scollegamento e le correzioni. Un collegamento proposto la cui email ha anche una
+ * Risposta proposta si decide con la risposta (confermarla conferma anche il collegamento): qui solo il rimando.
+ */
+export function RigaCollegamento({
+  collegamento: c,
+  risposte,
+  contesto,
+}: {
+  collegamento: CollegamentoDto;
+  /** Tutte le Risposte arrivate della Situazione. */
+  risposte: readonly RispostaDto[];
+  contesto: ContestoDettaglio;
+}) {
   const t = useTranslations("situazione.collegamenti");
   const tc = useTranslations("comuni");
   const formato = useFormatter();
-  const fonte = contesto.fonti.get(c.emailId);
-  // Il collegamento dell'email d'origine non si rifiuta: è la Situazione stessa (il caso d'uso risponde non_valido).
-  const origine = c.ruolo === "origine" || c.emailId === contesto.emailOrigineId;
   const rifiutato = c.stato === "rifiutato";
-  const proposto = c.stato === "proposto" && !origine;
-  const tono = rifiutato ? "pericolo" : c.stato === "confermato" ? "accento" : "proposta";
+  const proposto = c.stato === "proposto";
+  const conRisposta = proposto ? risposte.find((r) => r.emailId === c.emailId && r.proposta && r.statoCollegamento !== "rifiutato") : undefined;
 
   return (
-    <li id={ancora.collegamento(c.id)} className={`scroll-mt-6 space-y-2 px-4 py-3 target:bg-accent-soft ${rifiutato ? "bg-surface-muted" : ""}`}>
-      <div className="flex flex-wrap items-center gap-2">
-        <Link2 className="size-4 text-text-muted" aria-hidden />
+    <div
+      id={ancora.collegamento(c.id)}
+      className={cn(
+        "scroll-mt-6 space-y-2 rounded-lg px-1 text-sm target:bg-accent-soft",
+        proposto && "-mx-1 border border-dashed border-border-strong bg-suggestion-soft px-3 py-2.5",
+      )}
+    >
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-muted">
+        <Link2 className="size-3.5 shrink-0" aria-hidden />
         {proposto ? <DistintivoProposta /> : null}
-        <Distintivo tono={proposto ? "neutro" : tono}>{testoCodice(tc, "statiCollegamento", c.stato)}</Distintivo>
-        <Distintivo tono="neutro">{testoCodice(tc, "ruoliCollegamento", c.ruolo)}</Distintivo>
-        <span className="text-xs text-text-muted">{testoCodice(tc, "originiCollegamento", c.origine)}</span>
+        {rifiutato ? <Distintivo tono="pericolo">{testoCodice(tc, "statiCollegamento", c.stato)}</Distintivo> : null}
+        {c.stato === "confermato" && c.origine === "ai" ? (
+          <Distintivo tono="accento" icona={<CheckCircle2 className="size-3" aria-hidden />}>
+            {testoCodice(tc, "statiCollegamento", c.stato)}
+          </Distintivo>
+        ) : null}
+        <span>{testoCodice(tc, "originiCollegamento", c.origine)}</span>
         {c.confidenza !== null ? (
-          <span className="text-xs text-text-muted">
+          <span>
             {t("confidenza")} {formato.number(c.confidenza, { style: "percent", maximumFractionDigits: 0 })}
           </span>
         ) : null}
         <LinkPerche analisiId={c.analisiId} contesto={contesto} />
+        {!proposto && !rifiutato ? <Scollega collegamento={c} /> : null}
       </div>
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
-        {fonte ? (
-          <>
-            <TestoSemplice come="span" testo={fonte.oggetto || "—"} lingua={linguaDi(contesto, c.emailId)} className="font-medium" />
-            <span className="font-mono text-xs text-text-muted">{formattaIndirizzo(fonte.mittente)}</span>
-            <Istante iso={fonte.ricevutaIl} stile="data" className="text-xs text-text-muted" />
-            <a href={`#${ancora.email(c.emailId)}`} className="text-xs text-text-muted underline-offset-4 hover:text-text hover:underline">
-              {t("vaiAllaFonte")}
-            </a>
-          </>
-        ) : (
-          <span className="text-text-muted">{t("emailNonTraLeFonti")}</span>
-        )}
-        <LinkEmail emailId={c.emailId} className="text-xs text-accent-strong underline-offset-4 hover:underline" />
-      </div>
-      {origine ? (
-        <p className="text-xs text-text-muted">{t("origineAiuto")}</p>
-      ) : (
+      {rifiutato ? <p className="text-xs text-text-muted">{t("rifiutatoAiuto")}</p> : null}
+      {conRisposta ? (
+        <a href={`#${ancora.risposta(conRisposta.id)}`} className="inline-flex items-center gap-1 text-sm font-medium text-accent-strong underline-offset-4 hover:underline">
+          {t("conRisposta")}
+          <ArrowDown className="size-3.5" aria-hidden />
+        </a>
+      ) : proposto ? (
         <div className="flex flex-wrap items-center gap-2">
-          {c.stato === "proposto" ? (
-            <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "collegamento", id: c.id }} etichetta={t("conferma")} variante="primario" />
-          ) : null}
-          {!rifiutato ? (
-            <ModuloAzione
-              azione={rifiutaCollegamentoAzione}
-              campi={{ collegamento: c.id }}
-              etichetta={t("rifiuta")}
-              variante="fantasma"
-              conferma={{ domanda: t("rifiutaDomanda"), etichetta: t("rifiutaConferma") }}
-            />
-          ) : (
-            <p className="text-xs text-text-muted">{t("rifiutatoAiuto")}</p>
-          )}
+          <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "collegamento", id: c.id }} etichetta={t("conferma")} />
+          <Scollega collegamento={c} />
         </div>
-      )}
-      <CorrezioniElemento correzioni={c.correzioni} extra={extra} />
-    </li>
+      ) : null}
+      <CorrezioniElemento correzioni={c.correzioni} extra={correzioniDelRifiuto(risposte, c)} />
+    </div>
+  );
+}
+
+function Scollega({ collegamento: c }: { collegamento: CollegamentoDto }) {
+  const t = useTranslations("situazione.collegamenti");
+  return (
+    <ModuloAzione
+      azione={rifiutaCollegamentoAzione}
+      campi={{ collegamento: c.id }}
+      etichetta={t("rifiuta")}
+      variante="fantasma"
+      conferma={{ domanda: t("rifiutaDomanda"), etichetta: t("rifiutaConferma") }}
+    />
+  );
+}
+
+/**
+ * Email collegate e poi scollegate, che non sono più tra le email della Situazione: restano raggiungibili,
+ * con l'annullamento dello scollegamento.
+ */
+export function EmailScollegate({
+  collegamenti,
+  risposte,
+  contesto,
+}: {
+  collegamenti: readonly CollegamentoDto[];
+  risposte: readonly RispostaDto[];
+  contesto: ContestoDettaglio;
+}) {
+  const t = useTranslations("situazione.collegamenti");
+  if (collegamenti.length === 0) return null;
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-text-muted">{t("emailScollegate")}</h3>
+      <ul className="divide-y divide-border rounded-[var(--radius-card)] border border-border bg-surface-raised">
+        {collegamenti.map((c) => (
+          <li key={c.id} className="space-y-1.5 px-4 py-3">
+            <RigaCollegamento collegamento={c} risposte={risposte} contesto={contesto} />
+            <LinkEmail emailId={c.emailId} className="text-sm text-accent-strong underline-offset-4 hover:underline" />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

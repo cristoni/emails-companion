@@ -7,50 +7,45 @@ import { ElencoEvidenze, LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { cn } from "@/components/ui/cn";
 import { Distintivo } from "@/components/ui/distintivo";
-import { StatoVuoto } from "@/components/ui/pagina";
 import { completaAttivitaAzione, confermaElementoAzione, riapriAttivitaAzione, scartaElementoAzione } from "@/app/(app)/situations/[id]/azioni";
-import { ancora, CorrezioniElemento, LinkPerche, linguaDi, Sezione, type ContestoDettaglio } from "./comuni";
+import { ancora, AzioniScheda, CorrezioniElemento, ElencoSchede, LinkPerche, linguaDi, Sezione, type ContestoDettaglio } from "./comuni";
 import { ModificaAttivita } from "./modifica-attivita";
 
-/** Attività della Situazione: aperte prima, poi completate, scartate o non più trovate. */
+const aperta = (a: AttivitaDto) => a.stato === "proposta" || a.stato === "confermata";
+
+/** Attività della Situazione: le aperte in vista, le completate, scartate o non più trovate raccolte a parte. */
 export function SezioneAttivita({ attivita, contesto }: { attivita: readonly AttivitaDto[]; contesto: ContestoDettaglio }) {
   const t = useTranslations("situazione.attivita");
-  const aperta = (a: AttivitaDto) => a.stato === "proposta" || a.stato === "confermata";
-  const ordinate = [...attivita.filter(aperta), ...attivita.filter((a) => !aperta(a))];
+  const scheda = (a: AttivitaDto) => <SchedaAttivita key={a.id} attivita={a} contesto={contesto} />;
   return (
-    <Sezione id="attivita" titolo={t("titolo")} descrizione={t("descrizione")} conteggio={attivita.length}>
-      {ordinate.length === 0 ? (
-        <StatoVuoto titolo={t("vuoto")} />
-      ) : (
-        <ul className="space-y-3">
-          {ordinate.map((a) => (
-            <SchedaAttivita key={a.id} attivita={a} contesto={contesto} />
-          ))}
-        </ul>
-      )}
+    <Sezione id="attivita" titolo={t("titolo")} conteggio={attivita.filter(aperta).length || attivita.length}>
+      <ElencoSchede aperte={attivita.filter(aperta).map(scheda)} chiuse={attivita.filter((a) => !aperta(a)).map(scheda)} />
     </Sezione>
   );
 }
 
 function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; contesto: ContestoDettaglio }) {
   const t = useTranslations("situazione.attivita");
-  const tc = useTranslations("comuni");
   const lingua = linguaDi(contesto, a.emailSorgenteId);
-  const aperta = a.stato === "proposta" || a.stato === "confermata";
-  const chiusa = !aperta;
+  const inCorso = aperta(a);
+  // Le evidenze portano già all'email da cui deriva l'attività: il link a parte serve solo se nessuna lo fa.
+  const sorgenteCitata = a.evidenze.some((e) => e.emailId === a.emailSorgenteId);
+
   return (
     <li
       id={ancora.attivita(a.id)}
-      className={`scroll-mt-6 rounded-[var(--radius-card)] border bg-surface-raised p-4 shadow-[var(--shadow-card)] target:ring-2 target:ring-accent/40 ${
-        a.proposta ? "border-dashed border-border-strong" : "border-border"
-      }`}
+      className={cn(
+        "scroll-mt-6 rounded-[var(--radius-card)] border bg-surface-raised p-4 shadow-[var(--shadow-card)] target:ring-2 target:ring-accent/40",
+        a.proposta ? "border-dashed border-border-strong" : "border-border",
+      )}
     >
       <div className="flex flex-wrap items-center gap-2">
         {a.proposta ? <DistintivoProposta /> : <StatoAttivita attivita={a} />}
         <DistintivoBase base={a.base} />
-        <Distintivo tono="neutro">{testoCodice(tc, "priorita", a.priorita)}</Distintivo>
-        {a.urgente && aperta ? (
+        {a.priorita === "alta" && inCorso ? <PrioritaAlta /> : null}
+        {a.urgente && inCorso ? (
           <Distintivo tono="urgente" icona={<Zap className="size-3" aria-hidden />}>
             {t("urgente")}
           </Distintivo>
@@ -62,11 +57,11 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
         come="p"
         testo={a.descrizione}
         lingua={lingua}
-        className={`mt-2.5 text-[15px] leading-relaxed ${chiusa ? "text-text-muted line-through decoration-border-strong" : ""}`}
+        className={cn("mt-2 text-[15px] leading-relaxed", !inCorso && "text-text-muted line-through decoration-border-strong")}
       />
 
       {a.scadenza || a.scadenzaCitazione ? (
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
           <CalendarClock className="size-4 text-text-muted" aria-hidden />
           {a.scadenza ? (
             <span>
@@ -76,71 +71,58 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
             <span className="text-text-muted">{t("scadenzaNonLetta")}</span>
           )}
           {a.scadenzaCitazione ? (
-            <span className="inline-flex min-w-0 items-baseline gap-1 text-text-muted">
-              <span>{t("citazioneScadenza")}</span>
-              <TestoSemplice come="span" testo={`“${a.scadenzaCitazione}”`} lingua={lingua} className="italic" />
-            </span>
+            <TestoSemplice come="span" testo={`“${a.scadenzaCitazione}”`} lingua={lingua} className="text-text-muted italic" />
           ) : null}
-        </div>
+        </p>
       ) : null}
 
       {a.completataDaAi ? (
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-3 rounded-lg border border-dashed border-border-strong bg-suggestion-soft px-3 py-2.5 text-sm">
-          <div className="space-y-1">
-            <p className="flex flex-wrap items-center gap-1.5 font-medium">
-              <Sparkles className="size-3.5 text-suggestion" aria-hidden />
-              {t("completataDaAi")}
-              <DistintivoBase base="dedotto" />
-            </p>
-            <p className="text-text-muted">
-              {t("completataDaAiAiuto")} {a.completataIl ? <Istante iso={a.completataIl} stile="relativo" /> : null}
-            </p>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-dashed border-border-strong bg-suggestion-soft px-3 py-2 text-sm">
+          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            <Sparkles className="size-3.5 text-suggestion" aria-hidden />
+            <span className="font-medium">{t("completataDaAi")}</span>
+            <DistintivoBase base="dedotto" />
+            {a.completataIl ? <Istante iso={a.completataIl} stile="relativo" className="text-text-muted" /> : null}
             {a.emailCompletamentoId ? <LinkEmail emailId={a.emailCompletamentoId}>{t("apriRisposta")}</LinkEmail> : null}
-          </div>
+          </p>
           <ModuloAzione azione={riapriAttivitaAzione} campi={{ attivita: a.id }} etichetta={t("nonFatta")} />
         </div>
       ) : a.completata && a.completataDa === "utente" ? (
-        <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-text-muted">
+        <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-text-muted">
           <CheckCircle2 className="size-4 text-accent-strong" aria-hidden />
           {t("completataDaTe")} {a.completataIl ? <Istante iso={a.completataIl} stile="relativo" /> : null}
         </p>
       ) : null}
 
-      <div className="mt-3 space-y-2">
-        <ElencoEvidenze evidenze={a.evidenze} />
-        <p className="text-xs text-text-muted">
+      {a.evidenze.length > 0 ? <ElencoEvidenze evidenze={a.evidenze} className="mt-3 space-y-2" /> : null}
+      {!sorgenteCitata ? (
+        <p className="mt-2 text-sm">
           <LinkEmail emailId={a.emailSorgenteId}>{t("apriSorgente")}</LinkEmail>
         </p>
-      </div>
+      ) : null}
 
       {/* Completata dall'AI: la riapertura è già nel riquadro dell'inferenza, qui sopra. */}
-      {aperta || !a.completataDaAi ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
-          {a.proposta ? (
-            <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "attivita", id: a.id }} etichetta={tc("azioni.conferma")} variante="primario" />
-          ) : null}
-          {aperta ? (
+      {inCorso ? (
+        <AzioniScheda
+          fare={
             <>
+              {/* Il pulsante principale della pagina è nella scheda "Prossima azione": qui tutti secondari. */}
+              {a.proposta ? <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "attivita", id: a.id }} etichetta={t("conferma")} /> : null}
               <ModuloAzione azione={completaAttivitaAzione} campi={{ attivita: a.id }} etichetta={t("completa")} />
-              <ModificaAttivita
-                attivitaId={a.id}
-                descrizione={a.descrizione}
-                lingua={lingua}
-                scadenza={a.scadenza ? a.scadenza.slice(0, 10) : ""}
-                priorita={a.priorita}
-              />
-              <ModuloAzione
-                azione={scartaElementoAzione}
-                campi={{ tipo: "attivita", id: a.id }}
-                etichetta={t("scarta")}
-                variante="fantasma"
-                conferma={{ domanda: t("scartaDomanda"), etichetta: t("scartaConferma") }}
-              />
+              <ModificaAttivita attivitaId={a.id} descrizione={a.descrizione} lingua={lingua} scadenza={a.scadenza ? a.scadenza.slice(0, 10) : ""} priorita={a.priorita} />
             </>
-          ) : (
-            <ModuloAzione azione={riapriAttivitaAzione} campi={{ attivita: a.id }} etichetta={t("riapri")} />
-          )}
-        </div>
+          }
+          correggere={
+            <ModuloAzione
+              azione={scartaElementoAzione}
+              campi={{ tipo: "attivita", id: a.id }}
+              etichetta={t("scarta")}
+              conferma={{ domanda: t("scartaDomanda"), etichetta: t("scartaConferma") }}
+            />
+          }
+        />
+      ) : !a.completataDaAi ? (
+        <AzioniScheda fare={<ModuloAzione azione={riapriAttivitaAzione} campi={{ attivita: a.id }} etichetta={t("riapri")} />} />
       ) : null}
       {a.correzioni.length > 0 ? (
         <div className="mt-3">
@@ -151,11 +133,18 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
   );
 }
 
+function PrioritaAlta() {
+  const tc = useTranslations("comuni");
+  return <Distintivo tono="neutro">{tc("priorita.alta")}</Distintivo>;
+}
+
+/** Stato di un'attività chiusa (la confermata è lo stato normale e non ha distintivo); "Completata" è blu con la spunta. */
 function StatoAttivita({ attivita }: { attivita: AttivitaDto }) {
   const tc = useTranslations("comuni");
-  const tono = attivita.stato === "confermata" ? "accento" : "neutro";
+  if (attivita.stato === "confermata") return null;
+  const fatta = attivita.stato === "completata";
   return (
-    <Distintivo tono={tono} icona={attivita.stato === "completata" ? <CheckCircle2 className="size-3" aria-hidden /> : undefined}>
+    <Distintivo tono={fatta ? "accento" : "neutro"} icona={fatta ? <CheckCircle2 className="size-3" aria-hidden /> : undefined}>
       {testoCodice(tc, "statiElemento", attivita.stato)}
     </Distintivo>
   );

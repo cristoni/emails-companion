@@ -35,6 +35,11 @@ export interface VistaSituazione {
   areaPrincipale: Area | null;
   urgente: boolean;
   motivoUrgenza: MotivoUrgenza | null;
+  /**
+   * Con motivo "email_urgente", l'email che rende urgente la Situazione: l'email d'origine se conta,
+   * altrimenti la più recente tra quelle che contano. null con ogni altro motivo.
+   */
+  emailUrgente: IdEmail | null;
   prossimaAzione: ProssimaAzione;
   haProposte: boolean;
   scadenzaPiuVicina: Date | null;
@@ -127,11 +132,12 @@ export function derivaVistaSituazione(input: {
   const nonGestita = (istante: Date) => gestitaIl === null || istante > gestitaIl;
   const limiteScadenza = ora.getTime() + (input.oreScadenzaUrgente ?? ORE_SCADENZA_URGENTE) * 3_600_000;
   const segnataUrgente = valoreEffettivo<unknown>(null, correzioni, suSituazione, "urgente");
+  const segnaliAttivi = input.segnaliUrgenza.filter((s) => s.urgente && nonGestita(s.ricevutaIl));
 
   const motivoCalcolato: MotivoUrgenza | null =
     segnataUrgente.valore === true && segnataUrgente.correzione !== null && nonGestita(segnataUrgente.correzione.creataIl)
       ? "utente"
-      : input.segnaliUrgenza.some((s) => s.urgente && nonGestita(s.ricevutaIl))
+      : segnaliAttivi.length > 0
         ? "email_urgente"
         : attivitaAperte.some(({ a }) => a.urgente && nonGestita(a.creataIl))
           ? "attivita_urgente"
@@ -139,6 +145,12 @@ export function derivaVistaSituazione(input: {
             ? "scadenza_vicina"
             : null;
   const motivoUrgenza = archiviata ? null : motivoCalcolato;
+  const emailUrgente =
+    motivoUrgenza !== "email_urgente"
+      ? null
+      : (segnaliAttivi.find((s) => s.emailId === situazione.emailOrigineId) ??
+          [...segnaliAttivi].sort((x, y) => y.ricevutaIl.getTime() - x.ricevutaIl.getTime() || confrontaId(x.emailId, y.emailId))[0]!
+        ).emailId;
 
   const presenti: Record<Area, boolean> = {
     urgente: motivoUrgenza !== null,
@@ -173,6 +185,7 @@ export function derivaVistaSituazione(input: {
     areaPrincipale: aree[0] ?? null,
     urgente: motivoUrgenza !== null,
     motivoUrgenza,
+    emailUrgente,
     prossimaAzione,
     haProposte:
       attivitaAperte.some(({ stato }) => stato === "proposta") ||

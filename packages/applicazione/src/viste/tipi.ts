@@ -272,6 +272,8 @@ export interface VistaSituazioneDto {
     areaPrincipale: Area | null;
     urgente: boolean;
     motivoUrgenza: MotivoUrgenza | null;
+    /** Con motivo "email_urgente", l'email che rende urgente la Situazione (l'origine se conta). */
+    emailUrgenteId: string | null;
     haProposte: boolean;
     scadenzaPiuVicina: Istante | null;
     prioritaMassima: Priorita | null;

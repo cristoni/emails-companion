@@ -43,6 +43,7 @@ describe("derivaVistaSituazione: aree", () => {
       areaPrincipale: null,
       urgente: false,
       motivoUrgenza: null,
+      emailUrgente: null,
       prossimaAzione: { tipo: "nessuna" },
       haProposte: false,
       scadenzaPiuVicina: null,
@@ -171,7 +172,22 @@ describe("derivaVistaSituazione: urgenza", () => {
       { emailId: "e1", ricevutaIl: ore(10), urgente: true },
       { emailId: "e2", ricevutaIl: ore(60), urgente: true },
     ];
-    expect(vista({ segnaliUrgenza: segnali, gestitaIl: ore(20) }).motivoUrgenza).toBe("email_urgente");
+    expect(vista({ segnaliUrgenza: segnali, gestitaIl: ore(20) })).toMatchObject({ motivoUrgenza: "email_urgente", emailUrgente: "e2" });
+  });
+
+  it("indica l'email che rende urgente la Situazione: l'origine se conta, altrimenti la più recente", () => {
+    const origine = situazione({}).emailOrigineId;
+    const segnali = [
+      { emailId: origine, ricevutaIl: ore(10), urgente: true },
+      { emailId: "e2", ricevutaIl: ore(30), urgente: true },
+      { emailId: "e3", ricevutaIl: ore(40), urgente: false },
+    ];
+    expect(vista({ segnaliUrgenza: segnali }).emailUrgente).toBe(origine);
+    expect(vista({ segnaliUrgenza: segnali, gestitaIl: ore(20) }).emailUrgente).toBe("e2");
+    expect(vista({ segnaliUrgenza: segnali, gestitaIl: ore(35) })).toMatchObject({ urgente: false, emailUrgente: null });
+    // Con un altro motivo non c'è un'email urgente da indicare.
+    const segnata = correzione(suSituazione, "urgente", true, { creataIl: ore(50) });
+    expect(vista({ segnaliUrgenza: segnali, correzioni: [segnata] })).toMatchObject({ motivoUrgenza: "utente", emailUrgente: null });
   });
 
   it("gestitaIl effettivo segue la correzione dell'utente, anche come testo ISO", () => {
@@ -342,6 +358,7 @@ describe("ordinaVisteSituazioni", () => {
     areaPrincipale: "da_fare",
     urgente: false,
     motivoUrgenza: null,
+    emailUrgente: null,
     prossimaAzione: { tipo: "nessuna" },
     haProposte: false,
     scadenzaPiuVicina: null,

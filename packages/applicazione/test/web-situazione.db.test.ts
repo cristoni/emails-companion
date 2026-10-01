@@ -99,6 +99,7 @@ describe("dettaglio della Situazione: email d'origine e correzioni sulle email",
           ctx,
           vista.situazione.emailOrigineId,
           vista.fonti.map((f) => f.emailId),
+          vista.stato.emailUrgenteId,
         ),
       );
 
@@ -117,6 +118,9 @@ describe("dettaglio della Situazione: email d'origine e correzioni sulle email",
     // L'analisi dell'urgenza ha la sua voce nel pannello "Perché?" del dettaglio.
     expect(vista.perche.map((p) => p.analisiId)).toContain(dati.origine?.analisiId);
     expect(dati.correzioniEmail).toEqual([]);
+    // È l'origine a rendere urgente la Situazione: la stessa urgenza, senza una seconda lettura.
+    expect(vista.stato).toMatchObject({ motivoUrgenza: "email_urgente", emailUrgenteId: emailId });
+    expect(dati.urgente).toBe(dati.origine);
 
     // L'utente toglie l'urgenza: la correzione è attiva e l'evento della cronologia la richiama.
     const esito = await s.perUtente(utente, (ctx) => cambiaUrgenza(s.dip, ctx, emailId, false));
@@ -163,9 +167,9 @@ describe("dettaglio della Situazione: email d'origine e correzioni sulle email",
     // Un altro utente non vede nulla delle email di Anna.
     const altro = await s.creaUtente("bruno@esempio.it");
     const estraneo = await s.perUtente(altro, (ctx) => emailDellaSituazioneWeb(s.dip, ctx, emailId, [emailId]));
-    expect(estraneo).toEqual({ origine: null, correzioniEmail: [] });
+    expect(estraneo).toEqual({ origine: null, urgente: null, correzioniEmail: [] });
 
-    const vuoto = await s.perUtente(utente, (ctx) => emailDellaSituazioneWeb(s.dip, ctx, "x", []));
-    expect(vuoto).toEqual({ origine: null, correzioniEmail: [] });
+    const vuoto = await s.perUtente(utente, (ctx) => emailDellaSituazioneWeb(s.dip, ctx, "x", [], "y"));
+    expect(vuoto).toEqual({ origine: null, urgente: null, correzioniEmail: [] });
   });
 });

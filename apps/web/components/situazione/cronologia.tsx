@@ -7,14 +7,15 @@ import { testoCodice } from "@/components/comuni/codici";
 import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { Distintivo } from "@/components/ui/distintivo";
-import { PulsanteAnnulla, Sezione } from "./comuni";
+import { Espandibile } from "@/components/ui/espandibile";
+import { Conteggio, PulsanteAnnulla } from "./comuni";
 
 const ICONE: Record<Attore, typeof Bot> = { ai: Bot, utente: User, sistema: Cog };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Cronologia della Situazione, dalla più recente: chi ha agito (AI, utente, sistema), cosa è cambiato e
- * quando. Un evento che registra una correzione ancora attiva offre l'annullamento.
+ * Cronologia della Situazione, chiusa all'apertura, dalla più recente: chi ha agito (AI, utente, sistema),
+ * cosa è cambiato e quando. Un evento che registra una correzione ancora attiva offre l'annullamento.
  */
 export function SezioneCronologia({
   eventi,
@@ -25,18 +26,24 @@ export function SezioneCronologia({
   annullabili: ReadonlyMap<string, readonly string[]>;
 }) {
   const t = useTranslations("situazione.cronologia");
+  if (eventi.length === 0) return null;
   return (
-    <Sezione id="cronologia" titolo={t("titolo")} descrizione={t("descrizione")} conteggio={eventi.length}>
-      {eventi.length === 0 ? (
-        <p className="text-sm text-text-muted">{t("vuoto")}</p>
-      ) : (
+    <section id="cronologia" aria-labelledby="cronologia-titolo" className="scroll-mt-6">
+      <Espandibile
+        titolo={
+          <h2 id="cronologia-titolo" className="inline-flex items-center gap-2 text-lg text-text">
+            {t("titolo")}
+            <Conteggio numero={eventi.length} />
+          </h2>
+        }
+      >
         <ol className="divide-y divide-border overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-raised">
           {eventi.map((e) => (
             <VoceEvento key={e.id} evento={e} annullabili={annullabili} />
           ))}
         </ol>
-      )}
-    </Sezione>
+      </Espandibile>
+    </section>
   );
 }
 
@@ -52,13 +59,18 @@ function VoceEvento({ evento: e, annullabili }: { evento: EventoDto; annullabili
   return (
     <li className="flex flex-wrap items-start justify-between gap-3 px-4 py-3">
       <div className="flex min-w-0 items-start gap-3">
-        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-muted">
+        <span
+          title={testoCodice(t, "attori", e.attore, "attoreGenerico")}
+          className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-muted"
+        >
           <Icona className="size-3.5 text-text-muted" aria-hidden />
+          {e.attore !== "utente" ? <span className="sr-only">{testoCodice(t, "attori", e.attore, "attoreGenerico")}</span> : null}
         </span>
         <div className="min-w-0 space-y-1">
           <p className="text-sm">{testoCodice(t, "tipi", e.tipo, "tipoGenerico")}</p>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-muted">
-            <Distintivo tono={e.attore === "utente" ? "accento" : "neutro"}>{testoCodice(t, "attori", e.attore, "attoreGenerico")}</Distintivo>
+            {/* L'icona dice già chi ha agito: il distintivo segnala solo le modifiche dell'utente. */}
+            {e.attore === "utente" ? <Distintivo tono="accento">{testoCodice(t, "attori", e.attore, "attoreGenerico")}</Distintivo> : null}
             <Istante iso={e.creatoIl} stile="data_ora" />
             {email && UUID.test(email) ? <LinkEmail emailId={email} className="text-accent-strong underline-offset-4 hover:underline" /> : null}
             {altraSituazione && UUID.test(altraSituazione) ? (

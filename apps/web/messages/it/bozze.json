@@ -19,7 +19,7 @@
   "proponi": {
     "risposta": "Proponi risposta",
     "sollecito": "Proponi sollecito",
-    "consigliato": "Consigliato",
+    "apriBozza": "Apri bozza",
     "consigliatoAiuto": "La data attesa è passata: è consigliato un sollecito.",
     "inCorso": "Preparazione…",
     "aiuto": "L'AI scrive una bozza da rivedere. Nulla viene inviato senza la tua conferma.",
@@ -34,8 +34,6 @@
   },
   "sezione": {
     "titolo": "Bozze",
-    "descrizione": "Risposte e solleciti preparati qui. Nulla viene inviato finché non confermi.",
-    "vuota": "Nessuna bozza.",
     "senzaOggetto": "Bozza in scrittura",
     "a": "A",
     "da": "Da",

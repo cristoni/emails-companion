@@ -1,160 +1,150 @@
-import { useTranslations } from "next-intl";
-import { Archive, CheckCircle2, Zap } from "lucide-react";
-import type { UrgenzaEmailOrigineDto, VistaSituazioneDto } from "@ec/applicazione";
-import { testoCodice } from "@/components/comuni/codici";
-import { DistintivoArea, DistintivoBase, DistintivoProposta } from "@/components/comuni/distintivi";
-import { ElencoEvidenze, LinkEmail } from "@/components/comuni/evidenze";
+import { useFormatter, useTranslations } from "next-intl";
+import { Archive, ArchiveRestore, Sparkles } from "lucide-react";
+import type { VistaSituazioneDto } from "@ec/applicazione";
+import { DistintivoArea } from "@/components/comuni/distintivi";
+import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { Distintivo } from "@/components/ui/distintivo";
-import { archiviaAzione, cambiaUrgenzaAzione, riapriSituazioneAzione, segnaGestitaAzione } from "@/app/(app)/situations/[id]/azioni";
-import { CorrezioniElemento, LinkPerche, Metadato, PulsanteAnnulla, linguaDi, type ContestoDettaglio } from "./comuni";
+import { archiviaAzione, riapriSituazioneAzione } from "@/app/(app)/situations/[id]/azioni";
+import { ancora, CorrezioniElemento, LinkPerche, Metadato, PulsanteAnnulla, type ContestoDettaglio } from "./comuni";
 
 export const ANCORA_URGENZA = "urgenza";
 
 /**
- * Intestazione del dettaglio: titolo e descrizione scritti dall'AI, aree e stato, urgenza con il suo motivo
- * e le azioni sulla Situazione (segna come gestita, archivia, riapri) e sull'urgenza dell'email d'origine.
+ * Intestazione del dettaglio: aree e proposte da rivedere, titolo e descrizione scritti dall'AI con la loro
+ * provenienza in una riga, metadati essenziali su una riga. L'urgenza, il passo successivo e lo stato
+ * (archiviata, conclusa) sono nella scheda "Prossima azione", detti una volta sola.
  */
-export function IntestazioneSituazione({
-  vista,
-  origine,
-  contesto,
-}: {
-  vista: VistaSituazioneDto;
-  origine: UrgenzaEmailOrigineDto | null;
-  contesto: ContestoDettaglio;
-}) {
+export function IntestazioneSituazione({ vista, contesto }: { vista: VistaSituazioneDto; contesto: ContestoDettaglio }) {
   const t = useTranslations("situazione.intestazione");
   const tc = useTranslations("comuni");
+  const formato = useFormatter();
   const { situazione, stato } = vista;
-  const conclusa = !stato.attiva && !stato.archiviata;
-  // "Segna come gestita" chiude l'urgenza delle email, non una scadenza vicina: lì non avrebbe effetto.
-  const gestibile = stato.urgente && stato.motivoUrgenza !== "scadenza_vicina";
+  const alta = stato.prioritaMassima === "alta";
+  const distintivi = stato.aree.length > 0 || stato.haProposte || alta;
+  // Il segno delle proposte porta alla prima da rivedere; se non la trova resta un'indicazione.
+  const proposta = stato.haProposte ? (primaProposta(vista) ?? undefined) : null;
+  // "Archivia" e "Riapri" si annullano a vicenda con il pulsante in alto (e dalla cronologia); "Segna come
+  // gestita" si annulla accanto alla data di gestione. Le altre correzioni restano nella riga compatta.
+  const gestione = situazione.correzioni.filter((c) => c.campo === "gestitaIl").at(-1);
+  const altreCorrezioni = situazione.correzioni.filter((c) => c.campo !== "archiviata" && c.campo !== "gestitaIl");
 
   return (
-    <header className="space-y-6">
-      <div className="space-y-3">
+    <header className="space-y-2.5">
+      {distintivi ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.08em] text-accent-strong">{t("etichetta")}</span>
           {stato.aree.map((area) => (
             <DistintivoArea key={area} area={area} />
           ))}
-          {stato.archiviata ? (
-            <Distintivo tono="neutro" icona={<Archive className="size-3" aria-hidden />}>
-              {t("archiviata")}
-            </Distintivo>
+          {alta ? (
+            <span title={t("prioritaAiuto")}>
+              <Distintivo tono="neutro">{tc("priorita.alta")}</Distintivo>
+            </span>
           ) : null}
-          {conclusa ? (
-            <Distintivo tono="neutro" icona={<CheckCircle2 className="size-3" aria-hidden />}>
-              {t("conclusa")}
-            </Distintivo>
+          {proposta !== null ? (
+            <a
+              href={proposta}
+              title={tc("propostaAiuto")}
+              className="inline-flex items-center gap-1 rounded-full px-1 text-xs font-medium text-suggestion underline-offset-4 hover:underline"
+            >
+              <Sparkles className="size-3.5" aria-hidden />
+              {t("proposte")}
+            </a>
           ) : null}
-          {stato.haProposte ? <DistintivoProposta /> : null}
-        </div>
-        <h1 id="titolo-situazione" className="text-2xl leading-tight sm:text-3xl">
-          <TestoSemplice come="span" testo={situazione.titolo} lingua={situazione.lingua} />
-        </h1>
-        {situazione.descrizione.trim() ? (
-          <TestoSemplice come="p" testo={situazione.descrizione} lingua={situazione.lingua} className="max-w-prose text-[15px] leading-relaxed text-text-muted" />
-        ) : null}
-        <p className="flex flex-wrap items-center gap-2 text-xs text-text-muted">
-          <span>{t("testoAi")}</span>
-          <LinkEmail emailId={situazione.emailOrigineId}>{t("emailOrigine")}</LinkEmail>
-          <LinkPerche analisiId={situazione.analisiId} contesto={contesto} />
-        </p>
-      </div>
-
-      <dl className="flex flex-wrap gap-x-6 gap-y-1.5">
-        <Metadato etichetta={t("creata")}>
-          <Istante iso={situazione.creataIl} stile="data" />
-        </Metadato>
-        <Metadato etichetta={t("ultimaAttivita")}>
-          <Istante iso={situazione.ultimaAttivita} stile="relativo" />
-        </Metadato>
-        {stato.scadenzaPiuVicina ? (
-          <Metadato etichetta={t("scadenzaPiuVicina")}>
-            <Istante iso={stato.scadenzaPiuVicina} stile="giorno" />
-          </Metadato>
-        ) : null}
-        {stato.prioritaMassima ? <Metadato etichetta={t("priorita")}>{testoCodice(tc, "priorita", stato.prioritaMassima)}</Metadato> : null}
-        {situazione.gestitaIl ? (
-          <Metadato etichetta={t("gestita")}>
-            <Istante iso={situazione.gestitaIl} stile="data_ora" />
-          </Metadato>
-        ) : null}
-      </dl>
-
-      {stato.urgente ? (
-        <div id={ANCORA_URGENZA} className="scroll-mt-6 space-y-3 rounded-[var(--radius-card)] border border-urgent/30 bg-urgent-soft px-4 py-3">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="flex items-start gap-2.5">
-              <Zap className="mt-0.5 size-4 shrink-0 text-urgent" aria-hidden />
-              <div>
-                <p className="text-sm font-semibold">{t("urgenza.titolo")}</p>
-                <p className="text-sm text-text-muted">{testoCodice(tc, "motiviUrgenza", stato.motivoUrgenza, "aree.urgente")}</p>
-              </div>
-            </div>
-            {gestibile ? (
-              <ModuloAzione azione={segnaGestitaAzione} campi={{ situazione: situazione.id }} etichetta={t("urgenza.gestisci")} variante="primario" />
-            ) : null}
-          </div>
-          <p className="text-xs text-text-muted">{gestibile ? t("urgenza.gestisciAiuto") : t("urgenza.scadenzaAiuto")}</p>
         </div>
       ) : null}
-
-      {origine?.correggibile ? <UrgenzaOrigine origine={origine} contesto={contesto} /> : null}
-
-      <div className="flex flex-wrap items-center gap-3">
-        {stato.archiviata ? (
-          <ModuloAzione azione={riapriSituazioneAzione} campi={{ situazione: situazione.id }} etichetta={t("riapri")} />
-        ) : (
-          <ModuloAzione azione={archiviaAzione} campi={{ situazione: situazione.id }} etichetta={t("archivia")} />
-        )}
-        <p className="text-xs text-text-muted">{stato.archiviata ? t("archiviataAiuto") : conclusa ? t("conclusaAiuto") : t("archiviaAiuto")}</p>
+      <h1 id="titolo-situazione" className="scroll-mt-6 text-2xl leading-tight sm:text-3xl">
+        <TestoSemplice come="span" testo={situazione.titolo} lingua={situazione.lingua} />
+      </h1>
+      {situazione.descrizione.trim() ? (
+        <TestoSemplice come="p" testo={situazione.descrizione} lingua={situazione.lingua} className="max-w-prose text-[15px] leading-relaxed text-text-muted" />
+      ) : null}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-0.5 text-[13px]">
+        <p className="inline-flex flex-wrap items-center gap-x-1.5 text-text-muted">
+          <Sparkles className="size-3.5 shrink-0" aria-hidden />
+          <span>
+            {t.rich("scrittoDaAi", {
+              link: (testo) => (
+                <LinkEmail emailId={situazione.emailOrigineId} className="text-accent-strong underline-offset-4 hover:underline">
+                  {testo}
+                </LinkEmail>
+              ),
+            })}
+          </span>
+          <LinkPerche analisiId={situazione.analisiId} contesto={contesto} />
+        </p>
+        <dl className="flex flex-wrap gap-x-4 gap-y-1" title={t("creata", { data: formato.dateTime(new Date(situazione.creataIl), { dateStyle: "medium" }) })}>
+          <Metadato etichetta={t("ultimaAttivita")}>
+            <Istante iso={situazione.ultimaAttivita} stile="relativo" />
+          </Metadato>
+          {stato.scadenzaPiuVicina ? (
+            <Metadato etichetta={t("scadenzaPiuVicina")}>
+              <Istante iso={stato.scadenzaPiuVicina} stile="giorno" className="font-medium" />
+            </Metadato>
+          ) : null}
+          {situazione.gestitaIl ? (
+            <Metadato etichetta={t("gestita")}>
+              <span className="inline-flex flex-wrap items-center gap-x-1">
+                <Istante iso={situazione.gestitaIl} stile="relativo" />
+                {gestione ? (
+                  <PulsanteAnnulla correzioni={[gestione.id, ...situazione.correzioni.filter((c) => c.id !== gestione.id && c.creataIl === gestione.creataIl).map((c) => c.id)]} />
+                ) : null}
+              </span>
+            </Metadato>
+          ) : null}
+        </dl>
       </div>
-      <CorrezioniElemento correzioni={situazione.correzioni} />
+      <CorrezioniElemento correzioni={altreCorrezioni} />
     </header>
   );
 }
 
-/** Urgenza dell'email d'origine: valore dell'AI con base ed evidenze, correzione e annullamento. */
-function UrgenzaOrigine({ origine, contesto }: { origine: UrgenzaEmailOrigineDto; contesto: ContestoDettaglio }) {
-  const t = useTranslations("situazione.intestazione.origine");
-  const lingua = linguaDi(contesto, origine.emailId);
-  const corretta = origine.correzioni.length > 0;
+/** Archivia o riapri, in alto a destra: azione rara e reversibile, fuori dal percorso di lettura. */
+export function PulsanteArchivio({ vista }: { vista: VistaSituazioneDto }) {
+  const t = useTranslations("situazione.intestazione");
+  const campi = { situazione: vista.situazione.id };
+  if (vista.stato.archiviata) {
+    return (
+      <ModuloAzione
+        azione={riapriSituazioneAzione}
+        campi={campi}
+        variante="fantasma"
+        etichetta={
+          <>
+            <ArchiveRestore className="size-4" aria-hidden />
+            {t("riapri")}
+          </>
+        }
+      />
+    );
+  }
   return (
-    <section aria-labelledby="urgenza-origine-titolo" className="space-y-3 rounded-[var(--radius-card)] border border-border bg-surface-raised px-4 py-3">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-0.5">
-          <h2 id="urgenza-origine-titolo" className="text-sm">
-            {t("titolo")}
-          </h2>
-          <p className="text-sm text-text-muted">
-            {origine.urgente ? t("urgente") : t("nonUrgente")} · {corretta ? t("dallUtente") : origine.urgenteAi === null ? t("nonClassificata") : t("dallAi")}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ModuloAzione
-            azione={cambiaUrgenzaAzione}
-            campi={{ email: origine.emailId, urgente: origine.urgente ? "no" : "si" }}
-            etichetta={origine.urgente ? t("togli") : t("segna")}
-          />
-          <PulsanteAnnulla correzioni={origine.correzioni.map((c) => c.id)} />
-        </div>
-      </div>
-      {origine.urgenteAi !== null ? (
-        <div className="space-y-2 border-t border-border pt-3">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted">
-            <span>{origine.urgenteAi ? t("aiUrgente") : t("aiNonUrgente")}</span>
-            {origine.urgenteAi && origine.base ? <DistintivoBase base={origine.base} /> : null}
-            <LinkPerche analisiId={origine.analisiId} contesto={contesto} />
-          </div>
-          {origine.motivazione ? <TestoSemplice come="p" testo={origine.motivazione} lingua={lingua} className="text-sm" /> : null}
-          {origine.urgenteAi ? <ElencoEvidenze evidenze={origine.evidenze} /> : null}
-        </div>
-      ) : null}
-    </section>
+    <span title={t("archiviaAiuto")}>
+      <ModuloAzione
+        azione={archiviaAzione}
+        campi={campi}
+        variante="fantasma"
+        etichetta={
+          <>
+            <Archive className="size-4" aria-hidden />
+            {t("archivia")}
+          </>
+        }
+      />
+    </span>
   );
+}
+
+/** Ancora della prima proposta dell'AI ancora da rivedere, nell'ordine della pagina. */
+function primaProposta(vista: VistaSituazioneDto): string | null {
+  const attivita = vista.attivita.find((a) => a.stato === "proposta");
+  if (attivita) return `#${ancora.attivita(attivita.id)}`;
+  const attesa = vista.attese.find((a) => a.ciclo === "proposta" && (a.stato === "aperta" || a.stato === "parziale"));
+  if (attesa) return `#${ancora.attesa(attesa.id)}`;
+  const risposta = vista.attese.flatMap((a) => a.risposte).find((r) => r.proposta && r.statoCollegamento !== "rifiutato");
+  if (risposta) return `#${ancora.risposta(risposta.id)}`;
+  const collegamento = vista.collegamenti.find((c) => c.stato === "proposto" && c.ruolo !== "origine" && c.emailId !== vista.situazione.emailOrigineId);
+  return collegamento ? `#${ancora.collegamento(collegamento.id)}` : null;
 }

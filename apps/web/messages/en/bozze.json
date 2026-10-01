@@ -19,7 +19,7 @@
   "proponi": {
     "risposta": "Draft a reply",
     "sollecito": "Draft a follow-up",
-    "consigliato": "Recommended",
+    "apriBozza": "Open draft",
     "consigliatoAiuto": "The expected date has passed, so a follow-up is recommended.",
     "inCorso": "Preparing…",
     "aiuto": "The AI writes a draft for you to review. Nothing is sent without your confirmation.",
@@ -34,8 +34,6 @@
   },
   "sezione": {
     "titolo": "Drafts",
-    "descrizione": "Replies and follow-ups prepared here. Nothing is sent until you confirm.",
-    "vuota": "No drafts yet.",
     "senzaOggetto": "Draft being written",
     "a": "To",
     "da": "From",

@@ -3,20 +3,27 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ChevronLeft } from "lucide-react";
-import { emailDellaSituazioneWeb, vistaSituazione, type CorrezioneEmailDto, type VistaSituazioneDto } from "@ec/applicazione";
+import {
+  bozzeDellaSituazione,
+  emailDellaSituazioneWeb,
+  vistaSituazione,
+  type CorrezioneEmailDto,
+  type UrgenzaEmailOrigineDto,
+  type VistaSituazioneDto,
+} from "@ec/applicazione";
 import { richiediOnboardingEssenziale } from "@/lib/server/onboarding";
 import { comeUtente } from "@/lib/server/sessione";
 import { SezioneBozze } from "@/components/bozze/sezione-bozze";
+import { ApriAncora } from "@/components/situazione/apri-ancora";
 import { SezioneAttese } from "@/components/situazione/attese";
 import { SezioneAttivita } from "@/components/situazione/attivita";
-import { SezioneCollegamenti } from "@/components/situazione/collegamenti";
 import { creaContesto } from "@/components/situazione/comuni";
 import { correzioniDelRifiuto, correzioniDellaConferma } from "@/components/situazione/correzioni-collegate";
 import { SezioneCronologia } from "@/components/situazione/cronologia";
 import { SezioneFonti } from "@/components/situazione/fonti";
-import { IntestazioneSituazione } from "@/components/situazione/intestazione";
+import { IntestazioneSituazione, PulsanteArchivio } from "@/components/situazione/intestazione";
 import { PannelloPerche, PulsantePerche } from "@/components/situazione/perche";
-import { ProssimaAzione } from "@/components/situazione/prossima-azione";
+import { emailInEvidenza, ProssimaAzione } from "@/components/situazione/prossima-azione";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("situazione");
@@ -62,44 +69,63 @@ export default async function PaginaSituazione({ params }: { params: Promise<{ i
   const dati = await comeUtente(async (ctx, dip) => {
     const vista = await vistaSituazione(dip, ctx, id);
     if (!vista) return null;
-    const email = await emailDellaSituazioneWeb(dip, ctx, vista.situazione.emailOrigineId, [
-      ...vista.fonti.map((f) => f.emailId),
-      ...vista.collegamenti.map((c) => c.emailId),
-    ]);
-    return { vista, email };
+    // Con l'email che rende urgente la Situazione: la scheda "Prossima azione" la verifica e la corregge.
+    const email = await emailDellaSituazioneWeb(
+      dip,
+      ctx,
+      vista.situazione.emailOrigineId,
+      [...vista.fonti.map((f) => f.emailId), ...vista.collegamenti.map((c) => c.emailId)],
+      vista.stato.emailUrgenteId,
+    );
+    const urgenza = email.urgente;
+    // Lette una volta: la sezione "Bozze" e "Apri bozza" al posto di una nuova richiesta per la stessa email.
+    const bozze = await bozzeDellaSituazione(ctx, vista.id);
+    return { vista, email, urgenza, bozze };
   });
   if (!dati) notFound();
   // Una Situazione assorbita in un'altra porta alla destinazione.
   if (dati.vista.id !== id) redirect(`/situations/${dati.vista.id}`);
 
-  const { vista, email } = dati;
-  const contesto = creaContesto(vista);
+  const { vista, email, urgenza, bozze } = dati;
+  const contesto = creaContesto(vista, bozze);
+  // L'urgenza dell'email d'origine si verifica nella scheda "Prossima azione" quando è lei a rendere urgente la
+  // Situazione; altrimenti la sua correzione resta, compatta, sulla scheda dell'email.
+  const urgenzaNellaProssima = Boolean(urgenza?.correggibile && urgenza.emailId === email.origine?.emailId);
 
   return (
-    <article aria-labelledby="titolo-situazione" className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <nav aria-label={t("navigazione")}>
-          <Link href="/" className="inline-flex items-center gap-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
-            <ChevronLeft className="size-4" aria-hidden />
-            {t("tornaHome")}
-          </Link>
-        </nav>
-        <PulsantePerche />
+    <article aria-labelledby="titolo-situazione" className="space-y-8">
+      <div className="space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <nav aria-label={t("navigazione")}>
+            <Link href="/" className="-ml-1 inline-flex h-8 items-center gap-1 rounded-lg px-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
+              <ChevronLeft className="size-4" aria-hidden />
+              {t("tornaHome")}
+            </Link>
+          </nav>
+          <div className="flex items-center gap-1">
+            <PulsantePerche />
+            <PulsanteArchivio vista={vista} />
+          </div>
+        </div>
+        <IntestazioneSituazione vista={vista} contesto={contesto} />
+        <ProssimaAzione vista={vista} urgenza={urgenza} contesto={contesto} />
       </div>
 
-      <div>
-        <div className="min-w-0 space-y-10">
-          <IntestazioneSituazione vista={vista} origine={email.origine} contesto={contesto} />
-          <ProssimaAzione vista={vista} contesto={contesto} />
-          <SezioneAttivita attivita={vista.attivita} contesto={contesto} />
-          <SezioneAttese attese={vista.attese} collegamenti={vista.collegamenti} contesto={contesto} />
-          <SezioneFonti fonti={vista.fonti} />
-          {vista.collegamenti.length > 0 ? <SezioneCollegamenti vista={vista} contesto={contesto} /> : null}
-          <SezioneCronologia eventi={vista.eventi} annullabili={correzioniAnnullabili(vista, email.correzioniEmail)} />
-          <SezioneBozze situazioneId={vista.id} />
-        </div>
-        <PannelloPerche vista={vista} origine={email.origine} contesto={contesto} />
-      </div>
+      {vista.attivita.length > 0 ? <SezioneAttivita attivita={vista.attivita} contesto={contesto} /> : null}
+      {vista.attese.length > 0 ? <SezioneAttese attese={vista.attese} collegamenti={vista.collegamenti} contesto={contesto} /> : null}
+      <SezioneBozze voci={bozze} />
+      <SezioneFonti
+        vista={vista}
+        origine={email.origine}
+        urgenzaQui={!urgenzaNellaProssima}
+        emailUrgenteId={urgenza?.emailId ?? null}
+        emailInEvidenza={emailInEvidenza(vista, urgenza)}
+        contesto={contesto}
+      />
+      <SezioneCronologia eventi={vista.eventi} annullabili={correzioniAnnullabili(vista, email.correzioniEmail)} />
+
+      <PannelloPerche vista={vista} urgenze={[email.origine, urgenza].filter((u): u is UrgenzaEmailOrigineDto => u !== null)} contesto={contesto} />
+      <ApriAncora />
     </article>
   );
 }
