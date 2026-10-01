@@ -14,12 +14,14 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
           { href: "/", etichetta: t("home"), icona: "home" },
           { href: "/mail", etichetta: t("posta"), icona: "posta" },
           { href: "/news", etichetta: t("news"), icona: "news" },
+        ]}
+        vociSistema={[
           { href: "/status", etichetta: t("stato"), icona: "stato" },
           { href: "/settings", etichetta: t("impostazioni"), icona: "impostazioni" },
         ]}
-        etichette={{ esci: t("esci"), tema: t("tema"), menu: t("menu") }}
+        etichette={{ esci: t("esci"), tema: t("tema"), menu: t("menu"), chiudi: t("chiudi"), navigazione: t("navigazione") }}
       />
-      <main className="min-w-0 flex-1 px-4 pt-16 pb-6 sm:px-8 lg:px-12 lg:pt-6">
+      <main className="min-w-0 flex-1 px-4 pt-20 pb-10 sm:px-8 lg:px-12 lg:pt-8">
         <div className="mx-auto w-full max-w-5xl">{children}</div>
       </main>
       <AggiornamentoAutomatico />

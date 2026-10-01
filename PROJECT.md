@@ -61,7 +61,7 @@ Prese durante la definizione dell'architettura; sostituiscono le corrispondenti 
 
 - L'interfaccia è **multilingua fin dal progetto**, con **inglese come lingua predefinita** e italiano come seconda lingua iniziale. L'utente può cambiare lingua nelle impostazioni.
 - I testi prodotti dall'AI (motivazioni, descrizioni, titoli, riepiloghi, bozze) sono **nella lingua dell'email esaminata**, indipendentemente dalla lingua dell'interfaccia. Una bozza è nella lingua dell'email a cui risponde. Una voce del riepilogo che raccoglie email in lingue diverse usa la lingua dell'interfaccia.
-- Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify (www.mintlify.com): pulito, con molto spazio bianco, tipografia curata, un solo colore d'accento verde, temi chiaro e scuro.
+- Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify (www.mintlify.com): pulito, con molto spazio bianco, tipografia curata, un solo colore d'accento blu (verde fino al 1° ottobre 2026, §2.3), temi chiaro e scuro.
 
 **Client, riepilogo e bozze**
 
