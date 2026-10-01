@@ -50,7 +50,16 @@ export interface CorrezioneDto {
 }
 
 export type ProssimaAzioneDto =
-  | { tipo: "rivedi_risposta"; rispostaId: string; attesaId: string; emailId: string; oggettoAttesa: string; valutazione: Valutazione }
+  | {
+      tipo: "rivedi_risposta";
+      rispostaId: string;
+      attesaId: string;
+      emailId: string;
+      oggettoAttesa: string;
+      /** Valutazione effettiva; `valutazioneCorretta` dice se viene da una correzione dell'utente e non dall'AI. */
+      valutazione: Valutazione;
+      valutazioneCorretta: boolean;
+    }
   | { tipo: "attivita"; attivitaId: string; descrizione: string; scadenza: Istante | null; priorita: Priorita }
   | { tipo: "sollecito"; attesaId: string; oggetto: string; destinatari: string[]; dataAttesa: Istante | null }
   | { tipo: "attendi"; attesaId: string; oggetto: string; destinatari: string[]; dataAttesa: Istante | null }
@@ -112,6 +121,8 @@ export interface VistaNewsDto {
 
 export interface VistaHome {
   ora: Istante;
+  /** Caselle collegate dall'utente: con una sola, la casella di provenienza non si ripete su ogni Situazione. */
+  numeroCaselle: number;
   aree: Record<Area, CardSituazione[]>;
   avvisi: Avviso[];
   importazioni: ImportazioneDto[];

@@ -22,10 +22,8 @@ export default async function Home() {
 
   const conteggi = Object.fromEntries(AREE.map((a) => [a, vista.aree[a].length])) as Record<Area, number>;
   const areeAperte = AREE.filter((a) => conteggi[a] > 0);
-  // La casella compare sulle card solo se quelle mostrate provengono da più di una casella: con una sola,
-  // ripeterla ovunque non dice nulla. Regola indicata dal lead; il conteggio delle caselle collegate non è
-  // ancora nella vista della home (vedi PROJECT.md, Home).
-  const mostraCaselle = new Set(AREE.flatMap((a) => vista.aree[a].flatMap((c) => c.caselle))).size > 1;
+  // Con una sola casella collegata ripeterla su ogni card non dice nulla (PROJECT.md §2.3).
+  const mostraCaselle = vista.numeroCaselle > 1;
   // "Tutto in ordine" solo se nulla spiega il vuoto: con avvisi o importazioni l'analisi potrebbe non essere girata.
   const tuttoFatto = areeAperte.length === 0 && vista.avvisi.length === 0 && vista.importazioni.length === 0;
 

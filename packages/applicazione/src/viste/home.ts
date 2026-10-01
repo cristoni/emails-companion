@@ -30,6 +30,7 @@ export async function vistaHome(dip: DipendenzeViste, ctx: ContestoUtente): Prom
 
   return {
     ora: iso(ora),
+    numeroCaselle: caselle.length,
     aree,
     avvisi: await avvisi(dip, ctx, caselle),
     importazioni: caselle

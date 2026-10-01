@@ -166,7 +166,13 @@ describe("riapertura di un'Attesa chiusa dall'AI (§10.3)", () => {
     // La chiusura dell'AI resta visibile in Risposte arrivate.
     let home = await s.perUtente(utente, (ctx) => vistaHome(s.dip, ctx));
     expect(home.aree.risposte_arrivate.map((c) => c.id)).toEqual([situazioneId]);
-    expect(home.aree.risposte_arrivate[0]!.prossimaAzione).toMatchObject({ tipo: "rivedi_risposta", rispostaId: r1.id, oggettoAttesa: "Dati di agosto" });
+    expect(home.aree.risposte_arrivate[0]!.prossimaAzione).toMatchObject({
+      tipo: "rivedi_risposta",
+      rispostaId: r1.id,
+      oggettoAttesa: "Dati di agosto",
+      valutazione: "completa",
+      valutazioneCorretta: false,
+    });
 
     // L'utente corregge la valutazione: l'Attesa si riapre.
     const correzione = await s.perUtente(utente, (ctx) => correggiValutazione(s.dip, ctx, r1.id, "non_pertinente"));
@@ -178,6 +184,9 @@ describe("riapertura di un'Attesa chiusa dall'AI (§10.3)", () => {
     expect(attesa.risposte[0]!.valutazione).toBe("non_pertinente");
     expect(attesa.risposte[0]!.valutazioneAi).toBe("completa");
     expect(v.eventi.map((e) => e.tipo)).toContain("valutazione_corretta");
+    // In home la valutazione corretta non è presentata come dell'AI.
+    home = await s.perUtente(utente, (ctx) => vistaHome(s.dip, ctx));
+    expect(home.aree.risposte_arrivate[0]?.prossimaAzione).toMatchObject({ tipo: "rivedi_risposta", valutazione: "non_pertinente", valutazioneCorretta: true });
 
     // La rianalisi (riconciliazione ripetuta) di R1 non la richiude.
     const r1Email = r1.emailId;

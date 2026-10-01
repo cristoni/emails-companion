@@ -36,9 +36,8 @@ export function ProssimaAzione({ azione, lingua, titolo }: { azione: ProssimaAzi
 
   switch (azione.tipo) {
     case "rivedi_risposta": {
-      // La valutazione è quella effettiva: se l'utente l'ha corretta non va presentata come dell'AI. Il DTO della
-      // home non dice ancora se è corretta (richiesto `valutazioneCorretta`): finché manca vale come dell'AI.
-      const corretta = "valutazioneCorretta" in azione && azione.valutazioneCorretta === true;
+      // La valutazione è quella effettiva: se l'utente l'ha corretta non va presentata come dell'AI.
+      const corretta = azione.valutazioneCorretta;
       const chi = corretta ? t("valutazioneTua") : t("valutazioneAi");
       return (
         <Passo icona={<Reply className="text-reply" />} testo={t("rivediRisposta")} oggetto={oggetto(azione.oggettoAttesa)} lingua={lingua}>

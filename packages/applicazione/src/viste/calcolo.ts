@@ -216,7 +216,16 @@ export function prossimaAzioneDto(calc: SituazioneCalcolata): ProssimaAzioneDto 
       const r = calc.risposte.find((x) => x.id === p.rispostaId);
       const a = r ? calc.attese.find((x) => x.attesa.id === r.attesaId)?.attesa : undefined;
       if (!r || !a) return { tipo: "nessuna" };
-      return { tipo: "rivedi_risposta", rispostaId: r.id, attesaId: a.id, emailId: r.emailId, oggettoAttesa: a.oggetto, valutazione: valutazioneEffettiva(r, calc.correzioni) };
+      const valutazione = valoreEffettivo<Valutazione>(r.valutazione, calc.correzioni, { tipo: "risposta", id: r.id }, "valutazione");
+      return {
+        tipo: "rivedi_risposta",
+        rispostaId: r.id,
+        attesaId: a.id,
+        emailId: r.emailId,
+        oggettoAttesa: a.oggetto,
+        valutazione: valutazione.valore,
+        valutazioneCorretta: valutazione.corretto,
+      };
     }
     case "attivita": {
       const a = calc.attivita.find((x) => x.id === p.attivitaId);
