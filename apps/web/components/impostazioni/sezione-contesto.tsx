@@ -1,23 +1,27 @@
 import { useTranslations } from "next-intl";
-import { History } from "lucide-react";
 import type { VistaImpostazioniDto } from "@ec/applicazione";
 import { ripristinaDirettivePredefiniteAzione, ripristinaVersioneContestoAzione } from "@/app/(app)/settings/azioni";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { Distintivo } from "@/components/ui/distintivo";
+import { Espandibile } from "@/components/ui/espandibile";
 import { ConfermaAzione } from "./conferma-azione";
 import { ModuloContesto } from "./modulo-contesto";
 import { Sezione } from "./sezione";
 
+const CLASSE_LINK = "text-accent-strong underline-offset-4 hover:underline";
+
 /**
- * Sezione `#ai-context`: testo della versione corrente modificabile (ogni salvataggio è una nuova versione),
- * cronologia con "Ripristina" e ripristino delle Direttive predefinite. `predefinite` arriva dalla pagina,
- * che la legge da `@ec/ai` sul server.
+ * Sezione `#ai-context`: sotto il titolo una sola riga di stato (direttive predefinite o versione in uso), il testo modificabile
+ * (ogni salvataggio è una nuova versione) e, a richiesta, la cronologia con "Ripristina" e il ritorno alle
+ * Direttive predefinite, offerto solo quando non sono già in uso. `predefinite` arriva dalla pagina, che la
+ * legge da `@ec/ai` sul server.
  */
 export function SezioneContesto({ contesto, predefinite }: { contesto: VistaImpostazioniDto["contestoAi"]; predefinite: string }) {
   const t = useTranslations("impostazioni");
   const corrente = contesto.versioni.find((v) => v.numero === contesto.corrente) ?? null;
+  const usaPredefinite = !corrente || corrente.testo === predefinite;
   const messaggi = {
     ok: t("contesto.esiti.ok"),
     non_trovata: t("contesto.esiti.non_trovata"),
@@ -25,47 +29,43 @@ export function SezioneContesto({ contesto, predefinite }: { contesto: VistaImpo
   };
 
   return (
-    <Sezione id="ai-context" titolo={t("contesto.titolo")} descrizione={t("contesto.descrizione")}>
-      <div id="ai-context-aiuto" className="space-y-1 rounded-lg border border-border bg-surface-muted px-4 py-3">
-        <p>{t("contesto.ambito")}</p>
-        <a href="#reanalyse" className="text-accent-strong underline-offset-4 hover:underline">
-          {t("contesto.vaiRianalisi")}
-        </a>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 text-text-muted">
-        {corrente ? (
+    <Sezione
+      id="ai-context"
+      titolo={t("contesto.titolo")}
+      descrizione={
+        corrente && !usaPredefinite ? (
           <>
-            <Distintivo tono="accento">{t("contesto.inUsoVersione", { numero: corrente.numero })}</Distintivo>
-            <Istante iso={corrente.creatoIl} stile="data_ora" className="text-xs" />
+            {t("contesto.inUsoVersione", { numero: corrente.numero })} · <Istante iso={corrente.creatoIl} stile="data_ora" />
           </>
         ) : (
-          <>
-            <Distintivo tono="neutro">{t("contesto.inUsoPredefinite")}</Distintivo>
-            <span className="text-xs">{t("contesto.senzaVersioni")}</span>
-          </>
-        )}
-      </div>
-
-      <ModuloContesto iniziale={corrente?.testo ?? predefinite} idAiuto="ai-context-aiuto" />
-
-      <ConfermaAzione
-        azione={ripristinaDirettivePredefiniteAzione}
-        etichetta={t("contesto.predefinite.etichetta")}
-        titolo={t("contesto.predefinite.titolo")}
-        punti={[t("contesto.predefinite.testo")]}
-        conferma={t("contesto.predefinite.conferma")}
-        annulla={t("annulla")}
-        variante="secondario"
+          t("contesto.inUsoPredefinite")
+        )
+      }
+    >
+      <ModuloContesto
+        iniziale={corrente?.testo ?? predefinite}
+        aiuto={t.rich("contesto.aiuto", {
+          rianalisi: (parti) => (
+            <a href="#reanalyse" className={CLASSE_LINK}>
+              {parti}
+            </a>
+          ),
+        })}
       />
 
       {contesto.versioni.length > 0 ? (
-        <div className="space-y-3 border-t border-border pt-5">
-          <div className="flex items-center gap-2">
-            <History className="size-4 text-text-muted" aria-hidden />
-            <h3 className="text-sm font-semibold">{t("contesto.versioni")}</h3>
-          </div>
-          <p className="text-xs text-text-muted">{t("contesto.ripristinaAiuto")}</p>
+        <Espandibile titolo={t("contesto.versioni", { numero: contesto.versioni.length })} classeContenuto="space-y-3">
+          {usaPredefinite ? null : (
+            <ConfermaAzione
+              azione={ripristinaDirettivePredefiniteAzione}
+              etichetta={t("contesto.predefinite.etichetta")}
+              titolo={t("contesto.predefinite.titolo")}
+              punti={[t("contesto.predefinite.testo")]}
+              conferma={t("contesto.predefinite.conferma")}
+              annulla={t("annulla")}
+              variante="secondario"
+            />
+          )}
           <ol className="divide-y divide-border rounded-lg border border-border">
             {contesto.versioni.map((v) => {
               const inUso = v.numero === contesto.corrente;
@@ -86,18 +86,17 @@ export function SezioneContesto({ contesto, predefinite }: { contesto: VistaImpo
                       />
                     )}
                   </div>
-                  <details className="group">
-                    <summary className="cursor-pointer text-xs text-accent-strong underline-offset-4 hover:underline">{t("contesto.mostra")}</summary>
+                  <Espandibile titolo={t("contesto.mostra")}>
                     <TestoSemplice
                       testo={v.testo}
-                      className="mt-2 max-h-72 overflow-y-auto rounded-lg border border-border bg-surface-muted px-3 py-2 font-mono text-[13px] leading-relaxed"
+                      className="max-h-72 overflow-y-auto rounded-lg border border-border bg-surface-muted px-3 py-2 text-[13px] leading-relaxed"
                     />
-                  </details>
+                  </Espandibile>
                 </li>
               );
             })}
           </ol>
-        </div>
+        </Espandibile>
       ) : null}
     </Sezione>
   );

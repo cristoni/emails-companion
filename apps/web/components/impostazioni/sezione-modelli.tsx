@@ -1,13 +1,15 @@
 import { useTranslations } from "next-intl";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, ChevronDown } from "lucide-react";
 import type { VistaImpostazioniDto } from "@ec/applicazione";
 import { ripristinaModelloAzione } from "@/app/(app)/settings/azioni";
 import type { Traduttore } from "@/components/comuni/codici";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { Distintivo } from "@/components/ui/distintivo";
+import { cn } from "@/components/ui/cn";
+import { DettagliStabili } from "./dettagli-stabili";
 import { ModuloModello } from "./modulo-modello";
-import { Dato, Sezione } from "./sezione";
+import { RigaMeta, Sezione } from "./sezione";
 
 type VoceModello = VistaImpostazioniDto["modelli"][number];
 
@@ -24,7 +26,33 @@ export function testiFunzione(t: Traduttore, tc: Traduttore, funzione: string): 
   };
 }
 
-/** Sezione `#models`: un modello OpenRouter per ogni Funzione AI, con compatibilità e ripristino del predefinito. */
+/**
+ * ID di un modello (`fornitore/modello`) che, se non entra nella riga, va a capo dopo la barra o dopo un
+ * trattino, mai a metà di una parola salvo che una parte sia più larga dell'intera colonna.
+ */
+function IdModello({ id, className }: { id: string; className?: string }) {
+  const barra = id.indexOf("/");
+  return (
+    <code className={cn("font-mono [overflow-wrap:anywhere]", className)}>
+      {barra === -1 ? (
+        id
+      ) : (
+        <>
+          {id.slice(0, barra + 1)}
+          <wbr />
+          {id.slice(barra + 1)}
+        </>
+      )}
+    </code>
+  );
+}
+
+/**
+ * Sezione `#models`: una riga per Funzione AI con scopo e dati letti, il modello in uso (una sola volta),
+ * "Personalizzato" solo se diverso dal predefinito e lo stato solo se c'è un problema. La riga si apre sul
+ * modulo per cambiare modello e sul ripristino del predefinito; una funzione in pausa per il modello è già aperta
+ * al caricamento e resta aperta dopo il salvataggio, così l'esito si vede.
+ */
 export function SezioneModelli({ modelli }: { modelli: VoceModello[] }) {
   const t = useTranslations("impostazioni");
   const tc = useTranslations("comuni");
@@ -37,53 +65,65 @@ export function SezioneModelli({ modelli }: { modelli: VoceModello[] }) {
 
   return (
     <Sezione id="models" titolo={t("modelli.titolo")} descrizione={t("modelli.descrizione")}>
-      <p id="models-aiuto" className="text-text-muted">
-        {t("modelli.aiuto")}
-      </p>
-      <ul className="divide-y divide-border rounded-lg border border-border">
+      <ul className="-mt-1 divide-y divide-border">
         {modelli.map((m) => {
           const { nome, descrizione } = testiFunzione(t, tc, m.funzione);
           const ok = m.stato === "ok";
-          const predefinito = m.modello === m.predefinito;
+          const personalizzato = m.modello !== m.predefinito;
           return (
-            <li key={m.funzione} className="space-y-4 px-4 py-4">
-              <div className="space-y-1">
-                <h3 className="text-sm font-semibold">{nome}</h3>
-                <p className="text-text-muted">{descrizione}</p>
-              </div>
-
-              <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Dato etichetta={t("modelli.modello")}>
-                  <span className="font-mono break-all">{m.modello}</span>
-                </Dato>
-                <Dato etichetta={t("modelli.predefinito")}>
-                  <span className="font-mono break-all">{m.predefinito}</span>
-                </Dato>
-                <Dato etichetta={t("modelli.compatibilita")}>
-                  <span title={t(`modelli.statiAiuto.${m.stato}`)}>
-                    <Distintivo
-                      tono={ok ? "accento" : "pericolo"}
-                      icona={ok ? <CheckCircle2 className="size-3" aria-hidden /> : <AlertTriangle className="size-3" aria-hidden />}
-                    >
-                      {t(`modelli.stati.${m.stato}`)}
-                    </Distintivo>
+            <li key={m.funzione}>
+              <DettagliStabili apertoIniziale={!ok} className="group/modello">
+                <summary className="flex cursor-pointer list-none flex-col gap-1.5 py-3 select-none sm:flex-row sm:items-start sm:gap-6 [&::-webkit-details-marker]:hidden">
+                  <span className="block min-w-0 flex-1 space-y-0.5">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">{nome}</span>
+                      {personalizzato ? <Distintivo tono="neutro">{t("modelli.personalizzato")}</Distintivo> : null}
+                      {ok ? null : (
+                        <Distintivo tono="pericolo" icona={<AlertTriangle className="size-3" aria-hidden />}>
+                          {t(`modelli.stati.${m.stato}`)}
+                        </Distintivo>
+                      )}
+                    </span>
+                    <span className="block text-text-muted">{descrizione}</span>
                   </span>
-                </Dato>
-                <Dato etichetta={t("modelli.verificato")}>
-                  <Istante iso={m.verificataIl} stile="data_ora" />
-                </Dato>
-              </dl>
-
-              {ok ? null : <p className="text-danger">{t(`modelli.statiAiuto.${m.stato}`)}</p>}
-
-              <div className="space-y-2">
-                <ModuloModello funzione={m.funzione} modello={m.modello} nomeFunzione={nome} idAiuto="models-aiuto" />
-                {predefinito ? (
-                  <Distintivo tono="neutro">{t("modelli.usaPredefinito")}</Distintivo>
-                ) : (
-                  <ModuloAzione azione={ripristinaModelloAzione} campi={{ funzione: m.funzione }} etichetta={t("modelli.ripristina")} variante="fantasma" messaggi={messaggiRipristino} />
-                )}
-              </div>
+                  <span className="flex min-w-0 items-center gap-2 sm:max-w-[45%] sm:shrink-0 sm:pt-0.5">
+                    <IdModello id={m.modello} className="min-w-0 text-xs text-text-muted" />
+                    <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-accent-strong sm:ml-0">
+                      {t("modelli.cambia")}
+                      <ChevronDown className="size-3.5 transition-transform group-open/modello:rotate-180" aria-hidden />
+                    </span>
+                  </span>
+                </summary>
+                <div className="space-y-2 pb-4">
+                  {ok ? null : <p className="text-danger">{t(`modelli.statiAiuto.${m.stato}`)}</p>}
+                  <ModuloModello funzione={m.funzione} modello={m.modello} nomeFunzione={nome} />
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <RigaMeta
+                      parti={[
+                        personalizzato ? (
+                          <span>
+                            {t("modelli.predefinito")} <IdModello id={m.predefinito} />
+                          </span>
+                        ) : null,
+                        m.verificataIl ? (
+                          <span>
+                            {t("modelli.verificato")} <Istante iso={m.verificataIl} stile="data_ora" />
+                          </span>
+                        ) : null,
+                      ]}
+                    />
+                    {personalizzato ? (
+                      <ModuloAzione
+                        azione={ripristinaModelloAzione}
+                        campi={{ funzione: m.funzione }}
+                        etichetta={t("modelli.ripristina")}
+                        variante="fantasma"
+                        messaggi={messaggiRipristino}
+                      />
+                    ) : null}
+                  </div>
+                </div>
+              </DettagliStabili>
             </li>
           );
         })}

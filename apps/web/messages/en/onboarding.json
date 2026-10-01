@@ -1,14 +1,19 @@
 {
   "titolo": "Set up your workspace",
-  "descrizione": "A few steps before your mail becomes a list of things to do.",
-  "fatto": "Done",
-  "daFare": "To do",
+  "progresso": "{fatti} of {totale} done",
+  "fatto": "done",
+  "daFare": "to do",
+  "facoltativo": "Optional",
+  "rivedi": "Review",
+  "modifica": "Change",
+  "personalizza": "Customise",
   "vaiHome": "Go to your home",
   "vaiHomeComunque": "Skip for now",
+  "requisitiHome": "Accept the privacy notice and save an OpenRouter key to open your home.",
   "informativa": {
     "titolo": "Privacy notice",
     "dati": "We read your Gmail messages and store their text and headers encrypted while the mailbox stays connected.",
-    "modelli": "Email text is sent to AI models through OpenRouter with your key, only to providers with zero data retention.",
+    "modelli": "Email text goes to AI models through OpenRouter with your key, only to providers that keep no data.",
     "conservazione": "Disconnecting a mailbox or deleting your account removes everything derived from it.",
     "limitedUse": "The use of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.",
     "completa": "Read the full notice",
@@ -16,11 +21,11 @@
     "accettata": "You accepted this notice."
   },
   "chiave": {
-    "titolo": "Your OpenRouter key",
-    "spiegazione": "All AI analysis runs with your own OpenRouter key. It is verified, stored encrypted and never shown again.",
-    "etichetta": "API key",
+    "titolo": "OpenRouter key",
+    "spiegazione": "All AI analysis runs on your own key. It's stored encrypted and never shown in full.",
+    "etichetta": "OpenRouter API key",
     "verifica": "Verify and save",
-    "consiglio": "Tip: create a dedicated key with a credit limit. Prompt logging settings on your OpenRouter account stay under your control.",
+    "consiglio": "Tip: use a key just for this app, with a credit limit. Whether OpenRouter logs requests is up to your OpenRouter account settings.",
     "salvata": "Saved key ending in {cifre} — {stato}",
     "stati": {
       "non_verificata": "not verified",
@@ -33,15 +38,19 @@
       "valida": "Key verified and saved.",
       "non_valida": "OpenRouter rejected this key.",
       "credito_esaurito": "The key is valid but has no credit left.",
-      "errore_temporaneo": "OpenRouter could not be reached. Try again in a moment.",
-      "formato_non_valido": "This does not look like an OpenRouter key."
+      "errore_temporaneo": "OpenRouter couldn't be reached. Try again in a moment.",
+      "formato_non_valido": "This doesn't look like an OpenRouter key.",
+      "vuota": "Paste a key first.",
+      "errore": "Something went wrong. Try again."
     }
   },
   "contesto": {
     "titolo": "AI context",
-    "spiegazione": "Tell the assistant what matters to you: important senders, what counts as urgent, what is just News & FYI. These are the default directives; edit them freely.",
+    "spiegazione": "Tell the AI what matters to you: important senders, what's urgent, what's just News. You can change this later in Settings.",
+    "predefinite": "Using the default directives",
+    "personali": "Using your directives",
     "etichetta": "Your directives",
-    "salva": "Save AI context",
+    "salva": "Save",
     "salvato": "Saved.",
     "esiti": {
       "troppo_lungo": "The AI context can be at most 20,000 characters. Shorten it and save again.",
@@ -51,12 +60,15 @@
   },
   "importazione": {
     "titolo": "Initial import",
-    "spiegazione": "We analyse the last 14 days of received mail and 30 days of sent mail, newest first. Your home fills in when the analysis is done.",
-    "nessunaCasella": "No connected mailbox yet.",
-    "stima": "{numero} emails, estimated cost {costo}",
+    "spiegazione": "We analyse the last 14 days of received mail and 30 days of sent mail.",
+    "nessunaCasella": "No mailbox connected yet.",
+    "collega": "Connect Gmail",
+    "stima": "{numero, plural, one {# email} other {# emails}} · about {costo}",
     "conferma": "Start import",
-    "rinvia": "Later",
+    "rinvia": "Not now",
     "autorizza": "Authorise Gmail",
+    "requisiti": "Accept the privacy notice and save a valid key first (steps 1–2).",
+    "primaAccesso": "Authorise this mailbox first.",
     "fasi": {
       "da_stimare": "Estimating…",
       "stimata": "Estimate ready",
@@ -66,6 +78,5 @@
       "completata": "Import completed",
       "errore": "Import failed"
     }
-  },
-  "requisitiHome": "Accept the privacy notice and save an OpenRouter key to open the home page."
+  }
 }

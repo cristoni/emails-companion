@@ -11,6 +11,10 @@ import { cn } from "@/components/ui/cn";
  * Azione che chiede una conferma esplicita in un pannello che ne elenca le conseguenze (per esempio
  * scollegare una casella o rimuovere la chiave). Il primo pulsante apre il pannello, solo il secondo invia
  * l'azione. L'esito è un codice tradotto con `messaggi`, poi con `comuni.esiti`.
+ *
+ * Con `discreta` il primo pulsante è un comando secondario (testo rosso senza riempimento) allineato a
+ * destra, e il pannello aperto occupa tutta la riga anche dentro un contenitore flessibile che va a capo:
+ * le azioni distruttive non sono più evidenti di quelle utili. Pannello e conferma restano quelli pericolosi.
  */
 export function ConfermaAzione({
   azione,
@@ -21,6 +25,7 @@ export function ConfermaAzione({
   conferma,
   annulla,
   variante = "pericolo",
+  discreta = false,
   messaggi = {},
   className,
 }: {
@@ -32,6 +37,7 @@ export function ConfermaAzione({
   conferma: string;
   annulla: string;
   variante?: VariantePulsante;
+  discreta?: boolean;
   messaggi?: Record<string, string>;
   className?: string;
 }) {
@@ -57,12 +63,20 @@ export function ConfermaAzione({
 
   const esito = stato?.esito;
   const testoEsito = esito && esito !== "ok" ? (messaggi[esito] ?? testoCodice(t, "esiti", esito, "esiti.errore")) : null;
-  const pericolosa = variante === "pericolo";
+  const pericolosa = variante === "pericolo" || discreta;
 
   if (!aperto) {
     return (
-      <div className={cn("space-y-2", className)}>
-        <Pulsante id={idPulsante} variante={variante} dimensione="sm" onClick={() => setAperto(true)} aria-expanded={false}>
+      <div className={cn(discreta ? "-my-1.5 ml-auto flex flex-col items-end gap-1" : "space-y-2", className)}>
+        <Pulsante
+          id={idPulsante}
+          variante={discreta ? "fantasma" : variante}
+          dimensione="sm"
+          onClick={() => setAperto(true)}
+          aria-expanded={false}
+          // Il margine negativo allinea il testo rosso al bordo del contenuto, come gli altri comandi a destra.
+          className={discreta ? "-mr-3 text-danger hover:bg-danger-soft hover:text-danger" : undefined}
+        >
           {etichetta}
         </Pulsante>
         {testoEsito ? (
@@ -83,6 +97,7 @@ export function ConfermaAzione({
       className={cn(
         "space-y-3 rounded-lg border px-4 py-3 text-sm",
         pericolosa ? "border-danger/30 bg-danger-soft" : "border-border bg-surface-muted",
+        discreta && "basis-full",
         className,
       )}
     >

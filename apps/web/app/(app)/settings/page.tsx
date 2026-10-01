@@ -7,14 +7,15 @@ import { fusoValido } from "@/lib/server/preferenze";
 import { comeUtente } from "@/lib/server/sessione";
 import { testoCodice } from "@/components/comuni/codici";
 import { nomeFunzione, SEZIONE_MOTIVO_PAUSA } from "@/components/stato/testi";
-import { IndiceImpostazioni, SezioneAccount, SezionePrivacy, SezioneRianalisi } from "@/components/impostazioni/altre-sezioni";
+import { GruppoPrivacy, SezioneRianalisi } from "@/components/impostazioni/altre-sezioni";
 import { temaDa } from "@/components/impostazioni/formato";
+import { IndiceImpostazioni } from "@/components/impostazioni/indice";
+import { Gruppo } from "@/components/impostazioni/sezione";
 import { SezioneCaselle } from "@/components/impostazioni/sezione-caselle";
 import { SezioneChiave } from "@/components/impostazioni/sezione-chiave";
-import { SezioneConsumo } from "@/components/impostazioni/sezione-consumo";
 import { SezioneContesto } from "@/components/impostazioni/sezione-contesto";
 import { SezioneModelli } from "@/components/impostazioni/sezione-modelli";
-import { SezionePreferenze } from "@/components/impostazioni/sezione-preferenze";
+import { GruppoPreferenze, SezionePausa } from "@/components/impostazioni/sezione-preferenze";
 import { Avviso } from "@/components/ui/avviso";
 import { IntestazionePagina } from "@/components/ui/pagina";
 
@@ -49,8 +50,10 @@ function elencoFusi(corrente: string): string[] {
 }
 
 /**
- * `/settings`: caselle, chiave OpenRouter, modello per Funzione AI, Contesto AI, preferenze e pausa,
- * consumo, rianalisi, privacy ed eliminazione dell'account. Non chiama `richiediOnboardingEssenziale`:
+ * `/settings`, in quattro gruppi: Collegamenti (caselle, chiave OpenRouter con il consumo), AI (pausa,
+ * Contesto AI, modello per Funzione AI, rianalisi), Preferenze (lingua, tema, fuso) e Privacy e account.
+ * Ogni sezione mantiene la sua ancora (`#mailboxes`, `#openrouter`, `#usage`, `#pause`, `#ai-context`,
+ * `#models`, `#reanalyse`, `#preferences`, `#privacy`, `#account`). Non chiama `richiediOnboardingEssenziale`:
  * serve proprio a sistemare chiave e caselle.
  */
 export default async function PaginaImpostazioni({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -69,10 +72,12 @@ export default async function PaginaImpostazioni({ searchParams }: { searchParam
   const lingue = LINGUE.map((codice) => ({ codice, nome: t(`preferenze.lingue.${codice}`) }));
   const lingua = (LINGUE as readonly string[]).includes(vista.preferenze.lingua) ? vista.preferenze.lingua : LINGUE[0];
   const importazionePossibile = vista.consenso.accettato && vista.chiave?.stato === "valida";
+  // La pausa decisa dall'utente ha già stato e "Riprendi" nella sezione `#pause`: l'avviso elenca solo le altre cause.
+  const pauseDaRisolvere = pause.filter((p) => p.motivo !== "pausa_manuale");
 
   return (
     <div className="space-y-6">
-      <IntestazionePagina titolo={t("titolo")} descrizione={t("descrizione")} />
+      <IntestazionePagina titolo={t("titolo")} />
 
       {esito ? (
         <Avviso
@@ -88,16 +93,16 @@ export default async function PaginaImpostazioni({ searchParams }: { searchParam
         </Avviso>
       ) : null}
 
-      {pause.length > 0 ? (
+      {pauseDaRisolvere.length > 0 ? (
         <Avviso tono="attenzione" titolo={t("pauseAttive.titolo")}>
           <ul className="mt-1 space-y-1">
-            {pause.map((p) => (
+            {pauseDaRisolvere.map((p) => (
               <li key={`${p.funzione}-${p.motivo}`}>
                 <span className="text-text">{testoCodice(tc, "motiviPausa", p.motivo, "errori.sconosciuto")}</span>
                 {p.funzione === "*" ? null : <> · {nomeFunzione(tr, p.funzione)}</>}
                 {" · "}
-                <a href={`#${SEZIONE_MOTIVO_PAUSA[p.motivo] ?? "preferences"}`} className="text-accent-strong underline-offset-4 hover:underline">
-                  {p.motivo === "pausa_manuale" ? t("pauseAttive.riprendi") : t("pauseAttive.risolvi")}
+                <a href={`#${SEZIONE_MOTIVO_PAUSA[p.motivo] ?? "pause"}`} className="text-accent-strong underline-offset-4 hover:underline">
+                  {t("pauseAttive.risolvi")}
                 </a>
               </li>
             ))}
@@ -106,27 +111,24 @@ export default async function PaginaImpostazioni({ searchParams }: { searchParam
         </Avviso>
       ) : null}
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_11rem]">
-        <aside className="lg:order-2">
+      {/* L'indice diventa una colonna solo da xl: tra 1024 e 1280 px toglierebbe troppo spazio alle sezioni. */}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_11rem] xl:gap-10">
+        <aside className="min-w-0 xl:order-2">
           <IndiceImpostazioni />
         </aside>
-        <div className="min-w-0 space-y-8 lg:order-1">
-          <SezioneCaselle caselle={vista.caselle} stime={stime} importazionePossibile={importazionePossibile} />
-          <SezioneChiave chiave={vista.chiave} />
-          <SezioneModelli modelli={vista.modelli} />
-          <SezioneContesto contesto={vista.contestoAi} predefinite={DIRETTIVE_PREDEFINITE} />
-          <SezionePreferenze
-            lingua={lingua}
-            lingue={lingue}
-            tema={temaDa(vista.preferenze.tema)}
-            fuso={fuso}
-            fusi={elencoFusi(fuso)}
-            pausaManuale={vista.preferenze.pausaManuale}
-          />
-          <SezioneConsumo consumo={vista.consumo} />
-          <SezioneRianalisi pausaAttiva={pause.some((p) => FUNZIONI_RIANALISI.has(p.funzione))} />
-          <SezionePrivacy consenso={vista.consenso} />
-          <SezioneAccount />
+        <div className="min-w-0 space-y-8 xl:order-1">
+          <Gruppo titolo={t("gruppi.collegamenti")}>
+            <SezioneCaselle caselle={vista.caselle} stime={stime} importazionePossibile={importazionePossibile} />
+            <SezioneChiave chiave={vista.chiave} consumo={vista.consumo} />
+          </Gruppo>
+          <Gruppo titolo={t("gruppi.ai")}>
+            <SezionePausa pausaManuale={vista.preferenze.pausaManuale} />
+            <SezioneContesto contesto={vista.contestoAi} predefinite={DIRETTIVE_PREDEFINITE} />
+            <SezioneModelli modelli={vista.modelli} />
+            <SezioneRianalisi pausaAttiva={pause.some((p) => FUNZIONI_RIANALISI.has(p.funzione))} />
+          </Gruppo>
+          <GruppoPreferenze lingua={lingua} lingue={lingue} tema={temaDa(vista.preferenze.tema)} fuso={fuso} fusi={elencoFusi(fuso)} />
+          <GruppoPrivacy consenso={vista.consenso} />
         </div>
       </div>
     </div>

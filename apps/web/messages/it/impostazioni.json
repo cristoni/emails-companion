@@ -1,18 +1,22 @@
 {
   "titolo": "Impostazioni",
-  "descrizione": "Caselle, chiave OpenRouter, modelli AI e modo in cui l’assistente legge la tua posta.",
   "annulla": "Annulla",
+  "gruppi": {
+    "collegamenti": "Collegamenti",
+    "ai": "AI",
+    "preferenze": "Preferenze",
+    "privacy": "Privacy e account"
+  },
   "indice": {
     "etichetta": "In questa pagina",
     "caselle": "Caselle",
     "chiave": "Chiave OpenRouter",
-    "modelli": "Modelli AI",
+    "modelli": "Modelli",
     "contesto": "Contesto AI",
-    "preferenze": "Preferenze",
-    "consumo": "Consumo",
     "rianalisi": "Rianalizza",
-    "privacy": "Privacy",
-    "account": "Account"
+    "privacy": "Informativa",
+    "account": "Elimina l’account",
+    "pausa": "Analisi AI"
   },
   "esitiCollegamento": {
     "casella_collegata": {
@@ -54,44 +58,36 @@
   },
   "pauseAttive": {
     "titolo": "L’analisi AI è in pausa",
-    "testo": "La posta continua a sincronizzarsi e le email nuove attendono l’analisi, che riprende da sola quando la causa è risolta.",
-    "risolvi": "Risolvi",
-    "riprendi": "Riprendi"
+    "testo": "La posta continua a sincronizzarsi. L’analisi riprende quando la causa è risolta.",
+    "risolvi": "Risolvi"
   },
   "caselle": {
-    "titolo": "Caselle collegate",
-    "descrizione": "L’app legge e invia la posta tramite queste caselle. Ogni elemento della home indica la casella da cui proviene.",
+    "titolo": "Caselle",
     "collega": "Collega un’altra casella",
-    "nessuna": "Nessuna casella collegata",
-    "nessunaTesto": "Collega una casella Gmail per iniziare a costruire la tua home.",
-    "connettore": "Connettore di posta",
+    "nessuna": "Nessuna casella collegata.",
     "connettori": {
       "gmail": "Gmail",
       "altro": "Altro connettore"
     },
-    "collegataIl": "Collegata",
-    "permessi": "Permessi",
+    "collegataIl": "collegata il",
     "lettura": "Lettura",
     "invio": "Invio",
     "concesso": "concesso",
     "mancante": "mancante",
-    "importazione": "Importazione iniziale",
     "ricollega": "Ricollega",
-    "ricollegaTesto": "L’accesso Google è stato revocato o è scaduto, quindi la sincronizzazione è in pausa. Ricollega lo stesso account: i tuoi dati restano.",
+    "ricollegaTesto": "L’accesso Google è stato revocato o è scaduto, quindi la sincronizzazione è in pausa. Ricollega lo stesso account: i dati restano.",
     "autorizza": "Autorizza",
-    "autorizzaTesto": "Lettura o invio non sono stati consentiti. Autorizza di nuovo e consenti entrambi nella schermata di consenso di Google.",
+    "autorizzaTesto": "Lettura o invio non sono stati consentiti. Autorizza di nuovo e consenti entrambi nella schermata di Google.",
     "scollegamentoInCorso": "Scollegamento in corso: l’accesso Google viene revocato e i dati di questa casella eliminati.",
     "stima": {
       "titolo": "Importazione iniziale pronta",
-      "testo": "{numero, plural, =0 {Nessuna email da analizzare} one {# email da analizzare} other {# email da analizzare}} · costo stimato {costo}",
-      "calcolataIl": "Stima del",
+      "testo": "{numero, plural, =0 {nessuna email da analizzare} one {# email da analizzare} other {# email da analizzare}} · circa {costo}",
       "conferma": "Avvia l’importazione",
       "rinvia": "Non ora",
       "importaOra": "Importa ora",
-      "rinviata": "Hai rinviato l’importazione iniziale. La posta nuova viene comunque sincronizzata e analizzata.",
-      "inAttesa": "La stima è in preparazione.",
-      "requisiti": "Accetta l’informativa e salva una chiave OpenRouter valida per avviare l’importazione.",
-      "primaAccesso": "Prima ricollega o autorizza questa casella: l’importazione deve poterne leggere la posta."
+      "rinviata": "Importazione iniziale rinviata",
+      "requisiti": "Prima accetta l’informativa e salva una chiave valida:",
+      "primaAccesso": "Prima ricollega o autorizza questa casella."
     },
     "scollega": {
       "etichetta": "Scollega",
@@ -109,14 +105,22 @@
       "non_trovata": "Questa casella non è più collegata.",
       "non_valido": "La richiesta non è valida. Ricarica la pagina.",
       "casella_non_pronta": "Ricollega o autorizza questa casella prima di avviare l’importazione."
+    },
+    "collegaPrima": "Collega una casella Gmail",
+    "permessiOk": "lettura e invio consentiti",
+    "fasi": {
+      "da_stimare": "stima dell’importazione",
+      "stimata": "importazione da confermare",
+      "confermata": "importazione in avvio",
+      "rifiutata": "importazione rinviata",
+      "in_corso": "importazione in corso",
+      "completata": "importata",
+      "errore": "importazione non riuscita"
     }
   },
   "chiave": {
     "titolo": "Chiave OpenRouter",
-    "descrizione": "Tutte le analisi AI usano la tua chiave OpenRouter. È conservata cifrata e, dopo il salvataggio, non viene più mostrata.",
-    "nessuna": "Nessuna chiave salvata",
-    "nessunaTesto": "L’analisi AI resta in pausa finché non aggiungi una chiave.",
-    "stato": "Stato",
+    "nessuna": "Nessuna chiave salvata: l’analisi AI resta in pausa finché non ne aggiungi una.",
     "stati": {
       "non_verificata": "Non verificata",
       "valida": "Valida",
@@ -125,20 +129,18 @@
       "limitata": "Limite raggiunto",
       "sconosciuto": "Sconosciuto"
     },
-    "chiave": "Chiave",
-    "finale": "che termina con {cifre}",
+    "finale": "Chiave che termina con",
     "etichetta": "Nome su OpenRouter",
-    "limite": "Limite residuo",
-    "senzaLimite": "Nessun limite impostato",
-    "nonNoto": "Non noto",
-    "verificata": "Ultima verifica",
-    "sostituisci": "Sostituisci la chiave",
-    "aggiungi": "Aggiungi una chiave",
+    "limite": "{importo} residui",
+    "senzaLimite": "nessun limite di credito",
+    "aiutoCredito": "Aggiungi credito o alza il limite della chiave su OpenRouter.",
+    "verificata": "verificata il",
+    "sostituisci": "Sostituisci chiave",
+    "aggiungi": "Aggiungi la chiave",
     "campo": "Chiave API OpenRouter",
     "segnaposto": "sk-or-v1-…",
     "salva": "Verifica e salva",
-    "consiglio": "Usa una chiave creata solo per questa app, con un limite di credito: il limite fissa quanto l’app può spendere.",
-    "registrazione": "Le impostazioni di registrazione dei prompt e dei dati del tuo account OpenRouter restano sotto il tuo controllo. Controllale su OpenRouter.",
+    "consiglio": "Consiglio: usa una chiave solo per questa app, con un limite di credito. Se OpenRouter registra le richieste dipende dalle impostazioni del tuo account OpenRouter.",
     "esiti": {
       "valida": "Chiave verificata e salvata.",
       "non_valida": "OpenRouter ha rifiutato questa chiave. È stata salvata come non valida, quindi l’analisi AI è in pausa finché non aggiungi una chiave funzionante.",
@@ -157,108 +159,97 @@
   },
   "modelli": {
     "titolo": "Modelli AI",
-    "descrizione": "Ogni Funzione AI usa un proprio modello OpenRouter. Sono accettati solo modelli con output strutturato ed endpoint con Zero Data Retention.",
+    "descrizione": "Ogni Funzione AI usa un proprio modello OpenRouter.",
     "funzioni": {
       "classificazione_priorita": {
         "nome": "Classificazione e priorità",
-        "descrizione": "Legge ogni email ricevuta (intestazioni, oggetto, testo e nomi degli allegati) per distinguere le News dalle email urgenti e dalle altre, motivarne la priorità e proporre titolo e descrizione di una nuova Situazione."
+        "descrizione": "Legge le email ricevute per riconoscere urgenze e News e assegnare la priorità."
       },
       "estrazione_attivita": {
         "nome": "Estrazione attività",
-        "descrizione": "Legge le email ricevute che non sono News e quelle inviate o interne, con le email collegate e i risultati precedenti, per riconoscere azioni, impegni, promemoria e scadenze."
+        "descrizione": "Legge la posta ricevuta, inviata e interna per trovare attività e scadenze."
       },
       "attese_risposte": {
         "nome": "Gestione attese e risposte",
-        "descrizione": "Legge le email inviate e ricevute insieme alle Situazioni, alle attese e alle attività aperte, per rilevare le tue richieste, collegare email di thread diversi e valutare risposte e completamenti."
+        "descrizione": "Legge la posta inviata e ricevuta per seguire le attese e riconoscere le risposte."
       },
       "riepilogo_news": {
         "nome": "Riepilogo News",
-        "descrizione": "Legge le email di News e Informazioni secondarie ricevute nelle ultime 24 ore e le riassume, collegando ogni voce alle sue email."
+        "descrizione": "Legge le News delle ultime 24 ore per scrivere il riepilogo."
       },
       "bozze_assistite": {
         "nome": "Bozze assistite",
-        "descrizione": "Solo quando chiedi una risposta o un sollecito: legge l’email a cui rispondi, il suo thread e le email di contesto ammesse, e propone una bozza da rivedere. Non invia mai nulla."
+        "descrizione": "Legge l’email a cui rispondi e il suo thread per proporre una bozza. Non invia mai."
       },
       "sconosciuta": {
         "nome": "Funzione AI",
         "descrizione": "Una Funzione AI dell’app."
       }
     },
-    "modello": "Modello",
-    "predefinito": "Predefinito",
-    "usaPredefinito": "Modello predefinito",
-    "compatibilita": "Compatibilità",
+    "predefinito": "Predefinito:",
     "stati": {
-      "ok": "Compatibile",
       "incompatibile": "Non compatibile",
       "non_disponibile": "Non disponibile"
     },
     "statiAiuto": {
-      "ok": "Il modello ha endpoint con output strutturato e Zero Data Retention.",
-      "incompatibile": "Questa funzione è in pausa: il modello non ha endpoint con output strutturato e Zero Data Retention. Scegli un altro modello.",
-      "non_disponibile": "Questa funzione è in pausa: il modello non è disponibile su OpenRouter. Scegli un altro modello."
+      "incompatibile": "In pausa: questo modello può conservare i tuoi dati o non risponde nel formato richiesto dall’app. Scegline un altro.",
+      "non_disponibile": "In pausa: questo modello non è disponibile su OpenRouter. Scegline un altro."
     },
-    "verificato": "Ultima verifica",
+    "verificato": "verificato il",
     "campo": "ID del modello OpenRouter per {funzione}",
-    "salva": "Cambia modello",
+    "salva": "Salva modello",
     "ripristina": "Ripristina il predefinito",
-    "aiuto": "Gli ID dei modelli hanno la forma fornitore/modello, come su openrouter.ai/models. La modifica vale per le chiamate successive; se la funzione era in pausa per il modello, riprende da sola.",
     "esiti": {
       "ok": "Modello salvato.",
-      "incompatibile": "Questo modello non ha endpoint con output strutturato e Zero Data Retention. Scegline un altro.",
+      "incompatibile": "Questo modello può conservare i tuoi dati o non risponde nel formato richiesto. Scegline un altro.",
       "non_disponibile": "Questo modello non è disponibile su OpenRouter. Controlla l’ID.",
       "vuoto": "Inserisci l’ID di un modello.",
       "non_valido": "La richiesta non è valida. Ricarica la pagina."
-    }
+    },
+    "personalizzato": "Personalizzato",
+    "cambia": "Cambia",
+    "aiutoCampo": "Formato: fornitore/modello, come su openrouter.ai/models. Sono accettati solo modelli che non conservano dati e rispondono nel formato dell’app."
   },
   "contesto": {
     "titolo": "Contesto AI",
-    "descrizione": "Le tue direttive su come l’AI interpreta, classifica e ordina per priorità la posta. Sostituiscono le Direttive predefinite, ma non possono togliere le garanzie dell’app: evidenze per ogni affermazione e nessuna email inviata senza la tua conferma.",
-    "ambito": "Le modifiche valgono per le email nuove. Per applicarle alla posta già analizzata usa Rianalizza.",
-    "vaiRianalisi": "Vai a Rianalizza",
-    "inUsoVersione": "In uso la versione {numero}",
+    "inUsoVersione": "In uso le tue direttive · versione {numero}",
     "inUsoPredefinite": "In uso le Direttive predefinite",
-    "senzaVersioni": "Non hai ancora salvato un Contesto AI, quindi vengono usate le Direttive predefinite. Le trovi qui sotto, pronte da modificare.",
     "campo": "Le tue direttive",
-    "salva": "Salva come nuova versione",
+    "salva": "Salva",
     "predefinite": {
       "etichetta": "Ripristina le Direttive predefinite",
       "titolo": "Ripristinare le Direttive predefinite?",
       "testo": "Vengono salvate come nuova versione. Il testo attuale resta nella cronologia delle versioni.",
       "conferma": "Ripristina le predefinite"
     },
-    "versioni": "Cronologia delle versioni",
+    "versioni": "Cronologia delle versioni ({numero})",
     "versione": "Versione {numero}",
     "inUso": "In uso",
     "mostra": "Mostra il testo",
     "ripristina": "Ripristina",
-    "ripristinaAiuto": "Il ripristino salva questo testo come nuova versione.",
     "esiti": {
       "ok": "Salvato come nuova versione.",
       "vuoto": "Scrivi prima le tue direttive, oppure ripristina le predefinite.",
       "troppo_lungo": "Il testo è troppo lungo (al massimo 20.000 caratteri).",
       "non_trovata": "Questa versione non esiste più.",
       "non_valido": "La richiesta non è valida. Ricarica la pagina."
-    }
+    },
+    "aiuto": "Vale per le email nuove; per quelle già analizzate usa <rianalisi>Rianalizza</rianalisi>. Le garanzie dell’app restano sempre attive."
   },
   "preferenze": {
-    "titolo": "Preferenze",
-    "descrizione": "Lingua, tema e fuso orario dell’app. I testi scritti dall’AI restano nella lingua di ogni email.",
     "lingua": "Lingua",
-    "linguaAiuto": "Lingua dell’interfaccia dell’app.",
+    "linguaAiuto": "I testi scritti dall’AI restano nella lingua di ogni email.",
     "lingue": {
       "en": "English",
       "it": "Italiano"
     },
     "tema": "Tema",
-    "temaAiuto": "Applicato subito e salvato nel tuo account.",
     "temi": {
       "system": "Sistema",
       "light": "Chiaro",
       "dark": "Scuro"
     },
     "fuso": "Fuso orario",
-    "fusoAiuto": "Date, orari e scadenze sono mostrati in questo fuso orario.",
     "usaBrowser": "Usa il fuso orario di questo browser ({fuso})",
     "salva": "Salva",
     "esiti": {
@@ -268,19 +259,19 @@
   },
   "pausa": {
     "titolo": "Analisi AI",
-    "attiva": "Attiva",
     "inPausa": "In pausa per tua scelta",
-    "pausa": "Pausa analisi AI",
-    "riprendi": "Riprendi l’analisi AI",
+    "pausa": "Metti in pausa",
+    "riprendi": "Riprendi",
     "siFerma": "Cosa si ferma",
-    "siFermaTesto": "Ogni chiamata a un modello AI: analisi della posta nuova, Riepilogo News, bozze proposte e rianalisi. Nessuna spesa sulla tua chiave OpenRouter.",
+    "siFermaTesto": "Analisi della posta nuova, Riepilogo News, bozze proposte e rianalisi.",
     "continua": "Cosa continua",
-    "continuaTesto": "La sincronizzazione della posta, la lettura delle email, le attività, le attese e le correzioni già presenti, e l’invio delle bozze che confermi.",
-    "ripresa": "Alla ripresa vengono analizzate le email arrivate nel frattempo."
+    "continuaTesto": "Sincronizzazione e lettura della posta, attività, attese e correzioni già presenti, invio delle bozze che confermi.",
+    "ripresa": "Alla ripresa vengono analizzate le email arrivate nel frattempo.",
+    "attivaTesto": "La pausa ferma ogni chiamata AI e ogni spesa. La posta continua a sincronizzarsi.",
+    "inPausaTesto": "Nessuna chiamata AI e nessuna spesa. La posta continua a sincronizzarsi.",
+    "dettagli": "Cosa succede"
   },
   "consumo": {
-    "titolo": "Consumo",
-    "descrizione": "Chiamate AI fatte con la tua chiave negli ultimi 30 giorni, per Funzione AI. I dati di riferimento sono quelli del tuo account OpenRouter.",
     "funzione": "Funzione AI",
     "invocazioni": "Chiamate",
     "costo": "Costo",
@@ -288,23 +279,22 @@
     "tokenUscita": "Token in uscita",
     "totale": "Totale",
     "nessuno": "Nessuna chiamata AI negli ultimi 30 giorni.",
-    "funzioneSconosciuta": "Altro"
+    "funzioneSconosciuta": "Altro",
+    "riepilogo": "Ultimi 30 giorni: {costo} · {chiamate, plural, one {# chiamata AI} other {# chiamate AI}}",
+    "fonte": "I dati di riferimento sono quelli del tuo account OpenRouter."
   },
   "rianalisi": {
     "titolo": "Rianalizza",
-    "descrizione": "Esegue di nuovo classificazione ed estrazione delle attività con il Contesto AI e i modelli attuali. Le tue correzioni restano e prevalgono sempre.",
+    "descrizione": "Ripete l’analisi con il Contesto AI e i modelli attuali. Le tue correzioni restano.",
     "ambito": "Cosa rianalizzare",
-    "aperti": "Email degli elementi aperti",
-    "apertiAiuto": "Le email delle Situazioni con attività o attese aperte.",
-    "giorni": "Email degli ultimi giorni",
+    "aperti": "Email delle Situazioni aperte",
+    "giorni": "Email degli ultimi",
     "giorniCampo": "Numero di giorni",
-    "giorniAiuto": "Da 1 a 365 giorni.",
     "stima": "Stima il costo",
-    "nienteParte": "La stima non chiama nessun modello. Non parte nulla finché non confermi.",
-    "ambitoAperti": "Email degli elementi aperti",
+    "nienteParte": "Non parte nulla finché non confermi.",
     "ambitoGiorni": "Email {giorni, plural, one {dell’ultimo giorno} other {degli ultimi # giorni}}",
     "numero": "{numero, plural, =0 {Nessuna email da rianalizzare} one {# email da rianalizzare} other {# email da rianalizzare}}",
-    "costo": "Costo stimato: {costo}",
+    "costo": "circa {costo}",
     "prezziMancanti": "Prezzo non disponibile per: {funzioni}. La stima non le include.",
     "conferma": "Avvia la rianalisi",
     "pausaAttiva": "L’analisi AI è in pausa: la rianalisi partirà quando l’analisi riprende.",
@@ -314,19 +304,17 @@
       "non_trovata": "Questa stima non esiste più. Ripeti la stima.",
       "non_valido": "Scegli un numero di giorni da 1 a 365."
     },
-    "vaiStato": "Apri Stato"
+    "vaiStato": "Apri Stato",
+    "giorniUnita": "giorni"
   },
   "privacy": {
-    "titolo": "Privacy",
-    "descrizione": "Come la tua posta viene letta, conservata e inviata ai modelli AI, e come eliminarla.",
-    "accettata": "Hai accettato la versione {versione} dell’informativa.",
+    "accettata": "Informativa accettata (versione {versione}).",
     "nonAccettata": "Non hai accettato l’informativa attuale (versione {versione}). Finché non lo fai, l’analisi AI resta in pausa.",
-    "leggi": "Leggi l’informativa",
+    "leggi": "Leggila",
     "accetta": "Leggi e accetta"
   },
   "account": {
-    "titolo": "Elimina l’account",
-    "descrizione": "Rimuove il tuo account e tutto ciò che l’app conserva su di te.",
+    "descrizione": "Elimina il tuo account e tutto ciò che l’app conserva su di te.",
     "etichetta": "Elimina l’account…",
     "titoloConferma": "Eliminare l’account e tutti i suoi dati?",
     "analisi": "L’analisi AI si ferma subito.",

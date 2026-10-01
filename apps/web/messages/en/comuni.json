@@ -51,7 +51,7 @@
     "chiave_mancante": "No OpenRouter key is saved",
     "chiave_non_valida": "The OpenRouter key is not valid",
     "credito_esaurito": "The OpenRouter key has no credit left",
-    "modello_incompatibile": "The chosen model does not support structured output with Zero Data Retention",
+    "modello_incompatibile": "The chosen model may keep your data or can't answer in the app's format",
     "modello_non_disponibile": "The chosen model is not available",
     "pausa_manuale": "You paused AI analysis"
   },

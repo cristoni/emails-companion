@@ -13,9 +13,10 @@ const MASSIMO = 20_000;
 /**
  * Modifica del Contesto AI: ogni salvataggio crea una nuova versione. Il testo è controllato, così un
  * errore del salvataggio non cancella ciò che l'utente ha scritto; quando cambia la versione corrente
- * (salvataggio o ripristino) il campo riparte dal nuovo testo.
+ * (salvataggio o ripristino) il campo riparte dal nuovo testo. "Salva" si attiva solo dopo una modifica.
+ * `aiuto` (ambito delle modifiche e garanzie dell'app) sta sotto il campo e lo descrive.
  */
-export function ModuloContesto({ iniziale, idAiuto }: { iniziale: string; idAiuto: string }) {
+export function ModuloContesto({ iniziale, aiuto }: { iniziale: string; aiuto: React.ReactNode }) {
   const t = useTranslations("impostazioni.contesto");
   const tc = useTranslations("comuni");
   const formato = useFormatter();
@@ -33,25 +34,34 @@ export function ModuloContesto({ iniziale, idAiuto }: { iniziale: string; idAiut
 
   return (
     <form onSubmit={onSubmit} className="space-y-2">
-      <Etichetta htmlFor={`${id}-contesto`}>{t("campo")}</Etichetta>
+      <Etichetta htmlFor={`${id}-contesto`} className="sr-only">
+        {t("campo")}
+      </Etichetta>
       <AreaTesto
         id={`${id}-contesto`}
         name="contesto"
         value={testo}
         onChange={(e) => setTesto(e.target.value)}
-        rows={14}
+        rows={16}
         maxLength={MASSIMO}
-        aria-describedby={idAiuto}
+        aria-describedby={`${id}-aiuto`}
+        className="field-sizing-content max-h-[60vh] min-h-64 font-sans text-sm sm:max-h-[36rem]"
       />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Aiuto>
-          {formato.number(testo.length)} / {formato.number(MASSIMO)}
-        </Aiuto>
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0 flex-1 space-y-1">
+          <Aiuto id={`${id}-aiuto`}>{aiuto}</Aiuto>
+          {/* Il conteggio compare solo vicino al limite. */}
+          {testo.length > MASSIMO * 0.9 ? (
+            <Aiuto className="tabular-nums">
+              {formato.number(testo.length)} / {formato.number(MASSIMO)}
+            </Aiuto>
+          ) : null}
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <span role="status" aria-live="polite" className={cn("text-xs", esito === "ok" ? "text-accent-strong" : "text-danger")}>
             {testoEsito}
           </span>
-          <Pulsante type="submit" variante="primario" disabled={inCorso || !testo.trim()}>
+          <Pulsante type="submit" variante="primario" dimensione="sm" disabled={inCorso || !modificato || !testo.trim()}>
             {inCorso ? tc("azioni.inCorso") : t("salva")}
           </Pulsante>
         </div>

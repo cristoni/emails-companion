@@ -51,7 +51,7 @@
     "chiave_mancante": "Nessuna chiave OpenRouter salvata",
     "chiave_non_valida": "La chiave OpenRouter non è valida",
     "credito_esaurito": "La chiave OpenRouter ha esaurito il credito",
-    "modello_incompatibile": "Il modello scelto non supporta output strutturato con Zero Data Retention",
+    "modello_incompatibile": "Il modello scelto può conservare i tuoi dati o non risponde nel formato dell'app",
     "modello_non_disponibile": "Il modello scelto non è disponibile",
     "pausa_manuale": "Hai messo in pausa l'analisi AI"
   },

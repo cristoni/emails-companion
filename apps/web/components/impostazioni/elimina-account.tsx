@@ -11,6 +11,7 @@ import { authClient } from "@/lib/auth-client";
  * "Elimina account" in due passaggi espliciti: il primo pulsante mostra le conseguenze, il secondo resta
  * disabilitato finché l'utente non dichiara di aver capito. Dopo la richiesta al server (che ferma subito
  * l'analisi e affida al worker scollegamento e cancellazione) la sessione viene chiusa e si torna all'accesso.
+ * Il primo pulsante è discreto e allineato a destra; il pannello aperto occupa tutta la riga.
  */
 export function EliminaAccount({ punti }: { punti: string[] }) {
   const t = useTranslations("impostazioni");
@@ -51,7 +52,13 @@ export function EliminaAccount({ punti }: { punti: string[] }) {
 
   if (!aperto) {
     return (
-      <Pulsante id={`${id}-apri`} variante="pericolo" onClick={() => setAperto(true)}>
+      <Pulsante
+        id={`${id}-apri`}
+        variante="fantasma"
+        dimensione="sm"
+        onClick={() => setAperto(true)}
+        className="-my-1.5 -mr-3 ml-auto text-danger hover:bg-danger-soft hover:text-danger"
+      >
         {t("account.etichetta")}
       </Pulsante>
     );
@@ -63,7 +70,7 @@ export function EliminaAccount({ punti }: { punti: string[] }) {
       tabIndex={-1}
       role="group"
       aria-labelledby={`${id}-titolo`}
-      className="space-y-4 rounded-lg border border-danger/30 bg-danger-soft px-4 py-4 text-sm"
+      className="basis-full space-y-4 rounded-lg border border-danger/30 bg-danger-soft px-4 py-4 text-sm"
     >
       <p id={`${id}-titolo`} className="font-semibold text-text">
         {t("account.titoloConferma")}
@@ -74,13 +81,7 @@ export function EliminaAccount({ punti }: { punti: string[] }) {
         ))}
       </ul>
       <label className="flex items-start gap-2">
-        <input
-          type="checkbox"
-          checked={capito}
-          onChange={(e) => setCapito(e.target.checked)}
-          disabled={inCorso}
-          className="mt-0.5 size-4 accent-danger"
-        />
+        <input type="checkbox" checked={capito} onChange={(e) => setCapito(e.target.checked)} disabled={inCorso} className="mt-0.5 size-4 accent-danger" />
         <span>{t("account.capisco")}</span>
       </label>
       <div className="flex flex-wrap items-center gap-2">

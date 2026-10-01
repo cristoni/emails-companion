@@ -1,14 +1,19 @@
 {
   "titolo": "Configura il tuo spazio",
-  "descrizione": "Pochi passi prima che la tua posta diventi un elenco di cose da fare.",
-  "fatto": "Fatto",
-  "daFare": "Da fare",
+  "progresso": "{fatti} di {totale} completati",
+  "fatto": "completato",
+  "daFare": "da fare",
+  "facoltativo": "Facoltativo",
+  "rivedi": "Rivedi",
+  "modifica": "Modifica",
+  "personalizza": "Personalizza",
   "vaiHome": "Vai alla home",
   "vaiHomeComunque": "Salta per ora",
+  "requisitiHome": "Accetta l'informativa e salva una chiave OpenRouter per aprire la home.",
   "informativa": {
     "titolo": "Informativa",
     "dati": "Leggiamo i tuoi messaggi Gmail e ne conserviamo testo e intestazioni cifrati finché la casella resta collegata.",
-    "modelli": "Il testo delle email viene inviato ai modelli AI tramite OpenRouter con la tua chiave, solo a fornitori che non conservano dati.",
+    "modelli": "Il testo delle email va ai modelli AI tramite OpenRouter con la tua chiave, solo a fornitori che non conservano dati.",
     "conservazione": "Scollegare una casella o eliminare l'account cancella tutto ciò che ne deriva.",
     "limitedUse": "L'uso delle informazioni ricevute dalle API di Google rispetta la Google API Services User Data Policy, inclusi i requisiti di Limited Use.",
     "completa": "Leggi l'informativa completa",
@@ -16,11 +21,11 @@
     "accettata": "Hai accettato questa informativa."
   },
   "chiave": {
-    "titolo": "La tua chiave OpenRouter",
-    "spiegazione": "Tutte le analisi AI usano la tua chiave OpenRouter. Viene verificata, conservata cifrata e non viene più mostrata.",
-    "etichetta": "Chiave API",
+    "titolo": "Chiave OpenRouter",
+    "spiegazione": "Tutte le analisi AI usano la tua chiave. È conservata cifrata e non viene mai mostrata per intero.",
+    "etichetta": "Chiave API OpenRouter",
     "verifica": "Verifica e salva",
-    "consiglio": "Consiglio: crea una chiave dedicata con un limite di credito. Le impostazioni di registrazione dei prompt del tuo account OpenRouter restano sotto il tuo controllo.",
+    "consiglio": "Consiglio: usa una chiave solo per questa app, con un limite di credito. Se OpenRouter registra le richieste dipende dalle impostazioni del tuo account OpenRouter.",
     "salvata": "Chiave salvata che termina con {cifre} — {stato}",
     "stati": {
       "non_verificata": "non verificata",
@@ -34,14 +39,18 @@
       "non_valida": "OpenRouter ha rifiutato questa chiave.",
       "credito_esaurito": "La chiave è valida ma non ha più credito.",
       "errore_temporaneo": "OpenRouter non è raggiungibile. Riprova tra poco.",
-      "formato_non_valido": "Non sembra una chiave OpenRouter."
+      "formato_non_valido": "Non sembra una chiave OpenRouter.",
+      "vuota": "Incolla prima una chiave.",
+      "errore": "Qualcosa non ha funzionato. Riprova."
     }
   },
   "contesto": {
     "titolo": "Contesto AI",
-    "spiegazione": "Spiega all'assistente cosa conta per te: mittenti importanti, cosa è urgente, cosa è solo News e informazioni. Queste sono le direttive predefinite; modificale liberamente.",
+    "spiegazione": "Spiega all'AI cosa conta per te: mittenti importanti, cosa è urgente, cosa è solo News. Puoi cambiarlo più tardi nelle Impostazioni.",
+    "predefinite": "In uso le Direttive predefinite",
+    "personali": "In uso le tue direttive",
     "etichetta": "Le tue direttive",
-    "salva": "Salva il Contesto AI",
+    "salva": "Salva",
     "salvato": "Salvato.",
     "esiti": {
       "troppo_lungo": "Il Contesto AI può avere al massimo 20.000 caratteri. Accorcialo e salva di nuovo.",
@@ -51,12 +60,15 @@
   },
   "importazione": {
     "titolo": "Importazione iniziale",
-    "spiegazione": "Analizziamo gli ultimi 14 giorni di posta ricevuta e 30 di posta inviata, dalle più recenti. La home si riempie quando l'analisi è terminata.",
+    "spiegazione": "Analizziamo gli ultimi 14 giorni di posta ricevuta e 30 di posta inviata.",
     "nessunaCasella": "Nessuna casella collegata.",
-    "stima": "{numero} email, costo stimato {costo}",
+    "collega": "Collega Gmail",
+    "stima": "{numero, plural, one {# email} other {# email}} · circa {costo}",
     "conferma": "Avvia l'importazione",
-    "rinvia": "Più tardi",
+    "rinvia": "Non ora",
     "autorizza": "Autorizza Gmail",
+    "requisiti": "Prima accetta l'informativa e salva una chiave valida (passi 1–2).",
+    "primaAccesso": "Prima autorizza questa casella.",
     "fasi": {
       "da_stimare": "Stima in corso…",
       "stimata": "Stima pronta",
@@ -66,6 +78,5 @@
       "completata": "Importazione completata",
       "errore": "Importazione non riuscita"
     }
-  },
-  "requisitiHome": "Accetta l'informativa e salva una chiave OpenRouter per aprire la home."
+  }
 }

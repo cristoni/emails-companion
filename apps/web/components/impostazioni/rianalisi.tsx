@@ -34,8 +34,7 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
 
   const corrente: Stima | null = statoStima?.stima && statoStima.stima.richiestaId !== scartata ? statoStima.stima : null;
   const erroreStima = statoStima && statoStima.esito !== "ok" ? statoStima.esito : null;
-  const esitoConferma =
-    corrente && confermata?.richiestaId === corrente.richiestaId && statoConferma !== confermata.prima ? statoConferma?.esito : undefined;
+  const esitoConferma = corrente && confermata?.richiestaId === corrente.richiestaId && statoConferma !== confermata.prima ? statoConferma?.esito : undefined;
   const avviata = esitoConferma === "ok";
 
   const testo = (esito: string) => (t.has(`esiti.${esito}`) ? t(`esiti.${esito}`) : tc("esiti.errore"));
@@ -61,62 +60,62 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
 
   return (
     <div className="space-y-5">
-      <form onSubmit={inviaStima} className="space-y-4">
+      <form onSubmit={inviaStima} className="space-y-3">
         <fieldset className="space-y-2">
-          <legend className="text-sm font-medium">{t("ambito")}</legend>
-          <label className="flex items-start gap-3 rounded-lg border border-border px-4 py-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">
+          <legend className="sr-only">{t("ambito")}</legend>
+          <label className="flex items-center gap-2.5">
             <input
               type="radio"
               name="ambito"
               value="aperti"
               checked={tipo === "aperti"}
               onChange={() => cambiaAmbito("aperti")}
-              className="mt-1 accent-accent-strong"
+              className="size-4 accent-accent-strong"
             />
-            <span className="space-y-0.5">
-              <span className="block font-medium">{t("aperti")}</span>
-              <span className="block text-xs text-text-muted">{t("apertiAiuto")}</span>
+            {t("aperti")}
+          </label>
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2">
+            <label className="flex items-center gap-2.5">
+              <input
+                type="radio"
+                name="ambito"
+                value="giorni"
+                checked={tipo === "giorni"}
+                onChange={() => cambiaAmbito("giorni")}
+                className="size-4 accent-accent-strong"
+              />
+              {t("giorni")}
+            </label>
+            <span className="flex items-center gap-2">
+              <Etichetta htmlFor={`${id}-giorni`} className="sr-only">
+                {t("giorniCampo")}
+              </Etichetta>
+              <Input
+                id={`${id}-giorni`}
+                name="giorni"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={365}
+                step={1}
+                required={tipo === "giorni"}
+                value={giorni}
+                onFocus={() => {
+                  if (tipo !== "giorni") cambiaAmbito("giorni");
+                }}
+                onChange={(e) => {
+                  setGiorni(e.target.value);
+                  if (corrente) setScartata(corrente.richiestaId);
+                }}
+                className="h-8 w-20 tabular-nums"
+              />
+              <span>{t("giorniUnita")}</span>
             </span>
-          </label>
-          <label className="flex items-start gap-3 rounded-lg border border-border px-4 py-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">
-            <input
-              type="radio"
-              name="ambito"
-              value="giorni"
-              checked={tipo === "giorni"}
-              onChange={() => cambiaAmbito("giorni")}
-              className="mt-1 accent-accent-strong"
-            />
-            <span className="block font-medium">{t("giorni")}</span>
-          </label>
+          </div>
         </fieldset>
 
-        {tipo === "giorni" ? (
-          <div className="space-y-1.5">
-            <Etichetta htmlFor={`${id}-giorni`}>{t("giorniCampo")}</Etichetta>
-            <Input
-              id={`${id}-giorni`}
-              name="giorni"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={365}
-              step={1}
-              required
-              value={giorni}
-              onChange={(e) => {
-                setGiorni(e.target.value);
-                if (corrente) setScartata(corrente.richiestaId);
-              }}
-              aria-describedby={`${id}-giorni-aiuto`}
-              className="w-32 tabular-nums"
-            />
-            <Aiuto id={`${id}-giorni-aiuto`}>{t("giorniAiuto")}</Aiuto>
-          </div>
-        ) : null}
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Pulsante type="submit" disabled={stimaInCorso}>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Pulsante type="submit" dimensione="sm" disabled={stimaInCorso}>
             {stimaInCorso ? tc("azioni.inCorso") : t("stima")}
           </Pulsante>
           <Aiuto>{t("nienteParte")}</Aiuto>
@@ -139,14 +138,21 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
           </p>
         </div>
       ) : corrente ? (
-        <div className="space-y-3 rounded-lg border border-border bg-surface-muted px-4 py-4" aria-live="polite">
-          <p className="text-xs text-text-muted">
-            {corrente.ambito.tipo === "aperti" ? t("ambitoAperti") : t("ambitoGiorni", { giorni: corrente.ambito.giorni })}
+        <div className="space-y-3 rounded-lg border border-border bg-surface-muted px-4 py-3" aria-live="polite">
+          <p>
+            <span className="font-medium">{t("numero", { numero: corrente.numeroEmail })}</span>
+            {corrente.numeroEmail > 0 ? (
+              <span className="text-text-muted">
+                {" · "}
+                {t("costo", { costo: formato.number(corrente.costoStimato, opzioniImporto(corrente.costoStimato)) })}
+              </span>
+            ) : null}
+            <span className="block text-xs text-text-muted">
+              {corrente.ambito.tipo === "aperti" ? t("aperti") : t("ambitoGiorni", { giorni: corrente.ambito.giorni })}
+            </span>
           </p>
-          <p className="text-base font-semibold">{t("numero", { numero: corrente.numeroEmail })}</p>
           {corrente.numeroEmail > 0 ? (
             <>
-              <p>{t("costo", { costo: formato.number(corrente.costoStimato, opzioniImporto(corrente.costoStimato)) })}</p>
               {corrente.prezziMancanti.length > 0 ? (
                 <p className="text-xs text-text-muted">
                   {t("prezziMancanti", { funzioni: corrente.prezziMancanti.map((f) => nomiFunzioni[f] ?? nomiFunzioni.altro ?? "").join(", ") })}
@@ -160,10 +166,10 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
               ) : null}
               <form onSubmit={inviaConferma} className="flex flex-wrap items-center gap-2">
                 <input type="hidden" name="richiesta" value={corrente.richiestaId} />
-                <Pulsante type="submit" variante="primario" disabled={confermaInCorso}>
+                <Pulsante type="submit" variante="primario" dimensione="sm" disabled={confermaInCorso}>
                   {confermaInCorso ? tc("azioni.inCorso") : t("conferma")}
                 </Pulsante>
-                <Pulsante variante="fantasma" disabled={confermaInCorso} onClick={() => setScartata(corrente.richiestaId)}>
+                <Pulsante variante="fantasma" dimensione="sm" disabled={confermaInCorso} onClick={() => setScartata(corrente.richiestaId)}>
                   {ti("annulla")}
                 </Pulsante>
                 {esitoConferma && esitoConferma !== "ok" ? (

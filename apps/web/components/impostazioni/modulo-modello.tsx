@@ -4,13 +4,13 @@ import { useId } from "react";
 import { useTranslations } from "next-intl";
 import type { FunzioneAI } from "@ec/core/dominio";
 import { impostaModelloAzione } from "@/app/(app)/settings/azioni";
-import { Etichetta, Input } from "@/components/ui/campi";
+import { Aiuto, Etichetta, Input } from "@/components/ui/campi";
 import { Pulsante } from "@/components/ui/pulsante";
 import { cn } from "@/components/ui/cn";
 import { useInvioSenzaReset } from "./usa-invio";
 
 /** Cambio del modello OpenRouter di una Funzione AI: la verifica di compatibilità avviene sul server. */
-export function ModuloModello({ funzione, modello, nomeFunzione, idAiuto }: { funzione: FunzioneAI; modello: string; nomeFunzione: string; idAiuto: string }) {
+export function ModuloModello({ funzione, modello, nomeFunzione }: { funzione: FunzioneAI; modello: string; nomeFunzione: string }) {
   const t = useTranslations("impostazioni.modelli");
   const tc = useTranslations("comuni");
   const [stato, onSubmit, inCorso] = useInvioSenzaReset(impostaModelloAzione);
@@ -36,13 +36,14 @@ export function ModuloModello({ funzione, modello, nomeFunzione, idAiuto }: { fu
           spellCheck={false}
           maxLength={200}
           required
-          aria-describedby={idAiuto}
+          aria-describedby={`${id}-aiuto`}
           className="font-mono sm:flex-1"
         />
-        <Pulsante type="submit" variante="secondario" disabled={inCorso}>
+        <Pulsante type="submit" variante="secondario" disabled={inCorso} className="shrink-0 whitespace-nowrap">
           {inCorso ? tc("azioni.inCorso") : t("salva")}
         </Pulsante>
       </div>
+      <Aiuto id={`${id}-aiuto`}>{t("aiutoCampo")}</Aiuto>
       <p role="status" aria-live="polite" className={cn("text-xs", esito === "ok" ? "text-accent-strong" : "text-danger")}>
         {testoEsito}
       </p>

@@ -10,12 +10,16 @@ import { Aiuto, Etichetta, Selezione } from "@/components/ui/campi";
 import { Pulsante } from "@/components/ui/pulsante";
 import { cn } from "@/components/ui/cn";
 import type { Tema } from "./formato";
+import { useInvioSenzaReset } from "./usa-invio";
 
-function Esito({ stato }: { stato: StatoAzione }) {
+/** Riga delle preferenze: etichetta a sinistra e comando a destra; sui telefoni uno sotto l'altro. */
+const CLASSE_RIGA = "grid gap-x-6 gap-y-2 px-4 py-4 text-sm sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center sm:px-5";
+
+function Esito({ stato, nascondiOk = false }: { stato: StatoAzione; nascondiOk?: boolean }) {
   const t = useTranslations("impostazioni.preferenze");
   const tc = useTranslations("comuni");
   const esito = stato?.esito;
-  const testo = esito ? (t.has(`esiti.${esito}`) ? t(`esiti.${esito}`) : tc("esiti.errore")) : null;
+  const testo = esito && !(nascondiOk && esito === "ok") ? (t.has(`esiti.${esito}`) ? t(`esiti.${esito}`) : tc("esiti.errore")) : null;
   return (
     <span role="status" aria-live="polite" className={cn("text-xs", esito === "ok" ? "text-accent-strong" : "text-danger")}>
       {testo}
@@ -23,29 +27,57 @@ function Esito({ stato }: { stato: StatoAzione }) {
   );
 }
 
+/**
+ * Valore scelto in una selezione, che riparte dal valore salvato quando questo cambia (dopo il salvataggio
+ * la pagina viene riletta). Il pulsante "Salva" compare solo se la scelta è diversa dal valore salvato: niente
+ * invio al cambio, che con le frecce su una selezione chiusa partirebbe a ogni tasto. I moduli usano
+ * `useInvioSenzaReset`: il reset automatico di React riporterebbe la selezione al valore iniziale.
+ */
+function useScelta(salvato: string) {
+  const [scelta, setScelta] = useState(salvato);
+  const [precedente, setPrecedente] = useState(salvato);
+  if (salvato !== precedente) {
+    setPrecedente(salvato);
+    setScelta(salvato);
+  }
+  return [scelta, setScelta, scelta !== salvato] as const;
+}
+
 /** Lingua dell'interfaccia: dopo il salvataggio l'intera app viene riletta nella nuova lingua. */
 export function ModuloLingua({ lingua, lingue }: { lingua: string; lingue: { codice: string; nome: string }[] }) {
   const t = useTranslations("impostazioni.preferenze");
   const tc = useTranslations("comuni");
-  const [stato, azione, inCorso] = useActionState(impostaLinguaAzione, undefined);
+  const [stato, onSubmit, inCorso] = useInvioSenzaReset(impostaLinguaAzione);
+  const [scelta, setScelta, modificata] = useScelta(lingua);
   const id = useId();
   return (
-    <form action={azione} className="space-y-1.5">
+    <form onSubmit={onSubmit} className={CLASSE_RIGA}>
       <Etichetta htmlFor={`${id}-lingua`}>{t("lingua")}</Etichetta>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Selezione key={lingua} id={`${id}-lingua`} name="lingua" defaultValue={lingua} aria-describedby={`${id}-aiuto`} className="sm:max-w-xs">
-          {lingue.map((l) => (
-            <option key={l.codice} value={l.codice} lang={l.codice}>
-              {l.nome}
-            </option>
-          ))}
-        </Selezione>
-        <Pulsante type="submit" dimensione="md" disabled={inCorso}>
-          {inCorso ? tc("azioni.inCorso") : t("salva")}
-        </Pulsante>
-        <Esito stato={stato} />
+      <div className="space-y-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <Selezione
+            id={`${id}-lingua`}
+            name="lingua"
+            value={scelta}
+            onChange={(e) => setScelta(e.target.value)}
+            aria-describedby={`${id}-aiuto`}
+            className="w-auto min-w-48"
+          >
+            {lingue.map((l) => (
+              <option key={l.codice} value={l.codice} lang={l.codice}>
+                {l.nome}
+              </option>
+            ))}
+          </Selezione>
+          {modificata ? (
+            <Pulsante type="submit" variante="primario" dimensione="sm" disabled={inCorso}>
+              {inCorso ? tc("azioni.inCorso") : t("salva")}
+            </Pulsante>
+          ) : null}
+          <Esito stato={modificata ? undefined : stato} />
+        </div>
+        <Aiuto id={`${id}-aiuto`}>{t("linguaAiuto")}</Aiuto>
       </div>
-      <Aiuto id={`${id}-aiuto`}>{t("linguaAiuto")}</Aiuto>
     </form>
   );
 }
@@ -75,10 +107,12 @@ export function SceltaTema({ temaSalvato }: { temaSalvato: Tema }) {
   };
 
   return (
-    <fieldset className="space-y-1.5" aria-describedby={`${id}-aiuto`}>
-      <legend className="text-sm font-medium">{t("tema")}</legend>
+    <div className={CLASSE_RIGA}>
+      <span id={`${id}-tema`} className="text-sm font-medium">
+        {t("tema")}
+      </span>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex rounded-lg border border-border bg-surface-muted p-0.5">
+        <div role="radiogroup" aria-labelledby={`${id}-tema`} className="inline-flex rounded-lg border border-border bg-surface-muted p-0.5">
           {(["system", "light", "dark"] as const).map((valore) => {
             const Icona = ICONE_TEMA[valore];
             const scelto = corrente === valore;
@@ -97,10 +131,9 @@ export function SceltaTema({ temaSalvato }: { temaSalvato: Tema }) {
             );
           })}
         </div>
-        <Esito stato={stato?.esito === "ok" ? undefined : stato} />
+        <Esito stato={stato} nascondiOk />
       </div>
-      <Aiuto id={`${id}-aiuto`}>{t("temaAiuto")}</Aiuto>
-    </fieldset>
+    </div>
   );
 }
 
@@ -108,7 +141,8 @@ export function SceltaTema({ temaSalvato }: { temaSalvato: Tema }) {
 export function ModuloFuso({ fuso, fusi }: { fuso: string; fusi: string[] }) {
   const t = useTranslations("impostazioni.preferenze");
   const tc = useTranslations("comuni");
-  const [stato, azione, inCorso] = useActionState(impostaFusoAzione, undefined);
+  const [stato, onSubmit, inCorso] = useInvioSenzaReset(impostaFusoAzione);
+  const [scelta, setScelta, modificata] = useScelta(fuso);
   const [browser, setBrowser] = useState<string | null>(null);
   const modulo = useRef<HTMLFormElement>(null);
   const id = useId();
@@ -127,31 +161,33 @@ export function ModuloFuso({ fuso, fusi }: { fuso: string; fusi: string[] }) {
     const campo = modulo.current?.elements.namedItem("fuso");
     if (!browser || !(campo instanceof HTMLSelectElement)) return;
     campo.value = browser;
+    setScelta(browser);
     modulo.current?.requestSubmit();
   };
 
   return (
-    <form ref={modulo} action={azione} className="space-y-1.5">
+    <form ref={modulo} onSubmit={onSubmit} className={CLASSE_RIGA}>
       <Etichetta htmlFor={`${id}-fuso`}>{t("fuso")}</Etichetta>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Selezione key={fuso} id={`${id}-fuso`} name="fuso" defaultValue={fuso} aria-describedby={`${id}-aiuto`} className="font-mono sm:max-w-xs">
+      <div className="flex flex-wrap items-center gap-2">
+        <Selezione id={`${id}-fuso`} name="fuso" value={scelta} onChange={(e) => setScelta(e.target.value)} className="w-auto max-w-full min-w-48">
           {elenco.map((f) => (
             <option key={f} value={f}>
               {f}
             </option>
           ))}
         </Selezione>
-        <Pulsante type="submit" disabled={inCorso}>
-          {inCorso ? tc("azioni.inCorso") : t("salva")}
-        </Pulsante>
-        <Esito stato={stato} />
+        {modificata ? (
+          <Pulsante type="submit" variante="primario" dimensione="sm" disabled={inCorso}>
+            {inCorso ? tc("azioni.inCorso") : t("salva")}
+          </Pulsante>
+        ) : null}
+        <Esito stato={modificata ? undefined : stato} />
+        {browser && browser !== fuso && browser !== scelta ? (
+          <Pulsante variante="fantasma" dimensione="sm" onClick={usaBrowser} disabled={inCorso}>
+            {t("usaBrowser", { fuso: browser })}
+          </Pulsante>
+        ) : null}
       </div>
-      <Aiuto id={`${id}-aiuto`}>{t("fusoAiuto")}</Aiuto>
-      {browser && browser !== fuso ? (
-        <Pulsante variante="fantasma" dimensione="sm" onClick={usaBrowser} disabled={inCorso}>
-          {t("usaBrowser", { fuso: browser })}
-        </Pulsante>
-      ) : null}
     </form>
   );
 }

@@ -11,7 +11,7 @@ import { cn } from "@/components/ui/cn";
  * Inserimento o sostituzione della Chiave OpenRouter: campo password senza completamento automatico.
  * L'azione restituisce solo il codice d'esito; il campo si svuota dopo ogni invio (reset del modulo).
  */
-export function ModuloChiave({ haChiave }: { haChiave: boolean }) {
+export function ModuloChiave() {
   const t = useTranslations("impostazioni.chiave");
   const tc = useTranslations("comuni");
   const [stato, azione, inCorso] = useActionState(salvaChiaveAzione, undefined);
@@ -20,8 +20,7 @@ export function ModuloChiave({ haChiave }: { haChiave: boolean }) {
   const testoEsito = esito ? (t.has(`esiti.${esito}`) ? t(`esiti.${esito}`) : tc("esiti.errore")) : null;
 
   return (
-    <form action={azione} className="space-y-2">
-      <h3 className="text-sm font-medium">{haChiave ? t("sostituisci") : t("aggiungi")}</h3>
+    <form action={azione} className="space-y-1.5">
       <Etichetta htmlFor={`${id}-chiave`} className="block text-xs font-normal text-text-muted">
         {t("campo")}
       </Etichetta>
@@ -40,7 +39,7 @@ export function ModuloChiave({ haChiave }: { haChiave: boolean }) {
           required
           className="font-mono sm:flex-1"
         />
-        <Pulsante type="submit" variante="primario" disabled={inCorso}>
+        <Pulsante type="submit" variante="primario" disabled={inCorso} className="shrink-0 whitespace-nowrap">
           {inCorso ? tc("azioni.inCorso") : t("salva")}
         </Pulsante>
       </div>

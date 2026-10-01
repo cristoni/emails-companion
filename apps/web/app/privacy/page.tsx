@@ -1,23 +1,24 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { utenteCorrente } from "@/lib/server/sessione";
+import { LinkIndietro } from "./link-indietro";
 
 const SEZIONI = ["titolare", "dati", "finalita", "modelli", "conservazione", "diritti", "limitedUse"] as const;
 
+/** Informativa sulla privacy, leggibile con o senza sessione. "Indietro" torna alla pagina dell'app da cui si arriva. */
 export default async function PaginaPrivacy() {
   const t = await getTranslations("privacy");
+  const utente = await utenteCorrente().catch(() => null);
   return (
-    <main className="mx-auto max-w-2xl space-y-8 px-6 py-12">
+    <main className="mx-auto max-w-2xl space-y-8 px-4 py-12 sm:px-6">
       <div className="space-y-2">
-        <Link href="/sign-in" className="text-sm text-accent-strong underline-offset-4 hover:underline">
-          ← {t("indietro")}
-        </Link>
+        <LinkIndietro href={utente ? "/settings#privacy" : "/sign-in"}>← {t("indietro")}</LinkIndietro>
         <h1 className="text-3xl">{t("titolo")}</h1>
         <p className="text-text-muted">{t("introduzione")}</p>
       </div>
       {SEZIONI.map((s) => (
         <section key={s} className="space-y-2">
           <h2 className="text-lg">{t(`${s}.titolo`)}</h2>
-          <p className="leading-relaxed text-text-muted">{t(`${s}.testo`)}</p>
+          <p className="leading-relaxed">{t(`${s}.testo`)}</p>
         </section>
       ))}
     </main>

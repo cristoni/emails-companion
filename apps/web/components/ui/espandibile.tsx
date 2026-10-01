@@ -21,7 +21,7 @@ export function Espandibile({
 }) {
   return (
     <details open={aperto} className={cn("group/espandibile", className)}>
-      <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded-md text-sm text-text-muted select-none hover:text-text [&::-webkit-details-marker]:hidden">
+      <summary className="-my-2 inline-flex cursor-pointer list-none items-center gap-1 rounded-md py-2 text-sm text-text-muted select-none hover:text-text [&::-webkit-details-marker]:hidden">
         <ChevronRight className="size-4 shrink-0 transition-transform group-open/espandibile:rotate-90" aria-hidden />
         {titolo}
       </summary>
