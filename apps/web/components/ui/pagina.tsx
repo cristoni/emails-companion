@@ -10,7 +10,19 @@ export function IntestazionePagina({ titolo, descrizione, azioni }: { titolo: Re
   );
 }
 
-export function StatoVuoto({ titolo, children }: { titolo: React.ReactNode; children?: React.ReactNode }) {
+/**
+ * Stato vuoto. `compatto` è una sola riga attenuata, per le sezioni secondarie in cui l'assenza non è una
+ * notizia; la versione piena, con il bagliore d'accento, resta per i casi in cui l'assenza conta.
+ */
+export function StatoVuoto({ titolo, children, compatto = false }: { titolo: React.ReactNode; children?: React.ReactNode; compatto?: boolean }) {
+  if (compatto) {
+    return (
+      <p className="rounded-lg border border-dashed border-border px-4 py-3 text-sm text-text-muted">
+        {titolo}
+        {children ? <span className="block text-xs">{children}</span> : null}
+      </p>
+    );
+  }
   return (
     <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-dashed border-border px-6 py-10 text-center">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 h-48 bg-[radial-gradient(ellipse_at_center,var(--color-accent-soft),transparent_70%)]" />
