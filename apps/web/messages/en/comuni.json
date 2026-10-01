@@ -107,7 +107,7 @@
   },
   "motiviUrgenza": {
     "utente": "You marked it urgent",
-    "email_urgente": "Flagged urgent by the AI",
+    "email_urgente": "Urgent email",
     "attivita_urgente": "An action has high priority",
     "scadenza_vicina": "A deadline is within 48 hours"
   },
