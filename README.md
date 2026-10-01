@@ -39,7 +39,8 @@ Ogni elemento rimanda ai messaggi pertinenti: può collegare una o più email e 
 
 - L'interfaccia è multilingua, in inglese per impostazione predefinita (disponibile anche in italiano); i testi prodotti dall'AI seguono la lingua dell'email esaminata.
 - Si possono collegare più caselle di posta; Google è il primo sistema supportato e altri connettori verranno aggiunti senza cambiare le funzionalità.
-- Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify.
+- Lo stile grafico, realizzato con Tailwind CSS, si ispira a Mintlify, con un solo accento blu.
+- L'interfaccia punta a essere più immediata di un client di posta classico: poco testo, badge solo per le eccezioni, dettagli secondari (correzioni, cronologia, dati tecnici) aperti a richiesta. La home si apre con il numero di Situazioni per Area; nel dettaglio la prossima azione viene subito dopo il titolo e il pannello "Perché?" si apre solo quando serve (PROJECT.md §2.3).
 
 ## Sviluppo locale
 
