@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
-import { Quote, Sparkles } from "lucide-react";
+import { AlertTriangle, Clock, ListTodo, Quote, Reply, Sparkles } from "lucide-react";
+import { cn } from "@/components/ui/cn";
 import type { Area, Base } from "@ec/core/dominio";
 import { Distintivo, type TonoDistintivo } from "@/components/ui/distintivo";
 
@@ -18,9 +19,22 @@ export function DistintivoBase({ base }: { base: Base }) {
   );
 }
 
-/** Badge "Proposta AI" per ogni elemento o collegamento non ancora confermato dall'utente. */
-export function DistintivoProposta() {
+/**
+ * Badge "Proposta AI" per ogni elemento o collegamento non ancora confermato dall'utente. `discreto` è la
+ * forma senza pillola, per gli elenchi in cui il badge non deve prevalere sul titolo; la spiegazione resta
+ * nel `title` e per i lettori di schermo.
+ */
+export function DistintivoProposta({ discreto = false }: { discreto?: boolean }) {
   const t = useTranslations("comuni");
+  if (discreto) {
+    return (
+      <span title={t("propostaAiuto")} className="inline-flex items-center gap-1 whitespace-nowrap text-suggestion">
+        <Sparkles className="size-3.5" aria-hidden />
+        {t("proposta")}
+        <span className="sr-only">: {t("propostaAiuto")}</span>
+      </span>
+    );
+  }
   return (
     <span title={t("propostaAiuto")}>
       <Distintivo tono="proposta" icona={<Sparkles className="size-3" aria-hidden />}>
@@ -28,6 +42,15 @@ export function DistintivoProposta() {
       </Distintivo>
     </span>
   );
+}
+
+const ICONA_AREA = { urgente: AlertTriangle, risposte_arrivate: Reply, da_fare: ListTodo, in_attesa: Clock } as const;
+const COLORE_AREA: Record<Area, string> = { urgente: "text-urgent", risposte_arrivate: "text-reply", da_fare: "text-accent", in_attesa: "text-text-muted" };
+
+/** Icona di un'Area, la stessa ovunque (titoli, sommario, indicatori); decorativa: il nome è sempre nel testo. */
+export function IconaArea({ area, className }: { area: Area; className?: string }) {
+  const Icona = ICONA_AREA[area];
+  return <Icona className={cn("size-4 shrink-0", COLORE_AREA[area], className)} aria-hidden />;
 }
 
 const TONO_AREA: Record<Area, TonoDistintivo> = { urgente: "urgente", risposte_arrivate: "risposta", da_fare: "accento", in_attesa: "neutro" };

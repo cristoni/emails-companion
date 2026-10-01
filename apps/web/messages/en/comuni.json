@@ -70,8 +70,8 @@
     "errore": "Error"
   },
   "valutazioni": {
-    "completa": "Complete reply",
-    "parziale": "Partial reply",
+    "completa": "Fully answered",
+    "parziale": "Partly answered",
     "non_pertinente": "Not relevant"
   },
   "statiAttesa": {

@@ -56,6 +56,13 @@
 
   html {
     color-scheme: light;
+    /* Le ancore non finiscono sotto la barra superiore fissa degli schermi stretti (h-14). */
+    scroll-padding-top: 4rem;
+  }
+  @media (width >= 64rem) {
+    html {
+      scroll-padding-top: 0;
+    }
   }
   html.dark {
     color-scheme: dark;
