@@ -27,7 +27,7 @@ export function FiltroCaselle({ caselle, selezionata }: { caselle: readonly Case
               aria-current={selezionata === c.id ? "page" : undefined}
               className={cn(voce(selezionata === c.id), "min-w-0 max-w-full")}
             >
-              <span className="min-w-0 truncate font-mono text-[13px]">{c.indirizzo}</span>
+              <span className="min-w-0 truncate">{c.indirizzo}</span>
               {c.stato !== "collegata" ? <span className="shrink-0 text-xs text-urgent">· {tStati(c.stato)}</span> : null}
             </Link>
           </li>

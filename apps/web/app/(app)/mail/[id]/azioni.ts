@@ -89,8 +89,9 @@ export async function annullaCorrezioniAzione(_: StatoAzione, dati: FormData): P
 
 /**
  * "Rianalizza questa email": calcola soltanto la stima (nessun modello viene chiamato) e porta alla pagina
- * dell'email, che la mostra con il comando di conferma. Un id che non appartiene all'utente risulta non
- * trovato e non registra alcuna richiesta. Il redirect avviene dopo il commit della stima.
+ * dell'email, che la mostra con il comando di conferma, nella stessa vista del corpo (testo o originale). Un
+ * id che non appartiene all'utente risulta non trovato e non registra alcuna richiesta. Il redirect avviene
+ * dopo il commit della stima.
  */
 export async function stimaRianalisiAzione(_: StatoAzione, dati: FormData): Promise<StatoAzione> {
   return eseguiAzione(async () => {
@@ -103,6 +104,9 @@ export async function stimaRianalisiAzione(_: StatoAzione, dati: FormData): Prom
     if (!stima) return "non_trovato";
     const parametri = new URLSearchParams({ rianalisi: stima.richiestaId });
     if (stima.prezziMancanti.length > 0) parametri.set("prezzi", "incompleti");
+    // Si torna alla stessa vista del corpo: solo i valori ammessi dalla pagina.
+    if (leggiTesto(dati, "vista", 16) === "originale") parametri.set("vista", "originale");
+    if (leggiTesto(dati, "immagini", 2) === "1") parametri.set("immagini", "1");
     redirect(`/mail/${emailId}?${parametri.toString()}#rianalisi`);
   });
 }

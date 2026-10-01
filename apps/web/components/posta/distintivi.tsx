@@ -13,6 +13,9 @@ const ANALISI: Record<StatoAnalisiEmail, { tono: TonoDistintivo; icona: LucideIc
   non_prevista: { tono: "neutro", icona: CircleMinus },
 };
 
+/** Stati dell'analisi che meritano attenzione: gli altri ("analizzata", "non prevista") non si segnalano. */
+export const ANALISI_DA_SEGNALARE: readonly StatoAnalisiEmail[] = ["da_analizzare", "in_pausa", "errore"];
+
 export function DistintivoStatoAnalisi({ stato }: { stato: StatoAnalisiEmail }) {
   const t = useTranslations("comuni.statiAnalisi");
   const { tono, icona: Icona } = ANALISI[stato];
@@ -41,16 +44,10 @@ export function DistintivoStatoFunzione({ stato }: { stato: StatoFunzioneEmail }
   );
 }
 
-const DIREZIONE: Record<Direzione, LucideIcon> = { entrata: ArrowDownLeft, uscita: ArrowUpRight, interna: Repeat };
-
-export function DistintivoDirezione({ direzione }: { direzione: Direzione }) {
-  const t = useTranslations("comuni.direzioni");
-  const Icona = DIREZIONE[direzione];
-  return (
-    <Distintivo tono="neutro" icona={<Icona className="size-3" aria-hidden />}>
-      {t(direzione)}
-    </Distintivo>
-  );
+/** Direzione di un'email non ricevuta (inviata o interna), come icona accanto ai destinatari: decorativa. */
+export function IconaDirezione({ direzione, className }: { direzione: Direzione; className?: string }) {
+  const Icona = direzione === "interna" ? Repeat : direzione === "uscita" ? ArrowUpRight : ArrowDownLeft;
+  return <Icona className={className} aria-hidden />;
 }
 
 export function DistintivoCategoria({ categoria }: { categoria: Categoria }) {
@@ -65,3 +62,4 @@ export function DistintivoUrgente({ etichetta }: { etichetta: string }) {
     </Distintivo>
   );
 }
+

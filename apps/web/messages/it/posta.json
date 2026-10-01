@@ -1,6 +1,6 @@
 {
   "titolo": "Posta",
-  "descrizione": "Elenco in sola lettura delle email sincronizzate dalle tue caselle collegate. Risposte e solleciti passano dalle bozze che confermi.",
+  "descrizione": "Sola lettura: rispondi da una Situazione.",
   "filtro": {
     "etichetta": "Filtra per casella collegata",
     "tutte": "Tutte le caselle"
@@ -10,7 +10,7 @@
     "da": "Da",
     "a": "A",
     "nessunDestinatario": "Nessun destinatario",
-    "altri": "e {numero, plural, one {un altro} other {altri #}}",
+    "altri": "+{numero}",
     "senzaOggetto": "(senza oggetto)",
     "urgente": "Urgente",
     "allegati": "{numero, plural, one {# allegato} other {# allegati}}",
@@ -35,17 +35,16 @@
     "urgente": "Urgente",
     "intestazioni": "Intestazioni",
     "da": "Da",
-    "a": "A",
+    "a": "a",
     "cc": "Cc",
     "replyTo": "Rispondi a",
-    "data": "Data",
-    "nessuno": "Nessuno",
-    "interpretazione": "Interpretazione dell'AI e correzioni"
+    "nessuno": "nessuno",
+    "rispondiSituazione": "Rispondi dalla Situazione",
+    "rispondiGmail": "Per rispondere usa Gmail."
   },
   "copie": {
-    "titolo": "Copie nelle tue caselle",
-    "descrizione": "Un'email presente in più caselle collegate conta una sola volta e ha una copia in ciascuna.",
-    "cartelle": "Cartelle",
+    "inCasella": "In {indirizzo}",
+    "piuCaselle": "{numero, plural, other {In # caselle}}",
     "nessunaCartella": "Nessuna cartella",
     "inviataDallApp": "Inviata da questa app",
     "inviataFuori": "Inviata fuori da questa app",
@@ -53,20 +52,19 @@
   },
   "allegati": {
     "titolo": "Allegati",
-    "nota": "L'app non conserva gli allegati. Apri l'email in Gmail per scaricarli."
+    "nota": "Gli allegati restano in Gmail."
   },
-  "soloPerRisposte": {
-    "titolo": "Recuperata solo per verificare le risposte",
-    "testo": "Questa email è precedente alla finestra dell'importazione iniziale. È stata recuperata solo per capire se risponde a una tua richiesta, quindi l'AI non la analizza da sola."
+  "corpo": {
+    "etichetta": "Vista dell'email",
+    "titolo": "Messaggio"
   },
   "testo": {
-    "titolo": "Testo",
-    "descrizione": "Il testo semplice dell'email, così come lo legge l'AI. Qui link e immagini non sono attivi.",
-    "vuoto": "Questa email non contiene testo."
+    "titolo": "Testo semplice",
+    "vuoto": "Questa email non contiene testo.",
+    "citazione": "Citato dall'AI"
   },
   "originale": {
     "titolo": "Originale",
-    "descrizione": "Mostrato in un riquadro isolato: gli script non vengono mai eseguiti e le immagini remote restano nascoste finché non scegli di mostrarle.",
     "mostraImmagini": "Mostra immagini",
     "nascondiImmagini": "Nascondi immagini",
     "avvisoImmagini": "Mostrare le immagini può far sapere al mittente che hai aperto l'email.",
@@ -75,28 +73,31 @@
   },
   "classificazione": {
     "titolo": "Classificazione dell'AI",
-    "descrizione": "Come l'AI ha interpretato questa email. Le tue correzioni prevalgono sulle analisi successive.",
-    "categoria": "Categoria",
+    "nuovaCategoria": "Categoria",
     "urgenza": "Urgenza",
     "priorita": "Priorità",
+    "livelli": {
+      "alta": "Alta",
+      "media": "Media",
+      "bassa": "Bassa"
+    },
     "urgente": "Urgente",
     "nonUrgente": "Non urgente",
     "dallAi": "Indicata dall'AI",
     "corretta": "Corretta da te",
-    "valoreAi": "Valore originale dell'AI: {valore}",
-    "motivazione": "Motivazione dell'AI",
-    "evidenze": "Evidenze",
-    "nessunaEvidenza": "Nessuna citazione registrata per questa classificazione.",
-    "nuovaCategoria": "Nuova categoria",
+    "valoreAi": "Per l'AI: {valore}",
+    "motivazione": "Motivazione",
     "salva": "Salva",
-    "segnaUrgente": "Segna come urgente",
-    "segnaNonUrgente": "Segna come non urgente",
+    "segnaUrgente": "Segna urgente",
+    "segnaNonUrgente": "Togli urgenza",
+    "annullaBreve": "Annulla",
     "annulla": "Annulla correzione",
+    "annullaUrgenza": "Annulla modifica dell'urgenza",
     "annullata": "Correzione annullata",
     "nonClassificata": "L'AI non ha ancora classificato questa email.",
-    "soloPerRisposte": "Questa email non viene classificata: è stata recuperata solo per verificare le risposte.",
-    "nonPrevista": "Le email inviate e interne non vengono classificate: l'AI vi cerca solo impegni e richieste.",
-    "statoFunzione": "Classificazione: {stato}"
+    "soloPerRisposte": "Non classificata: recuperata solo per verificare le risposte.",
+    "soloPerRisposteAiuto": "È precedente alla finestra di importazione: l'AI non la analizza da sola.",
+    "nonPrevista": "Le email inviate non si classificano."
   },
   "perche": {
     "titolo": "Perché?",
@@ -106,38 +107,35 @@
     "contesto": "Contesto AI",
     "versione": "Versione {numero}",
     "nonRegistrata": "Non registrata",
-    "completata": "Analizzata",
-    "nessuna": "Non ci sono dettagli disponibili su questa analisi."
+    "completata": "Analizzata"
   },
   "lingua": {
     "titolo": "Lingua",
-    "descrizione": "I testi dell'AI su questa email, come motivazioni, titoli e bozze, sono scritti in questa lingua.",
-    "attuale": "Lingua dell'email",
-    "fonte": "Origine",
+    "descrizione": "I testi dell'AI su questa email sono scritti in questa lingua.",
     "fonti": {
       "rilevata": "Rilevata automaticamente",
       "thread": "Ricavata dal thread",
       "risposta": "Ricavata dall'email a cui risponde",
-      "interfaccia": "Lingua della tua interfaccia, usata quando il rilevamento era incerto",
-      "utente": "Indicata da te"
+      "interfaccia": "Lingua dell'interfaccia (rilevamento incerto)",
+      "utente": "Corretta da te"
     },
-    "correggi": "Correggi la lingua",
-    "scegli": "Lingua",
+    "correggi": "Cambia lingua",
+    "scegli": "Nuova lingua",
     "altra": "Altra lingua…",
     "codice": "Codice della lingua",
     "codiceAiuto": "Un codice ISO 639-1 come sl, eventualmente con la regione come pt-BR.",
     "salva": "Salva lingua",
-    "annulla": "Annulla correzione",
+    "annulla": "Annulla cambio lingua",
     "codiceNonValido": "Inserisci un codice di lingua valido, per esempio sl o pt-BR."
   },
   "rianalisi": {
     "titolo": "Rianalizza questa email",
-    "invito": "Hai corretto la lingua. Rianalizza l'email perché l'AI la legga di nuovo e scriva i suoi testi in quella lingua. Prima vedrai il costo stimato.",
+    "invito": "Rianalizzare nella nuova lingua? Prima vedrai il costo.",
     "pulsante": "Rianalizza questa email",
     "stima": "{numero, plural, one {# email verrà analizzata} other {# email verranno analizzate}} di nuovo. Costo stimato: {costo}.",
     "costoMinimo": "meno di {costo}",
     "prezziIncompleti": "Alcuni prezzi dei modelli non sono noti, quindi il costo reale può essere più alto.",
-    "nota": "Il costo è addebitato sulla tua chiave OpenRouter. Non parte nulla finché non confermi.",
+    "nota": "Addebitato sulla tua chiave OpenRouter. Non parte nulla finché non confermi.",
     "conferma": "Conferma la rianalisi",
     "nonOra": "Non ora",
     "nessunaEmail": "Per questa email non c'è nulla da rianalizzare.",
@@ -149,17 +147,10 @@
     }
   },
   "situazioni": {
-    "titolo": "Situazioni",
-    "descrizione": "Le Situazioni a cui è collegata questa email.",
-    "nessuna": "Questa email non fa parte di nessuna Situazione.",
-    "origine": "Ha originato questa Situazione",
-    "ruolo": "Ruolo",
-    "come": "Origine del collegamento"
+    "titolo": "{numero, plural, one {Situazione} other {Situazioni}}",
+    "origine": "Ha avviato la Situazione"
   },
   "analisi": {
-    "titolo": "Funzioni AI",
-    "descrizione": "Che cosa ha fatto ogni Funzione AI con questa email.",
-    "nessuna": "Nessuna Funzione AI viene eseguita su questa email.",
-    "motivo": "Motivo: {motivo}"
+    "titolo": "Funzioni AI"
   }
 }

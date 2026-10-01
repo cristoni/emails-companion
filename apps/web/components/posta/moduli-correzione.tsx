@@ -21,32 +21,40 @@ function inviaSenzaReset(esegui: (dati: FormData) => void) {
   };
 }
 
-/** Esito di una correzione come testo tradotto: mai il codice grezzo. */
+/**
+ * Esito di una correzione come testo tradotto: mai il codice grezzo. Il successo resta solo per i lettori di
+ * schermo: la pagina mostra già il nuovo valore con "Corretta da te".
+ */
 function Esito({ stato, messaggi = {} }: { stato: StatoAzione; messaggi?: Record<string, string> }) {
   const t = useTranslations("comuni");
   const esito = stato?.esito;
   if (!esito) return null;
   return (
-    <p role="status" className={cn("text-xs", esito === "ok" ? "text-accent-strong" : "text-danger")}>
+    <p role="status" className={cn("text-xs", esito === "ok" ? "sr-only" : "text-danger")}>
       {messaggi[esito] ?? testoCodice(t, "esiti", esito, "esiti.errore")}
     </p>
   );
 }
 
-/** Correzione della categoria di un'email in entrata: la categoria scelta prevale sulle analisi successive. */
+/**
+ * Correzione della categoria di un'email in entrata: il campo mostra il valore effettivo e la categoria
+ * scelta prevale sulle analisi successive. L'etichetta è nella riga che lo contiene (`id`); "Salva" si
+ * attiva solo dopo una modifica.
+ */
 export function ModuloCategoria({
+  id,
   azione,
   emailId,
   attuale,
   opzioni,
 }: {
+  id: string;
   azione: AzioneModulo;
   emailId: string;
   attuale: Categoria;
   opzioni: { valore: Categoria; etichetta: string }[];
 }) {
   const t = useTranslations("posta.classificazione");
-  const id = useId();
   const [valore, setValore] = useState<string>(attuale);
   // Dopo un salvataggio o un annullamento la pagina porta un nuovo valore effettivo: il campo lo segue.
   const [precedente, setPrecedente] = useState(attuale);
@@ -58,9 +66,6 @@ export function ModuloCategoria({
   return (
     <form onSubmit={inviaSenzaReset(esegui)} className="space-y-1.5">
       <input type="hidden" name="email" value={emailId} />
-      <Etichetta htmlFor={id}>
-        {t("nuovaCategoria")}
-      </Etichetta>
       <div className="flex gap-2">
         <Selezione id={id} name="categoria" value={valore} onChange={(e) => setValore(e.target.value)} className="min-w-0 flex-1">
           {opzioni.map((o) => (
@@ -69,7 +74,7 @@ export function ModuloCategoria({
             </option>
           ))}
         </Selezione>
-        <Pulsante type="submit" variante="secondario" dimensione="md" disabled={inCorso}>
+        <Pulsante type="submit" variante={valore === attuale ? "secondario" : "primario"} dimensione="md" disabled={inCorso || valore === attuale}>
           {t("salva")}
         </Pulsante>
       </div>
@@ -111,8 +116,8 @@ export function ModuloLingua({
   return (
     <form onSubmit={inviaSenzaReset(esegui)} className="space-y-2">
       <input type="hidden" name="email" value={emailId} />
-      <div className="space-y-1.5">
-        <Etichetta htmlFor={idScelta}>
+      <div>
+        <Etichetta htmlFor={idScelta} className="sr-only">
           {t("scegli")}
         </Etichetta>
         <Selezione id={idScelta} name="lingua" value={scelta} onChange={(e) => setScelta(e.target.value)}>

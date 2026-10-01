@@ -1,4 +1,3 @@
-import { useFormatter, useTranslations } from "next-intl";
 import type { MotivoPausa } from "@ec/core/dominio";
 import { testoCodice, type Traduttore } from "@/components/comuni/codici";
 
@@ -26,16 +25,4 @@ export function testoErrore(t: Traduttore, codice: string | null | undefined): s
 export function nomeFunzione(t: Traduttore, funzione: string): string {
   if (funzione === "*") return t("stato.pause.tutte");
   return testoCodice(t, "comuni.funzioni", funzione, "stato.erroriRecenti.funzioneSconosciuta");
-}
-
-const MINUTO_MS = 60_000;
-
-/** Durata leggibile (minuti, ore o giorni) formattata nella lingua dell'utente. */
-export function Durata({ ms }: { ms: number }) {
-  const formato = useFormatter();
-  const t = useTranslations("stato.durata");
-  const minuti = Math.floor(ms / MINUTO_MS);
-  if (minuti < 1) return <>{t("menoDiUnMinuto")}</>;
-  const [valore, unita] = minuti < 60 ? [minuti, "minute"] : minuti < 48 * 60 ? [Math.floor(minuti / 60), "hour"] : [Math.floor(minuti / (24 * 60)), "day"];
-  return <>{formato.number(valore, { style: "unit", unit: unita, unitDisplay: "long" })}</>;
 }

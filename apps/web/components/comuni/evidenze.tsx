@@ -13,11 +13,17 @@ export function ElencoEvidenze({
   evidenze,
   className,
   emailCorrente,
+  hrefEmailCorrente,
 }: {
   evidenze: readonly EvidenzaDto[];
   className?: string;
-  /** Sulla pagina di un'email, le citazioni tratte da quella email portano al suo testo invece di ricaricare la pagina. */
+  /**
+   * Sulla pagina di un'email, le citazioni tratte da quella email portano al suo testo invece di ricaricare la
+   * pagina: una citazione verificata alla sua evidenziazione (`#citazione-<indice>`), le altre al testo.
+   */
   emailCorrente?: string;
+  /** Indirizzo del testo dell'email corrente, con i parametri della pagina da conservare (per esempio una stima). */
+  hrefEmailCorrente?: string;
 }) {
   const t = useTranslations("comuni.fonte");
   if (evidenze.length === 0) return null;
@@ -31,7 +37,14 @@ export function ElencoEvidenze({
               {e.verificata ? <CheckCircle2 className="size-3.5 text-accent-strong" aria-hidden /> : <AlertTriangle className="size-3.5 text-urgent" aria-hidden />}
               {t(e.verificata ? "verificata" : "nonVerificata")}
             </span>
-            <Link href={e.emailId === emailCorrente ? `/mail/${e.emailId}#testo` : `/mail/${e.emailId}`} className={CLASSE_LINK}>
+            <Link
+              href={
+                e.emailId === emailCorrente
+                  ? `${hrefEmailCorrente ?? `/mail/${e.emailId}`}#${e.verificata ? `citazione-${i}` : "testo"}`
+                  : `/mail/${e.emailId}`
+              }
+              className={CLASSE_LINK}
+            >
               {t(e.emailId === emailCorrente ? "mostraNelTesto" : "apri")}
             </Link>
           </div>

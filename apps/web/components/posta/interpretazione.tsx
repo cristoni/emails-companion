@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { ArrowRight, Sparkles, UserCheck } from "lucide-react";
+import { ArrowRight, Reply, Sparkles, TriangleAlert, Undo2, UserCheck } from "lucide-react";
 import type { CorrezioneDto, RianalisiEmailDto, VistaEmailDto } from "@ec/applicazione";
 import { CATEGORIE, type StatoFunzioneEmail } from "@ec/core/dominio";
 import { testoCodice } from "@/components/comuni/codici";
@@ -10,10 +10,10 @@ import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione, type AzioneModulo } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { Avviso } from "@/components/ui/avviso";
-import { Distintivo } from "@/components/ui/distintivo";
+import { Espandibile } from "@/components/ui/espandibile";
 import { classiPulsante } from "@/components/ui/pulsante";
-import { IntestazioneScheda, Scheda } from "@/components/ui/scheda";
-import { DistintivoCategoria, DistintivoStatoFunzione, DistintivoUrgente } from "./distintivi";
+import { Scheda } from "@/components/ui/scheda";
+import { DistintivoStatoFunzione } from "./distintivi";
 import { ModuloCategoria, ModuloLingua } from "./moduli-correzione";
 
 export interface AzioniEmail {
@@ -24,6 +24,9 @@ export interface AzioniEmail {
   stimaRianalisi: AzioneModulo;
   confermaRianalisi: AzioneModulo;
 }
+
+/** Id del campo della categoria: l'etichetta della riga lo indica, il modulo (client) lo usa. */
+const ID_CATEGORIA = "categoria-email";
 
 /** Ultima correzione attiva su un campo dell'email: è quella che l'annullamento revoca. */
 function ultimaCorrezione(correzioni: readonly CorrezioneDto[], campo: string): CorrezioneDto | null {
@@ -40,174 +43,80 @@ function useMotivoFunzione() {
   };
 }
 
-function Provenienza({ corretta }: { corretta: boolean }) {
-  const t = useTranslations("posta.classificazione");
-  return corretta ? (
-    <Distintivo tono="accento" icona={<UserCheck className="size-3" aria-hidden />}>
-      {t("corretta")}
-    </Distintivo>
-  ) : (
-    <Distintivo tono="neutro" icona={<Sparkles className="size-3" aria-hidden />}>
-      {t("dallAi")}
-    </Distintivo>
-  );
-}
+const ETICHETTA = "flex min-h-9 items-center self-start text-sm text-text-muted";
 
-function Campo({ titolo, children }: { titolo: string; children: React.ReactNode }) {
+/** Riga della scheda: etichetta a sinistra, valore e azioni a destra. Con `per` l'etichetta è quella del campo. */
+function Riga({ etichetta, per, children }: { etichetta: string; per?: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-2 px-5 py-4">
-      <h3 className="text-xs font-medium uppercase tracking-wide text-text-muted">{titolo}</h3>
-      {children}
+    <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3 px-5 py-3">
+      {per ? (
+        <label htmlFor={per} className={ETICHETTA}>
+          {etichetta}
+        </label>
+      ) : (
+        <span className={ETICHETTA}>{etichetta}</span>
+      )}
+      <div className="min-w-0 space-y-1">{children}</div>
     </div>
   );
 }
 
 /**
- * Classificazione dell'AI con i valori effettivi (correzione prima dell'AI), la base dell'urgenza, la
- * motivazione come testo dell'AI, le evidenze e il pannello "Perché?". Categoria e urgenza si correggono
- * solo sulle email in entrata, le sole che l'AI classifica; ogni correzione è annullabile.
+ * Provenienza di un valore, come testo attenuato e non come pillola: "Indicata dall'AI" oppure, dopo una
+ * correzione, l'icona dell'utente con il valore originale dell'AI ("Per l'AI: …", mai spezzato a metà) o
+ * "Corretta da te", e l'annullamento in linea dopo il testo. "Corretta da te" resta nel titolo e per i
+ * lettori di schermo anche quando si mostra il valore dell'AI.
  */
-export function SchedaClassificazione({ email, azioni }: { email: VistaEmailDto; azioni: AzioniEmail }) {
+function Provenienza({ corretta, valoreAi, annulla }: { corretta: boolean; valoreAi?: React.ReactNode; annulla?: React.ReactNode }) {
   const t = useTranslations("posta.classificazione");
-  const tc = useTranslations("comuni");
-  const motivoFunzione = useMotivoFunzione();
-  const c = email.classificazione;
-  const correggibile = email.direzione === "entrata";
-
-  if (!c) {
-    const stato = email.analisi.find((a) => a.funzione === "classificazione_priorita");
-    const motivo = stato ? motivoFunzione(stato.stato, stato.motivo) : null;
+  if (!corretta) {
     return (
-      <Scheda>
-        <IntestazioneScheda titolo={t("titolo")} />
-        <div className="space-y-2 px-5 py-4 text-sm text-text-muted">
-          <p>{email.direzione !== "entrata" ? t("nonPrevista") : email.soloPerRisposte ? t("soloPerRisposte") : t("nonClassificata")}</p>
-          {stato ? (
-            <p className="flex flex-wrap items-center gap-2">
-              <span>{t("statoFunzione", { stato: tc(`statiFunzione.${stato.stato}`) })}</span>
-              {motivo ? <span>· {motivo}</span> : null}
-            </p>
-          ) : null}
-        </div>
-      </Scheda>
+      <p className="flex items-center gap-1.5 text-xs text-text-muted">
+        <Sparkles className="size-3.5 shrink-0" aria-hidden />
+        {t("dallAi")}
+      </p>
     );
   }
-
-  const correzioneCategoria = ultimaCorrezione(email.correzioni, "categoria");
-  const correzioneUrgenza = ultimaCorrezione(email.correzioni, "urgente");
-  const annulla = (correzione: CorrezioneDto) => (
-    <ModuloAzione
-      azione={azioni.annulla}
-      campi={{ email: email.id, correzioni: correzione.id }}
-      etichetta={t("annulla")}
-      variante="fantasma"
-      messaggi={{ ok: t("annullata") }}
-    />
-  );
-
   return (
-    <Scheda>
-      <IntestazioneScheda titolo={t("titolo")} descrizione={t("descrizione")} />
-      <div className="divide-y divide-border">
-        <Campo titolo={t("categoria")}>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <DistintivoCategoria categoria={c.categoria} />
-            <Provenienza corretta={correzioneCategoria !== null} />
-          </div>
-          {correzioneCategoria && c.categoriaAi !== c.categoria ? (
-            <p className="text-xs text-text-muted">{t("valoreAi", { valore: tc(`categorie.${c.categoriaAi}`) })}</p>
-          ) : null}
-          {correggibile ? (
-            <ModuloCategoria
-              azione={azioni.categoria}
-              emailId={email.id}
-              attuale={c.categoria}
-              opzioni={CATEGORIE.map((valore) => ({ valore, etichetta: tc(`categorie.${valore}`) }))}
-            />
-          ) : null}
-          {correzioneCategoria ? annulla(correzioneCategoria) : null}
-        </Campo>
-
-        <Campo titolo={t("urgenza")}>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {c.urgente ? <DistintivoUrgente etichetta={t("urgente")} /> : <Distintivo tono="neutro">{t("nonUrgente")}</Distintivo>}
-            {correzioneUrgenza ? null : <DistintivoBase base={c.baseUrgenza} />}
-            <Provenienza corretta={correzioneUrgenza !== null} />
-          </div>
-          {correzioneUrgenza ? (
-            <p className="flex flex-wrap items-center gap-1.5 text-xs text-text-muted">
-              {t("valoreAi", { valore: c.urgenteAi ? t("urgente") : t("nonUrgente") })}
-              <DistintivoBase base={c.baseUrgenza} />
-            </p>
-          ) : null}
-          <div className="flex flex-wrap items-center gap-2">
-            {correggibile ? (
-              <ModuloAzione
-                azione={azioni.urgenza}
-                campi={{ email: email.id, urgente: String(!c.urgente) }}
-                etichetta={c.urgente ? t("segnaNonUrgente") : t("segnaUrgente")}
-              />
-            ) : null}
-            {correzioneUrgenza ? annulla(correzioneUrgenza) : null}
-          </div>
-        </Campo>
-
-        <Campo titolo={t("priorita")}>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Distintivo tono="neutro">{tc(`priorita.${c.priorita}`)}</Distintivo>
-            <Provenienza corretta={c.priorita !== c.prioritaAi} />
-          </div>
-          {c.priorita !== c.prioritaAi ? <p className="text-xs text-text-muted">{t("valoreAi", { valore: tc(`priorita.${c.prioritaAi}`) })}</p> : null}
-        </Campo>
-
-        <Campo titolo={t("motivazione")}>
-          <TestoSemplice come="p" testo={c.motivazione} lingua={email.lingua.valore} className="text-sm leading-relaxed" />
-        </Campo>
-
-        <Campo titolo={t("evidenze")}>
-          {c.evidenze.length > 0 ? <ElencoEvidenze evidenze={c.evidenze} /> : <p className="text-sm text-text-muted">{t("nessunaEvidenza")}</p>}
-        </Campo>
-
-        <PannelloPerche email={email} />
-      </div>
-    </Scheda>
+    <div className="text-xs leading-6 text-text-muted">
+      <span title={t("corretta")}>
+        <UserCheck className="mr-1 inline size-3.5 align-[-3px] text-accent-strong" aria-hidden />
+        {valoreAi ? (
+          <>
+            <span className="sr-only">{t("corretta")} · </span>
+            <span className="whitespace-nowrap">{valoreAi}</span>
+          </>
+        ) : (
+          t("corretta")
+        )}
+      </span>{" "}
+      {annulla}
+    </div>
   );
 }
 
-/** "Perché?": funzione, modello richiesto e servito, versione del Contesto AI e data dell'analisi. */
-function PannelloPerche({ email }: { email: VistaEmailDto }) {
-  const t = useTranslations("posta.perche");
-  const tf = useTranslations("comuni.funzioni");
+/**
+ * Annullamento di una correzione: visibile come "Annulla", con il nome completo (diverso per categoria,
+ * urgenza e lingua) per i lettori di schermo, così due annullamenti sulla stessa pagina non si confondono.
+ * Segue il testo della provenienza senza alzarne la riga.
+ */
+function Annulla({ azione, emailId, correzioneId, nome }: { azione: AzioneModulo; emailId: string; correzioneId: string; nome: string }) {
+  const t = useTranslations("posta.classificazione");
   return (
-    <details className="group px-5 py-4">
-      <summary className="cursor-pointer text-sm font-medium text-accent-strong underline-offset-4 hover:underline">{t("titolo")}</summary>
-      {email.perche.length === 0 ? (
-        <p className="mt-3 text-sm text-text-muted">{t("nessuna")}</p>
-      ) : (
-        <div className="mt-3 space-y-3">
-          {email.perche.map((p) => (
-            <dl key={p.analisiId} className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 rounded-lg border border-border bg-surface-muted px-3 py-2.5 text-xs">
-              <dt className="text-text-muted">{t("funzione")}</dt>
-              <dd>{tf(p.funzione)}</dd>
-              <dt className="text-text-muted">{t("modello")}</dt>
-              <dd className="break-all font-mono">{p.modelloRichiesto}</dd>
-              {p.modelloServito && p.modelloServito !== p.modelloRichiesto ? (
-                <>
-                  <dt className="text-text-muted">{t("modelloServito")}</dt>
-                  <dd className="break-all font-mono">{p.modelloServito}</dd>
-                </>
-              ) : null}
-              <dt className="text-text-muted">{t("contesto")}</dt>
-              <dd>{p.contestoAiVersione === null ? t("nonRegistrata") : t("versione", { numero: p.contestoAiVersione })}</dd>
-              <dt className="text-text-muted">{t("completata")}</dt>
-              <dd>
-                <Istante iso={p.completataIl} stile="data_ora" />
-              </dd>
-            </dl>
-          ))}
-        </div>
-      )}
-    </details>
+    <ModuloAzione
+      azione={azione}
+      campi={{ email: emailId, correzioni: correzioneId }}
+      etichetta={
+        <>
+          <Undo2 className="size-3.5" aria-hidden />
+          <span aria-hidden>{t("annullaBreve")}</span>
+          <span className="sr-only">{nome}</span>
+        </>
+      }
+      variante="fantasma"
+      messaggi={{ ok: t("annullata") }}
+      className="-my-2 -ml-1 align-middle"
+    />
   );
 }
 
@@ -222,16 +131,186 @@ function useCosto() {
 }
 
 /**
- * Lingua effettiva con la sua fonte, correzione (lingue comuni o codice libero) annullabile e, dopo una
- * correzione, "Rianalizza questa email": prima la stima di numero e costo, poi la conferma esplicita.
+ * Scheda unica dell'AI sull'email: categoria, urgenza, priorità e lingua come righe con il valore effettivo
+ * (la correzione prevale sull'AI) e la correzione sul posto, ogni correzione annullabile; poi la motivazione
+ * con le evidenze e, a richiesta, la provenienza tecnica ("Perché?") e lo stato di ogni Funzione AI.
+ * Categoria e urgenza si correggono solo sulle email in entrata, le sole che l'AI classifica. Dopo una
+ * correzione della lingua, "Rianalizza questa email" mostra prima la stima e chiede una conferma esplicita.
  */
-export function SchedaLingua({
+export function SchedaAi({
+  email,
+  nomeLingua,
+  opzioniLingua,
+  rianalisi,
+  prezziIncompleti,
+  hrefSenzaRianalisi,
+  hrefTesto,
+  vistaCorpo,
+  azioni,
+}: {
+  email: VistaEmailDto;
+  nomeLingua: string | null;
+  opzioniLingua: { codice: string; nome: string }[];
+  rianalisi: RianalisiEmailDto | null;
+  prezziIncompleti: boolean;
+  hrefSenzaRianalisi: string;
+  /** Testo dell'email (vista "Testo") con i parametri da conservare: le citazioni portano lì. */
+  hrefTesto: string;
+  vistaCorpo: Record<string, string>;
+  azioni: AzioniEmail;
+}) {
+  const t = useTranslations("posta.classificazione");
+  const motivoFunzione = useMotivoFunzione();
+  const c = email.classificazione;
+
+  let senzaClassificazione: React.ReactNode = null;
+  if (!c) {
+    // La riga di stato serve solo quando la classificazione è ferma (pausa o errore), con il motivo.
+    const ferma = email.analisi.find((a) => a.funzione === "classificazione_priorita" && (a.stato === "in_pausa" || a.stato === "errore"));
+    const ricevuta = email.direzione === "entrata";
+    senzaClassificazione = (
+      <div className="space-y-1 px-5 py-3 text-sm text-text-muted">
+        {!ricevuta ? (
+          <p>{t("nonPrevista")}</p>
+        ) : email.soloPerRisposte ? (
+          <p title={t("soloPerRisposteAiuto")}>
+            {t("soloPerRisposte")}
+            <span className="sr-only"> {t("soloPerRisposteAiuto")}</span>
+          </p>
+        ) : (
+          <p>{t("nonClassificata")}</p>
+        )}
+        {ferma && ricevuta ? <p className="text-xs">{motivoFunzione(ferma.stato, ferma.motivo)}</p> : null}
+      </div>
+    );
+  }
+
+  return (
+    <Scheda id="ai" className="scroll-mt-6">
+      <h2 id="ai-titolo" className="flex items-center gap-2 border-b border-border px-5 py-3.5 text-base">
+        <Sparkles className="size-4 shrink-0 text-accent-strong" aria-hidden />
+        {t("titolo")}
+      </h2>
+      <div className="divide-y divide-border">
+        {c ? <RigheClassificazione email={email} azioni={azioni} /> : senzaClassificazione}
+        <RigaLingua
+          email={email}
+          nomeLingua={nomeLingua}
+          opzioni={opzioniLingua}
+          rianalisi={rianalisi}
+          prezziIncompleti={prezziIncompleti}
+          hrefSenzaRianalisi={hrefSenzaRianalisi}
+          vistaCorpo={vistaCorpo}
+          azioni={azioni}
+        />
+        {c ? (
+          <div className="space-y-3 px-5 py-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-normal text-text-muted">{t("motivazione")}</h3>
+              <TestoSemplice come="p" testo={c.motivazione} lingua={email.lingua.valore} className="text-sm leading-relaxed" />
+            </div>
+            <ElencoEvidenze evidenze={c.evidenze} emailCorrente={email.id} hrefEmailCorrente={hrefTesto} />
+          </div>
+        ) : null}
+        <Dettagli email={email} />
+      </div>
+    </Scheda>
+  );
+}
+
+function RigheClassificazione({ email, azioni }: { email: VistaEmailDto; azioni: AzioniEmail }) {
+  const t = useTranslations("posta.classificazione");
+  const tc = useTranslations("comuni");
+  const c = email.classificazione!;
+  const correggibile = email.direzione === "entrata";
+  const correzioneCategoria = ultimaCorrezione(email.correzioni, "categoria");
+  const correzioneUrgenza = ultimaCorrezione(email.correzioni, "urgente");
+  return (
+    <>
+      <Riga etichetta={t("nuovaCategoria")} per={correggibile ? ID_CATEGORIA : undefined}>
+        {correggibile ? (
+          <ModuloCategoria
+            id={ID_CATEGORIA}
+            azione={azioni.categoria}
+            emailId={email.id}
+            attuale={c.categoria}
+            opzioni={CATEGORIE.map((valore) => ({ valore, etichetta: tc(`categorie.${valore}`) }))}
+          />
+        ) : (
+          <p className="flex min-h-9 items-center text-sm">{tc(`categorie.${c.categoria}`)}</p>
+        )}
+        <Provenienza
+          corretta={correzioneCategoria !== null}
+          valoreAi={c.categoriaAi !== c.categoria ? t("valoreAi", { valore: tc(`categorie.${c.categoriaAi}`) }) : null}
+          annulla={correzioneCategoria ? <Annulla azione={azioni.annulla} emailId={email.id} correzioneId={correzioneCategoria.id} nome={t("annulla")} /> : null}
+        />
+      </Riga>
+
+      <Riga etichetta={t("urgenza")}>
+        <div className="flex min-h-9 flex-wrap items-center gap-x-2 gap-y-1">
+          {c.urgente ? (
+            <span className="inline-flex min-w-0 items-center gap-1.5 text-sm">
+              <TriangleAlert className="size-3.5 shrink-0 text-urgent" aria-hidden />
+              {t("urgente")}
+            </span>
+          ) : (
+            <span className="min-w-0 text-sm">{t("nonUrgente")}</span>
+          )}
+          {correggibile ? (
+            <ModuloAzione
+              azione={azioni.urgenza}
+              campi={{ email: email.id, urgente: String(!c.urgente) }}
+              etichetta={c.urgente ? t("segnaNonUrgente") : t("segnaUrgente")}
+              className="ml-auto"
+            />
+          ) : null}
+        </div>
+        {correzioneUrgenza ? (
+          <Provenienza
+            corretta
+            valoreAi={
+              <>
+                {t("valoreAi", { valore: c.urgenteAi ? t("urgente") : t("nonUrgente") })}
+                {c.urgenteAi ? (
+                  <>
+                    {" "}
+                    <DistintivoBase base={c.baseUrgenza} />
+                  </>
+                ) : null}
+              </>
+            }
+            annulla={<Annulla azione={azioni.annulla} emailId={email.id} correzioneId={correzioneUrgenza.id} nome={t("annullaUrgenza")} />}
+          />
+        ) : c.urgente ? (
+          <p>
+            <DistintivoBase base={c.baseUrgenza} />
+          </p>
+        ) : null}
+      </Riga>
+
+      <Riga etichetta={t("priorita")}>
+        <p className="flex min-h-9 flex-wrap items-center gap-x-1.5 text-sm">
+          {t(`livelli.${c.priorita}`)}
+          {c.priorita !== c.prioritaAi ? <span className="text-xs text-text-muted">· {t("valoreAi", { valore: t(`livelli.${c.prioritaAi}`) })}</span> : null}
+        </p>
+      </Riga>
+    </>
+  );
+}
+
+/**
+ * Lingua effettiva con la sua fonte (solo se non è il rilevamento automatico), la correzione a richiesta
+ * (lingue comuni o codice libero) annullabile e, dopo una correzione, il blocco della rianalisi, sempre
+ * visibile sotto la riga.
+ */
+function RigaLingua({
   email,
   nomeLingua,
   opzioni,
   rianalisi,
   prezziIncompleti,
   hrefSenzaRianalisi,
+  vistaCorpo,
   azioni,
 }: {
   email: VistaEmailDto;
@@ -240,6 +319,7 @@ export function SchedaLingua({
   rianalisi: RianalisiEmailDto | null;
   prezziIncompleti: boolean;
   hrefSenzaRianalisi: string;
+  vistaCorpo: Record<string, string>;
   azioni: AzioniEmail;
 }) {
   const t = useTranslations("posta.lingua");
@@ -251,51 +331,59 @@ export function SchedaLingua({
     email.analisi.some((a) => a.funzione === "classificazione_priorita" || a.funzione === "estrazione_attivita");
   // Un'analisi conclusa dopo la correzione ha già usato la lingua corretta: la rianalisi non va riproposta.
   const giaAggiornata = correzione !== null && email.perche.some((p) => p.completataIl !== null && Date.parse(p.completataIl) > Date.parse(correzione.creataIl));
+  const fonte = email.lingua.fonte;
 
   return (
-    <Scheda>
-      <IntestazioneScheda titolo={t("titolo")} descrizione={t("descrizione")} />
-      <div className="divide-y divide-border">
-        <Campo titolo={t("attuale")}>
-          <p className="flex flex-wrap items-baseline gap-2">
-            <span className="font-medium">{nomeLingua ?? email.lingua.valore}</span>
-            <span className="font-mono text-xs text-text-muted">{email.lingua.valore}</span>
-          </p>
+    <>
+      <Riga etichetta={t("titolo")}>
+        <p className="flex min-h-9 flex-wrap items-center gap-x-1.5 text-sm">
+          <span>{nomeLingua ?? email.lingua.valore}</span>
+          <span className="font-mono text-xs text-text-muted">{email.lingua.valore}</span>
+        </p>
+        {correzione ? (
+          <Provenienza corretta annulla={<Annulla azione={azioni.annulla} emailId={email.id} correzioneId={correzione.id} nome={t("annulla")} />} />
+        ) : fonte !== "rilevata" ? (
           <p className="text-xs text-text-muted">
-            {t("fonte")}: {t(`fonti.${email.lingua.fonte}`)}
+            {fonte === "utente" ? <UserCheck className="mr-1 inline size-3.5 align-[-3px] text-accent-strong" aria-hidden /> : null}
+            {t(`fonti.${fonte}`)}
           </p>
-          {correzione ? (
-            <ModuloAzione azione={azioni.annulla} campi={{ email: email.id, correzioni: correzione.id }} etichetta={t("annulla")} variante="fantasma" />
-          ) : null}
-        </Campo>
-        <Campo titolo={t("correggi")}>
-          <ModuloLingua azione={azioni.lingua} emailId={email.id} attuale={email.lingua.valore} opzioni={opzioni} />
-        </Campo>
-        {rianalisi || (email.lingua.corretta && rianalizzabile && !giaAggiornata) ? (
-          <BloccoRianalisi
-            email={email}
-            rianalisi={rianalisi}
-            prezziIncompleti={prezziIncompleti}
-            hrefSenzaRianalisi={hrefSenzaRianalisi}
-            azioni={azioni}
-          />
         ) : null}
-      </div>
-    </Scheda>
+        <Espandibile titolo={t("correggi")} classeContenuto="mt-2 space-y-2">
+          <p className="text-xs text-text-muted">{t("descrizione")}</p>
+          <ModuloLingua azione={azioni.lingua} emailId={email.id} attuale={email.lingua.valore} opzioni={opzioni} />
+        </Espandibile>
+      </Riga>
+      {rianalisi || (email.lingua.corretta && rianalizzabile && !giaAggiornata) ? (
+        <BloccoRianalisi
+          email={email}
+          rianalisi={rianalisi}
+          prezziIncompleti={prezziIncompleti}
+          hrefSenzaRianalisi={hrefSenzaRianalisi}
+          vistaCorpo={vistaCorpo}
+          azioni={azioni}
+        />
+      ) : null}
+    </>
   );
 }
 
+/**
+ * Rianalisi dopo una correzione della lingua: prima la stima, poi la conferma esplicita. La stima riporta
+ * alla stessa vista del corpo (`vistaCorpo`: testo o originale, con o senza immagini).
+ */
 function BloccoRianalisi({
   email,
   rianalisi,
   prezziIncompleti,
   hrefSenzaRianalisi,
+  vistaCorpo,
   azioni,
 }: {
   email: VistaEmailDto;
   rianalisi: RianalisiEmailDto | null;
   prezziIncompleti: boolean;
   hrefSenzaRianalisi: string;
+  vistaCorpo: Record<string, string>;
   azioni: AzioniEmail;
 }) {
   const t = useTranslations("posta.rianalisi");
@@ -305,8 +393,8 @@ function BloccoRianalisi({
   if (!rianalisi) {
     contenuto = (
       <>
-        <p className="text-sm text-text-muted">{t("invito")}</p>
-        <ModuloAzione azione={azioni.stimaRianalisi} campi={{ email: email.id }} etichetta={t("pulsante")} />
+        <p className="text-sm">{t("invito")}</p>
+        <ModuloAzione azione={azioni.stimaRianalisi} campi={{ ...vistaCorpo, email: email.id }} etichetta={t("pulsante")} />
       </>
     );
   } else if (rianalisi.stato === "stimata" && rianalisi.numeroEmail === 0) {
@@ -342,8 +430,8 @@ function BloccoRianalisi({
   }
 
   return (
-    <section id="rianalisi" aria-labelledby="rianalisi-titolo" className="scroll-mt-6 space-y-2.5 px-5 py-4">
-      <h3 id="rianalisi-titolo" className="text-xs font-medium uppercase tracking-wide text-text-muted">
+    <section id="rianalisi" aria-labelledby="rianalisi-titolo" className="scroll-mt-6 space-y-2.5 bg-surface-muted px-5 py-3.5">
+      <h3 id="rianalisi-titolo" className="sr-only">
         {t("titolo")}
       </h3>
       {contenuto}
@@ -351,80 +439,153 @@ function BloccoRianalisi({
   );
 }
 
-/** Situazioni collegate, con ruolo, origine e stato del Collegamento; un collegamento proposto dall'AI lo dice. */
-export function SchedaSituazioni({ email }: { email: VistaEmailDto }) {
-  const t = useTranslations("posta.situazioni");
-  const tc = useTranslations("comuni");
+/**
+ * Dettagli a richiesta in fondo alla scheda: "Perché?" con funzione, modello richiesto e servito, versione
+ * del Contesto AI e data di ogni analisi; poi lo stato di ogni Funzione AI, aperto da sé se una è in pausa o
+ * in errore, così i problemi restano visibili.
+ */
+function Dettagli({ email }: { email: VistaEmailDto }) {
+  const t = useTranslations("posta");
+  const tf = useTranslations("comuni.funzioni");
+  const motivoFunzione = useMotivoFunzione();
+  if (email.perche.length === 0 && email.analisi.length === 0) return null;
+  const problemi = email.analisi.filter((a) => a.stato === "errore" || a.stato === "in_pausa");
+
   return (
-    <Scheda>
-      <IntestazioneScheda titolo={t("titolo")} descrizione={t("descrizione")} />
-      {email.situazioni.length === 0 ? (
-        <p className="px-5 py-4 text-sm text-text-muted">{t("nessuna")}</p>
-      ) : (
-        <ul className="divide-y divide-border">
-          {email.situazioni.map((s) => (
-            <li key={s.collegamentoId ?? s.situazioneId} className="space-y-2 px-5 py-4">
-              <Link href={`/situations/${s.situazioneId}`} className="group inline-flex items-start gap-1.5 font-medium text-text hover:text-accent-strong">
-                <TestoSemplice come="span" testo={s.titolo} className="underline-offset-4 group-hover:underline" />
-                <ArrowRight className="mt-1 size-3.5 shrink-0" aria-hidden />
-              </Link>
-              <div className="flex flex-wrap items-center gap-1.5">
-                {s.origineDellaSituazione ? <Distintivo tono="accento">{t("origine")}</Distintivo> : null}
-                {s.stato === "proposto" ? <DistintivoProposta /> : null}
-                {s.stato ? (
-                  <Distintivo tono={s.stato === "rifiutato" ? "pericolo" : "neutro"}>{tc(`statiCollegamento.${s.stato}`)}</Distintivo>
-                ) : null}
-              </div>
-              {s.ruolo || s.origine ? (
-                <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-xs">
-                  {s.ruolo ? (
-                    <>
-                      <dt className="text-text-muted">{t("ruolo")}</dt>
-                      <dd>{tc(`ruoliCollegamento.${s.ruolo}`)}</dd>
-                    </>
-                  ) : null}
-                  {s.origine ? (
-                    <>
-                      <dt className="text-text-muted">{t("come")}</dt>
-                      <dd>{tc(`originiCollegamento.${s.origine}`)}</dd>
-                    </>
-                  ) : null}
-                </dl>
+    <div className="space-y-2.5 px-5 py-3.5">
+      {email.perche.length > 0 ? (
+        <Espandibile titolo={t("perche.titolo")} classeContenuto="mt-2 space-y-3">
+          {email.perche.map((p) => (
+            <dl key={p.analisiId} className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-xs">
+              <dt className="text-text-muted">{t("perche.funzione")}</dt>
+              <dd>{tf(p.funzione)}</dd>
+              <dt className="text-text-muted">{t("perche.modello")}</dt>
+              <dd className="font-mono break-all">{p.modelloRichiesto}</dd>
+              {p.modelloServito && p.modelloServito !== p.modelloRichiesto ? (
+                <>
+                  <dt className="text-text-muted">{t("perche.modelloServito")}</dt>
+                  <dd className="font-mono break-all">{p.modelloServito}</dd>
+                </>
               ) : null}
-            </li>
+              <dt className="text-text-muted">{t("perche.contesto")}</dt>
+              <dd>{p.contestoAiVersione === null ? t("perche.nonRegistrata") : t("perche.versione", { numero: p.contestoAiVersione })}</dd>
+              <dt className="text-text-muted">{t("perche.completata")}</dt>
+              <dd>
+                <Istante iso={p.completataIl} stile="data_ora" />
+              </dd>
+            </dl>
           ))}
-        </ul>
-      )}
-    </Scheda>
+        </Espandibile>
+      ) : null}
+      {email.analisi.length > 0 ? (
+        <div id="funzioni-ai" className="scroll-mt-6">
+          <Espandibile
+            titolo={
+              <>
+                {t("analisi.titolo")}
+                {problemi[0] ? <DistintivoStatoFunzione stato={problemi[0].stato} /> : null}
+              </>
+            }
+            aperto={problemi.length > 0}
+            classeContenuto="mt-2"
+          >
+            <ul className="space-y-2">
+              {email.analisi.map((a) => {
+                const motivo = motivoFunzione(a.stato, a.motivo);
+                return (
+                  <li key={a.funzione} className="text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span>{tf(a.funzione)}</span>
+                      <DistintivoStatoFunzione stato={a.stato} />
+                    </div>
+                    {motivo ? <p className="text-xs text-text-muted">{motivo}</p> : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </Espandibile>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
-/** Stato di ogni Funzione AI sull'email, con il motivo tradotto di pause ed errori. */
-export function SchedaFunzioni({ email }: { email: VistaEmailDto }) {
-  const t = useTranslations("posta.analisi");
-  const tf = useTranslations("comuni.funzioni");
-  const motivoFunzione = useMotivoFunzione();
+/**
+ * Situazioni collegate, subito sotto l'intestazione: titolo (porta alla Situazione) e una riga con ruolo e
+ * origine del Collegamento; un collegamento proposto dall'AI lo dice (senza ripetere l'origine) e porta alle
+ * fonti, dove si conferma o rifiuta. Per le email ricevute indica dove si risponde: da una Situazione con un
+ * collegamento confermato o, altrimenti, da Gmail; le News non hanno risposte da suggerire.
+ */
+export function SituazioniEmail({ email }: { email: VistaEmailDto }) {
+  const t = useTranslations("posta.situazioni");
+  const te = useTranslations("posta.email");
+  const tc = useTranslations("comuni");
+  const ricevuta = email.direzione === "entrata";
+  // Solo un collegamento confermato (o l'email d'origine): una proposta dell'AI va prima confermata.
+  const perRispondere = email.situazioni.find((s) => s.stato !== "proposto" && s.stato !== "rifiutato");
+  const viaGmail =
+    ricevuta && !perRispondere && email.classificazione?.categoria !== "news" ? <p className="text-sm text-text-muted">{te("rispondiGmail")}</p> : null;
+
+  if (email.situazioni.length === 0) return viaGmail;
+
   return (
-    <Scheda>
-      <IntestazioneScheda titolo={t("titolo")} descrizione={t("descrizione")} />
-      {email.analisi.length === 0 ? (
-        <p className="px-5 py-4 text-sm text-text-muted">{t("nessuna")}</p>
-      ) : (
-        <ul className="divide-y divide-border">
-          {email.analisi.map((a) => {
-            const motivo = motivoFunzione(a.stato, a.motivo);
+    <section
+      aria-labelledby="situazioni-titolo"
+      className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 rounded-[var(--radius-card)] border border-border bg-surface-muted px-4 py-3"
+    >
+      <div className="min-w-0 space-y-1.5">
+        <h2 id="situazioni-titolo" className="text-xs font-normal text-text-muted">
+          {t("titolo", { numero: email.situazioni.length })}
+        </h2>
+        <ul className="space-y-2">
+          {email.situazioni.map((s) => {
+            const proposto = s.stato === "proposto";
+            const ruolo = s.origineDellaSituazione ? t("origine") : s.ruolo ? tc(`ruoliCollegamento.${s.ruolo}`) : null;
+            // L'origine non aggiunge nulla all'email d'origine né a una proposta, che lo dice già.
+            const origine = s.origine && !s.origineDellaSituazione && !proposto ? tc(`originiCollegamento.${s.origine}`) : null;
+            const meta = [ruolo, origine].filter(Boolean).join(" · ");
             return (
-              <li key={a.funzione} className="space-y-1 px-5 py-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm">{tf(a.funzione)}</span>
-                  <DistintivoStatoFunzione stato={a.stato} />
-                </div>
-                {motivo ? <p className="text-xs text-text-muted">{t("motivo", { motivo })}</p> : null}
+              <li key={s.collegamentoId ?? s.situazioneId}>
+                <Link
+                  href={`/situations/${s.situazioneId}${proposto ? "#fonti" : ""}`}
+                  className="group inline-flex items-start gap-1.5 font-medium text-text hover:text-accent-strong"
+                >
+                  <TestoSemplice come="span" testo={s.titolo} className="underline-offset-4 group-hover:underline" />
+                  <ArrowRight className="mt-1 size-3.5 shrink-0" aria-hidden />
+                </Link>
+                {meta || proposto || s.stato === "rifiutato" ? (
+                  <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-text-muted">
+                    {meta}
+                    {proposto ? (
+                      <>
+                        {meta ? <span aria-hidden>·</span> : null}
+                        <DistintivoProposta discreto />
+                      </>
+                    ) : null}
+                    {s.stato === "rifiutato" ? (
+                      <span className="text-danger">
+                        {meta ? "· " : null}
+                        {tc("statiCollegamento.rifiutato")}
+                      </span>
+                    ) : null}
+                  </p>
+                ) : null}
               </li>
             );
           })}
         </ul>
+      </div>
+      {ricevuta && perRispondere ? (
+        <Link
+          href={`/situations/${perRispondere.situazioneId}`}
+          className="inline-flex min-h-9 items-center gap-1.5 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline"
+        >
+          <Reply className="size-4 shrink-0" aria-hidden />
+          {te("rispondiSituazione")}
+        </Link>
+      ) : (
+        viaGmail
       )}
-    </Scheda>
+    </section>
   );
 }

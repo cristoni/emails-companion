@@ -1,27 +1,21 @@
 {
-  "titolo": "News e informazioni secondarie",
-  "descrizione": "Email classificate come News e informazioni secondarie nelle ultime 24 ore. Sposta fuori quelle che richiedono la tua attenzione.",
+  "titolo": "News e informazioni",
+  "descrizione": "Ultime 24 ore. Sposta fuori ciò che ti serve.",
+  "vuoto": "Nessuna News nelle ultime 24 ore",
   "elenco": {
-    "titolo": "Email delle ultime 24 ore",
-    "conteggio": "{numero, plural, one {# email} other {# email}}",
-    "vuoto": "Nessuna News nelle ultime 24 ore",
-    "vuotoAiuto": "Le email classificate come News e informazioni secondarie restano qui per 24 ore.",
-    "nelRiepilogo": "Nel riepilogo",
+    "titolo": "Email originali",
     "nonNelRiepilogo": "Non ancora nel riepilogo",
-    "ricevuta": "Ricevuta",
     "casella": "Casella",
     "senzaOggetto": "(senza oggetto)"
   },
   "sposta": {
-    "categoria": "Sposta in",
-    "azione": "Sposta fuori dalle News",
+    "apri": "Non è una News?",
+    "aiuto": "Sposta in",
     "spostata": "Spostata fuori dalle News."
   },
   "spostate": {
-    "titolo": "Spostate fuori dalle News",
-    "descrizione": "Email che hai spostato fuori dalle News nelle ultime 24 ore. Annulla per rimetterle nelle News.",
+    "titolo": "Spostate di recente",
     "categoria": "Ora: {categoria}",
-    "spostataIl": "Spostata",
     "annulla": "Annulla",
     "annullata": "Di nuovo nelle News."
   }

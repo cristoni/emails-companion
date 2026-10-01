@@ -26,7 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("titolo") };
 }
 
-/** `/mail`: elenco in sola lettura della posta sincronizzata, dalla più recente, con filtro per casella. */
+/**
+ * `/mail`: elenco in sola lettura della posta sincronizzata, dalla più recente, con filtro per casella. La
+ * casella di ogni email si mostra solo con più caselle collegate e senza filtro: altrimenti è sempre la stessa.
+ */
 export default async function PaginaPosta({ searchParams }: { searchParams: Promise<Parametri> }) {
   await richiediOnboardingEssenziale();
   const t = await getTranslations("posta");
@@ -46,6 +49,7 @@ export default async function PaginaPosta({ searchParams }: { searchParams: Prom
   });
 
   const filtro = richiesta !== undefined ? (casellaId ?? richiesta) : null;
+  const mostraCasella = caselle.length > 1 && filtro === null;
   const conFiltro = (extra: Record<string, string>) => {
     const q = new URLSearchParams(filtro ? { casella: filtro, ...extra } : extra).toString();
     return q ? `/mail?${q}` : "/mail";
@@ -79,7 +83,7 @@ export default async function PaginaPosta({ searchParams }: { searchParams: Prom
         <Scheda className="overflow-hidden">
           <ul aria-label={t("elenco.etichetta")} className="divide-y divide-border">
             {elenco.email.map((email) => (
-              <RigaEmail key={email.id} email={email} />
+              <RigaEmail key={email.id} email={email} mostraCasella={mostraCasella} />
             ))}
           </ul>
         </Scheda>

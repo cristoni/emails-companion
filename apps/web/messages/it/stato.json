@@ -1,44 +1,58 @@
 {
   "titolo": "Stato",
-  "descrizione": "Sincronizzazione della posta e analisi AI a colpo d’occhio. La pagina si aggiorna da sola.",
-  "aggiornato": "Aggiornato",
-  "durata": {
-    "menoDiUnMinuto": "meno di un minuto"
+  "aggiornato": "Aggiornato alle",
+  "sintesi": {
+    "ok": "Tutto funziona",
+    "problemi": "{numero, plural, one {# cosa da controllare} other {# cose da controllare}}",
+    "nessunaCasella": "Nessuna casella collegata",
+    "caselle": "{numero, plural, one {# casella richiede attenzione} other {# caselle richiedono attenzione}}",
+    "pausa": "L’analisi AI è in pausa",
+    "pausaFunzioni": "{numero, plural, one {# Funzione AI in pausa} other {# Funzioni AI in pausa}}",
+    "analisiErrore": "{numero, plural, one {# email non analizzata} other {# email non analizzate}}",
+    "aggiornamenti": "Gli aggiornamenti automatici non riescono"
   },
   "caselle": {
     "titolo": "Caselle",
+    "gestisci": "Gestisci",
     "nessuna": "Nessuna casella collegata",
-    "nessunaTesto": "Collega una casella nelle Impostazioni per iniziare la sincronizzazione.",
-    "ritardo": "Ritardo della sincronizzazione",
+    "nessunaTesto": "Collegane una nelle Impostazioni",
+    "ultimaSync": "Ultima sincronizzazione",
     "maiSincronizzata": "Non ancora sincronizzata",
     "inRitardo": "In ritardo",
     "aggiornata": "Aggiornata",
-    "ultimaSync": "Ultima sincronizzazione riuscita",
     "importazione": "Importazione iniziale",
-    "avanzamento": "{acquisite} di {totale} email acquisite",
+    "fasi": {
+      "da_stimare": "Stima in corso…",
+      "stimata": "In attesa della tua conferma",
+      "confermata": "Sta per iniziare",
+      "rifiutata": "Rinviata",
+      "in_corso": "In corso",
+      "errore": "Interrotta da un errore"
+    },
+    "avanzamento": "{acquisite} di {totale} email importate",
     "avanzamentoEtichetta": "Avanzamento dell’importazione iniziale",
     "elencoInCorso": "Conteggio delle email da importare in corso…",
     "erroreSync": "Errore di sincronizzazione",
     "erroreCasella": "Errore della casella",
     "erroriConsecutivi": "{numero, plural, one {# tentativo fallito di seguito} other {# tentativi falliti di seguito}}",
+    "ritenta": "Nuovo tentativo dopo un errore: {errore}",
     "prossimoTentativo": "Prossimo tentativo",
-    "gestisci": "Gestisci nelle Impostazioni"
+    "risolvi": "Risolvi nelle Impostazioni",
+    "conferma": "Conferma nelle Impostazioni"
   },
   "analisi": {
     "titolo": "Analisi AI",
-    "descrizione": "Email per stato dell’analisi, in tutte le tue caselle.",
-    "daEseguire": "Da analizzare",
-    "inPausa": "In pausa",
-    "errore": "In errore",
-    "email": "{numero, plural, one {email} other {email}}"
+    "tutteAnalizzate": "Tutte le email sono state analizzate",
+    "errore": "{numero, plural, one {non riuscita} other {non riuscite}}",
+    "erroreAiuto": "{numero, plural, one {Resta nella Posta, senza analisi AI.} other {Restano nella Posta, senza analisi AI.}}",
+    "inPausa": "{numero, plural, one {in pausa} other {in pausa}}",
+    "inPausaAiuto": "{numero, plural, one {Sarà analizzata alla fine della pausa.} other {Saranno analizzate alla fine della pausa.}}",
+    "daEseguire": "{numero, plural, one {in coda} other {in coda}}",
+    "daEseguireAiuto": "{numero, plural, one {Sarà analizzata a breve, in automatico.} other {Saranno analizzate a breve, in automatico.}}"
   },
   "pause": {
     "titolo": "Pause attive",
-    "nessuna": "Nessuna pausa: l’analisi AI è attiva.",
-    "descrizione": "Durante una pausa la posta continua a sincronizzarsi e le email restano “da analizzare”. L’analisi riprende da sola quando la causa è risolta.",
     "tutte": "Tutte le Funzioni AI",
-    "funzione": "Funzione AI",
-    "motivo": "Motivo",
     "dal": "Dal",
     "prossimaVerifica": "Prossima verifica",
     "risolvi": "Risolvi nelle Impostazioni",
@@ -46,25 +60,17 @@
   },
   "erroriRecenti": {
     "titolo": "Errori recenti",
-    "descrizione": "Le ultime chiamate AI fallite e le email rimaste in errore.",
-    "nessuno": "Nessun errore recente.",
-    "quando": "Quando",
-    "funzione": "Funzione AI",
-    "errore": "Errore",
-    "email": "Email",
-    "senzaEmail": "Nessuna email",
+    "storico": "Storico degli errori",
+    "descrizione": "Gli errori temporanei vengono ritentati in automatico.",
     "funzioneSconosciuta": "Funzione AI"
   },
   "elaborazione": {
-    "titolo": "Elaborazione in background",
+    "titolo": "Aggiornamenti automatici",
     "riconciliazione": "Aggiornamento delle Situazioni",
-    "riconciliazioneAiuto": "Collega le email analizzate a Situazioni, attività e attese.",
     "news": "Riepilogo News",
-    "newsAiuto": "Riassume le email di News e Informazioni secondarie delle ultime 24 ore.",
-    "nessunErrore": "Nessun errore",
+    "nessunErrore": "Funziona regolarmente",
     "errori": "{numero, plural, one {# errore di seguito} other {# errori di seguito}}",
-    "ultimoErrore": "Ultimo errore",
-    "nonAvviata": "Non è ancora stato eseguito nulla."
+    "ultimoErrore": "Ultimo errore"
   },
   "codiciErrore": {
     "recupero_limitato": "La sincronizzazione è rimasta ferma a lungo: il recupero copre solo gli ultimi 90 giorni.",

@@ -1,44 +1,58 @@
 {
   "titolo": "Status",
-  "descrizione": "Mail sync and AI analysis at a glance. This page refreshes on its own.",
   "aggiornato": "Updated",
-  "durata": {
-    "menoDiUnMinuto": "less than a minute"
+  "sintesi": {
+    "ok": "Everything is working",
+    "problemi": "{numero, plural, one {# thing needs a look} other {# things need a look}}",
+    "nessunaCasella": "No mailbox connected",
+    "caselle": "{numero, plural, one {# mailbox needs attention} other {# mailboxes need attention}}",
+    "pausa": "AI analysis is paused",
+    "pausaFunzioni": "{numero, plural, one {# AI function is paused} other {# AI functions are paused}}",
+    "analisiErrore": "{numero, plural, one {# email couldn’t be analysed} other {# emails couldn’t be analysed}}",
+    "aggiornamenti": "Automatic updates are failing"
   },
   "caselle": {
     "titolo": "Mailboxes",
+    "gestisci": "Manage",
     "nessuna": "No connected mailbox",
-    "nessunaTesto": "Connect a mailbox in Settings to start syncing.",
-    "ritardo": "Sync delay",
+    "nessunaTesto": "Connect one in Settings",
+    "ultimaSync": "Last synced",
     "maiSincronizzata": "Not synced yet",
     "inRitardo": "Behind",
     "aggiornata": "Up to date",
-    "ultimaSync": "Last successful sync",
     "importazione": "Initial import",
-    "avanzamento": "{acquisite} of {totale} emails fetched",
+    "fasi": {
+      "da_stimare": "Estimating…",
+      "stimata": "Waiting for your confirmation",
+      "confermata": "Starting soon",
+      "rifiutata": "Postponed",
+      "in_corso": "In progress",
+      "errore": "Stopped by an error"
+    },
+    "avanzamento": "{acquisite} of {totale} emails imported",
     "avanzamentoEtichetta": "Initial import progress",
     "elencoInCorso": "Still counting the emails to import…",
     "erroreSync": "Sync error",
     "erroreCasella": "Mailbox error",
     "erroriConsecutivi": "{numero, plural, one {# failed attempt in a row} other {# failed attempts in a row}}",
+    "ritenta": "Retrying after an error: {errore}",
     "prossimoTentativo": "Next attempt",
-    "gestisci": "Manage in Settings"
+    "risolvi": "Fix in Settings",
+    "conferma": "Confirm in Settings"
   },
   "analisi": {
     "titolo": "AI analysis",
-    "descrizione": "Emails by analysis state, across all your mailboxes.",
-    "daEseguire": "Waiting for analysis",
-    "inPausa": "Paused",
-    "errore": "Failed",
-    "email": "{numero, plural, one {email} other {emails}}"
+    "tutteAnalizzate": "Every email has been analysed",
+    "errore": "{numero, plural, one {failed} other {failed}}",
+    "erroreAiuto": "{numero, plural, one {It stays in Mail, without AI analysis.} other {They stay in Mail, without AI analysis.}}",
+    "inPausa": "{numero, plural, one {paused} other {paused}}",
+    "inPausaAiuto": "Analysed when the pause ends.",
+    "daEseguire": "{numero, plural, one {queued} other {queued}}",
+    "daEseguireAiuto": "Analysed shortly, automatically."
   },
   "pause": {
     "titolo": "Active pauses",
-    "nessuna": "No pauses: AI analysis is running.",
-    "descrizione": "While paused, mail keeps syncing and emails wait as “waiting for analysis”. Analysis resumes on its own once the cause is fixed.",
     "tutte": "All AI functions",
-    "funzione": "AI function",
-    "motivo": "Reason",
     "dal": "Since",
     "prossimaVerifica": "Next check",
     "risolvi": "Fix in Settings",
@@ -46,25 +60,17 @@
   },
   "erroriRecenti": {
     "titolo": "Recent errors",
-    "descrizione": "The latest failed AI calls and emails left with an error.",
-    "nessuno": "No recent errors.",
-    "quando": "When",
-    "funzione": "AI function",
-    "errore": "Error",
-    "email": "Email",
-    "senzaEmail": "No email",
+    "storico": "Error history",
+    "descrizione": "Temporary errors are retried automatically.",
     "funzioneSconosciuta": "AI function"
   },
   "elaborazione": {
-    "titolo": "Background processing",
+    "titolo": "Automatic updates",
     "riconciliazione": "Situation updates",
-    "riconciliazioneAiuto": "Links analysed emails to Situations, actions and waiting items.",
     "news": "News digest",
-    "newsAiuto": "Summarises the News & FYI emails of the last 24 hours.",
-    "nessunErrore": "No errors",
+    "nessunErrore": "Working normally",
     "errori": "{numero, plural, one {# error in a row} other {# errors in a row}}",
-    "ultimoErrore": "Last error",
-    "nonAvviata": "Nothing has run yet."
+    "ultimoErrore": "Last error"
   },
   "codiciErrore": {
     "recupero_limitato": "Sync was interrupted for a long time: catch-up covers the last 90 days only.",
