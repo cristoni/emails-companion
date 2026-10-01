@@ -81,7 +81,7 @@ function VoceAvviso({ avviso }: { avviso: AvvisoDto }) {
       return (
         <Avviso tono="info" titolo={t("importazione_da_confermare.titolo", { indirizzo: avviso.indirizzo })}>
           <p>{stima}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             {stimaPronta ? (
               <ModuloAzione
                 azione={confermaImportazioneAzione}
@@ -132,8 +132,8 @@ function VoceAvviso({ avviso }: { avviso: AvvisoDto }) {
             )
           }
         >
-          <p className="text-text">{testoCodice(tc, "motiviPausa", avviso.motivo)}</p>
-          <p>{t("analisi_in_pausa.testo")}</p>
+          {/* Una riga sola: il motivo e l'azione che lo risolve; con la pausa manuale il motivo ripeterebbe il titolo. */}
+          {manuale ? t("analisi_in_pausa.testo") : `${testoCodice(tc, "motiviPausa", avviso.motivo)}.`}
         </Avviso>
       );
     }

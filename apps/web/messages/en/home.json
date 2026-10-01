@@ -1,111 +1,105 @@
 {
   "titolo": "Home",
-  "descrizione": "What needs your attention, rebuilt from the email you receive and send.",
   "conteggio": "{numero, plural, one {# situation} other {# situations}}",
-  "aree": {
-    "urgente": {
-      "descrizione": "Urgent emails and deadlines within 48 hours.",
-      "vuoto": "Nothing urgent right now."
-    },
-    "risposte_arrivate": {
-      "descrizione": "Replies to what you asked for. Check whether they answer your request.",
-      "vuoto": "No new replies to review."
-    },
-    "da_fare": {
-      "descrizione": "Actions that are on you.",
-      "vuoto": "Nothing on your list."
-    },
-    "in_attesa": {
-      "descrizione": "What you asked others for and haven't fully received yet.",
-      "vuoto": "You're not waiting on anyone."
-    }
+  "mostraAltre": "Show {numero} more",
+  "mostraMeno": "Show fewer",
+  "sommario": {
+    "etichetta": "Summary",
+    "news": "News"
+  },
+  "tuttoFatto": {
+    "titolo": "All caught up",
+    "testo": "Nothing needs you right now."
   },
   "card": {
-    "anche": "Also in",
-    "prossimaAzione": "Next step",
+    "anche": "Also:",
     "scadenza": "Due",
     "caselle": "Mailboxes",
     "ultimaAttivita": "Last activity"
   },
   "prossimaAzione": {
     "rivediRisposta": "Review the reply",
-    "richiesta": "Your request:",
-    "apriRisposta": "Open reply",
-    "sollecito": "Follow-up recommended",
+    "valutazioneAi": "AI assessment of the reply",
+    "valutazioneTua": "Your assessment of the reply",
+    "apriRisposta": "Read reply",
+    "sollecito": "Send a follow-up",
     "sollecitoA": "Asked {destinatari}",
     "attendi": "Waiting on {destinatari}",
     "attendiSenzaDestinatari": "Waiting for a reply",
     "attesaEntro": "Expected by",
-    "gestisciUrgenza": "Check the urgent email, then mark the situation as handled.",
-    "nessuna": "No next step right now."
+    "gestisciUrgenza": "Read the email, then mark as handled",
+    "nessuna": "Nothing to do right now"
   },
   "avvisi": {
     "titolo": "Notices",
     "casella_da_ricollegare": {
       "titolo": "Reconnect {indirizzo}",
-      "testo": "Google access to this connected mailbox stopped working. Its mail is not synced until you reconnect it.",
+      "testo": "Google access stopped working, so this mailbox isn't syncing.",
       "azione": "Reconnect"
     },
     "permessi_incompleti": {
       "titolo": "{indirizzo} is missing permissions",
-      "testo": "Allow both reading and sending, so the app can sync this mailbox and send the drafts you confirm.",
+      "testo": "Allow reading and sending; only drafts you confirm are sent.",
       "azione": "Grant access"
     },
     "importazione_da_confermare": {
       "titolo": "Confirm the initial import for {indirizzo}",
-      "stima": "{numero, plural, one {# email} other {# emails}} to analyse, estimated cost {costo}. Analysis runs with your OpenRouter key.",
-      "stimaAssente": "The estimate is not ready yet.",
+      "stima": "{numero, plural, one {# email} other {# emails}} to analyse, about {costo} on your OpenRouter key.",
+      "stimaAssente": "Estimate not ready yet.",
       "conferma": "Start import",
       "rinvia": "Later",
-      "giaDecisa": "This import is no longer waiting for your confirmation."
+      "giaDecisa": "This import no longer needs your confirmation."
     },
     "analisi_in_pausa": {
       "titolo": "AI analysis is paused",
       "titoloFunzione": "{funzione} is paused",
-      "testo": "Sync continues: new emails wait to be analysed and analysis resumes once this is solved.",
+      "testo": "Sync continues; new emails wait for analysis.",
       "riprendi": "Resume",
       "ripresa": "Analysis resumed.",
       "impostazioni": "Open settings"
     },
     "chiave_non_valida": {
-      "titolo": "Your OpenRouter key is not valid",
-      "testo": "AI analysis is paused until you save a working key. Sync continues.",
+      "titolo": "Your OpenRouter key isn't valid",
+      "testo": "Analysis is paused; sync continues.",
       "azione": "Update key"
     },
     "credito_esaurito": {
       "titolo": "Your OpenRouter key is out of credit",
-      "testo": "Add credit or raise the key limit on OpenRouter. Analysis resumes by itself.",
+      "testo": "Add credit or raise the key limit; analysis then resumes.",
       "azione": "Open settings"
     },
     "consenso_mancante": {
       "titolo": "Accept the privacy notice",
-      "testo": "Email text is not sent to AI models until you accept the notice.",
+      "testo": "Until then, no email text is sent to AI models.",
       "azione": "Review notice"
     }
   },
   "importazioni": {
     "titolo": "Initial import",
-    "siRiempie": "Your home fills in when the analysis is done.",
-    "avanzamento": "{acquisite, number} of {totale, number} emails fetched",
+    "siRiempie": "Situations appear when the import is done.",
+    "avanzamento": "{acquisite, number} of {totale, number} emails",
     "avanzamentoEtichetta": "Initial import progress for {indirizzo}",
     "inPreparazione": "Listing the emails to import…",
-    "stato": "See status"
+    "stato": "See status",
+    "fasi": {
+      "da_stimare": "Estimating",
+      "confermata": "Starting",
+      "in_corso": "Importing",
+      "errore": "Stopped by an error"
+    }
   },
   "riepilogo": {
     "titolo": "News digest",
-    "descrizione": "News & FYI received in the last 24 hours, summarised by the AI.",
     "testoAi": "AI summary",
     "testoAiAiuto": "Written by the AI from the emails linked to each item. Open them to check.",
     "aggiornato": "Updated",
     "aggiorna": "Update",
-    "aggiornaRichiesto": "Update requested. The digest refreshes in a moment.",
+    "aggiornaRichiesto": "Update requested.",
     "vuoto": "No News in the last 24 hours",
-    "vuotoAiuto": "Emails classified as News & FYI are summarised here.",
-    "inPreparazione": "The digest for these emails hasn't been written yet.",
-    "fonti": "Sources",
+    "inPreparazione": "The digest isn't ready yet.",
     "fonte": "Source email {numero}",
-    "nonIncluse": "{numero, plural, one {# new email} other {# new emails}} not yet in the digest",
-    "vediNews": "See all News & FYI",
+    "nonIncluse": "{numero, plural, one {# email} other {# emails}} not yet in the digest",
+    "vediNews": "See all News",
     "errore": "The last update failed: {motivo}"
   }
 }

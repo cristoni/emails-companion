@@ -1,110 +1,104 @@
 {
   "titolo": "Home",
-  "descrizione": "Ciò che richiede la tua attenzione, ricostruito dalle email che ricevi e invii.",
   "conteggio": "{numero, plural, one {# situazione} other {# situazioni}}",
-  "aree": {
-    "urgente": {
-      "descrizione": "Email urgenti e scadenze entro 48 ore.",
-      "vuoto": "Niente di urgente al momento."
-    },
-    "risposte_arrivate": {
-      "descrizione": "Risposte a ciò che hai chiesto. Verifica se rispondono alla tua richiesta.",
-      "vuoto": "Nessuna nuova risposta da rivedere."
-    },
-    "da_fare": {
-      "descrizione": "Attività che spettano a te.",
-      "vuoto": "Niente da fare."
-    },
-    "in_attesa": {
-      "descrizione": "Ciò che hai chiesto ad altri e non hai ancora ricevuto del tutto.",
-      "vuoto": "Non stai aspettando nessuno."
-    }
+  "mostraAltre": "Mostra altre {numero}",
+  "mostraMeno": "Mostra meno",
+  "sommario": {
+    "etichetta": "Sommario",
+    "news": "News"
+  },
+  "tuttoFatto": {
+    "titolo": "Tutto in ordine",
+    "testo": "Al momento non c'è niente da fare."
   },
   "card": {
-    "anche": "Anche in",
-    "prossimaAzione": "Prossima azione",
+    "anche": "Anche:",
     "scadenza": "Scadenza",
     "caselle": "Caselle",
     "ultimaAttivita": "Ultima attività"
   },
   "prossimaAzione": {
     "rivediRisposta": "Rivedi la risposta",
-    "richiesta": "La tua richiesta:",
-    "apriRisposta": "Apri la risposta",
-    "sollecito": "Sollecito consigliato",
-    "sollecitoA": "Richiesto a {destinatari}",
+    "valutazioneAi": "Valutazione AI della risposta",
+    "valutazioneTua": "La tua valutazione della risposta",
+    "apriRisposta": "Leggi la risposta",
+    "sollecito": "Invia un sollecito",
+    "sollecitoA": "Chiesto a {destinatari}",
     "attendi": "In attesa di {destinatari}",
     "attendiSenzaDestinatari": "In attesa di risposta",
-    "attesaEntro": "Risposta attesa entro",
-    "gestisciUrgenza": "Controlla l'email urgente, poi segna la situazione come gestita.",
-    "nessuna": "Nessuna prossima azione per ora."
+    "attesaEntro": "Risposta entro",
+    "gestisciUrgenza": "Leggi l'email, poi segna come gestita",
+    "nessuna": "Niente da fare per ora"
   },
   "avvisi": {
     "titolo": "Avvisi",
     "casella_da_ricollegare": {
       "titolo": "Ricollega {indirizzo}",
-      "testo": "L'accesso Google a questa casella collegata non funziona più. La sua posta non viene sincronizzata finché non la ricolleghi.",
+      "testo": "L'accesso Google non funziona più: la casella non si sincronizza.",
       "azione": "Ricollega"
     },
     "permessi_incompleti": {
       "titolo": "Mancano dei permessi per {indirizzo}",
-      "testo": "Consenti sia la lettura sia l'invio, così l'app può sincronizzare questa casella e inviare le bozze che confermi.",
+      "testo": "Consenti lettura e invio: si inviano solo le bozze che confermi.",
       "azione": "Concedi l'accesso"
     },
     "importazione_da_confermare": {
       "titolo": "Conferma l'importazione iniziale di {indirizzo}",
-      "stima": "{numero, plural, one {# email} other {# email}} da analizzare, costo stimato {costo}. L'analisi usa la tua chiave OpenRouter.",
-      "stimaAssente": "La stima non è ancora pronta.",
+      "stima": "{numero, plural, one {# email} other {# email}} da analizzare, costo stimato {costo} a carico della tua chiave OpenRouter.",
+      "stimaAssente": "Stima non ancora pronta.",
       "conferma": "Avvia l'importazione",
       "rinvia": "Più tardi",
-      "giaDecisa": "Questa importazione non è più in attesa della tua conferma."
+      "giaDecisa": "Questa importazione non attende più la tua conferma."
     },
     "analisi_in_pausa": {
       "titolo": "L'analisi AI è in pausa",
       "titoloFunzione": "{funzione} è in pausa",
-      "testo": "La sincronizzazione continua: le nuove email attendono l'analisi, che riprende quando il problema è risolto.",
+      "testo": "La sincronizzazione continua; le nuove email attendono l'analisi.",
       "riprendi": "Riprendi",
       "ripresa": "Analisi ripresa.",
       "impostazioni": "Apri le impostazioni"
     },
     "chiave_non_valida": {
-      "titolo": "La tua chiave OpenRouter non è valida",
-      "testo": "L'analisi AI resta in pausa finché non salvi una chiave funzionante. La sincronizzazione continua.",
+      "titolo": "La chiave OpenRouter non è valida",
+      "testo": "Analisi in pausa; la sincronizzazione continua.",
       "azione": "Aggiorna la chiave"
     },
     "credito_esaurito": {
-      "titolo": "La tua chiave OpenRouter ha esaurito il credito",
-      "testo": "Aggiungi credito o alza il limite della chiave su OpenRouter. L'analisi riprende da sola.",
+      "titolo": "La chiave OpenRouter ha esaurito il credito",
+      "testo": "Aggiungi credito o alza il limite della chiave; poi l'analisi riprende.",
       "azione": "Apri le impostazioni"
     },
     "consenso_mancante": {
       "titolo": "Accetta l'informativa sulla privacy",
-      "testo": "Il testo delle email non viene inviato ai modelli AI finché non accetti l'informativa.",
+      "testo": "Fino ad allora nessun testo delle email va ai modelli AI.",
       "azione": "Leggi l'informativa"
     }
   },
   "importazioni": {
     "titolo": "Importazione iniziale",
-    "siRiempie": "La home si riempie quando l'analisi è terminata.",
-    "avanzamento": "{acquisite, number} di {totale, number} email acquisite",
+    "siRiempie": "Le Situazioni compaiono a importazione finita.",
+    "avanzamento": "{acquisite, number} di {totale, number} email",
     "avanzamentoEtichetta": "Avanzamento dell'importazione iniziale di {indirizzo}",
-    "inPreparazione": "Elenco delle email da importare in corso…",
-    "stato": "Vedi lo stato"
+    "inPreparazione": "Elenco delle email in preparazione…",
+    "stato": "Vedi lo stato",
+    "fasi": {
+      "da_stimare": "Stima in corso",
+      "confermata": "In avvio",
+      "in_corso": "In corso",
+      "errore": "Interrotta da un errore"
+    }
   },
   "riepilogo": {
     "titolo": "Riepilogo News",
-    "descrizione": "News e informazioni secondarie ricevute nelle ultime 24 ore, riassunte dall'AI.",
     "testoAi": "Sintesi AI",
-    "testoAiAiuto": "Scritto dall'AI a partire dalle email collegate a ogni voce, che puoi aprire per verificarlo.",
+    "testoAiAiuto": "Scritto dall'AI in base alle email collegate a ogni voce. Apri le email per verificare.",
     "aggiornato": "Aggiornato",
     "aggiorna": "Aggiorna",
-    "aggiornaRichiesto": "Aggiornamento richiesto. Il riepilogo si aggiorna tra poco.",
+    "aggiornaRichiesto": "Aggiornamento richiesto.",
     "vuoto": "Nessuna News nelle ultime 24 ore",
-    "vuotoAiuto": "Le email classificate come News e informazioni secondarie vengono riassunte qui.",
-    "inPreparazione": "Il riepilogo di queste email non è ancora stato scritto.",
-    "fonti": "Fonti",
+    "inPreparazione": "Il riepilogo non è ancora pronto.",
     "fonte": "Email fonte {numero}",
-    "nonIncluse": "{numero, plural, one {# nuova email non ancora inclusa} other {# nuove email non ancora incluse}} nel riepilogo",
+    "nonIncluse": "{numero, plural, one {# email non ancora inclusa} other {# email non ancora incluse}} nel riepilogo",
     "vediNews": "Vedi tutte le News",
     "errore": "L'ultimo aggiornamento non è riuscito: {motivo}"
   }

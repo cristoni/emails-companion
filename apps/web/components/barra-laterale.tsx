@@ -112,7 +112,7 @@ export function BarraLaterale({
       <aside
         id="barra-laterale"
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-y-auto border-r border-border bg-surface-muted px-3 py-5 transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-y-auto border-r border-border bg-surface-muted px-3 py-5 transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:translate-x-0 lg:transition-none",
           // Da chiuso, su schermi stretti, esce anche dall'ordine di tabulazione e dall'albero di accessibilità.
           // `visibility` si anima solo in chiusura: in apertura il menu è subito visibile e può ricevere il fuoco.
           aperta ? "translate-x-0 shadow-xl lg:shadow-none" : "-translate-x-full max-lg:invisible max-lg:transition-[transform,visibility]",
