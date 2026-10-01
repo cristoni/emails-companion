@@ -15,7 +15,7 @@ import { correzioniDelRifiuto, correzioniDellaConferma } from "@/components/situ
 import { SezioneCronologia } from "@/components/situazione/cronologia";
 import { SezioneFonti } from "@/components/situazione/fonti";
 import { IntestazioneSituazione } from "@/components/situazione/intestazione";
-import { PannelloPerche } from "@/components/situazione/perche";
+import { PannelloPerche, PulsantePerche } from "@/components/situazione/perche";
 import { ProssimaAzione } from "@/components/situazione/prossima-azione";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -77,14 +77,17 @@ export default async function PaginaSituazione({ params }: { params: Promise<{ i
 
   return (
     <article aria-labelledby="titolo-situazione" className="space-y-6">
-      <nav aria-label={t("navigazione")}>
-        <Link href="/" className="inline-flex items-center gap-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
-          <ChevronLeft className="size-4" aria-hidden />
-          {t("tornaHome")}
-        </Link>
-      </nav>
+      <div className="flex items-center justify-between gap-3">
+        <nav aria-label={t("navigazione")}>
+          <Link href="/" className="inline-flex items-center gap-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
+            <ChevronLeft className="size-4" aria-hidden />
+            {t("tornaHome")}
+          </Link>
+        </nav>
+        <PulsantePerche />
+      </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-8">
+      <div>
         <div className="min-w-0 space-y-10">
           <IntestazioneSituazione vista={vista} origine={email.origine} contesto={contesto} />
           <ProssimaAzione vista={vista} contesto={contesto} />

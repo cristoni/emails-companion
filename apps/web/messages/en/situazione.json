@@ -167,7 +167,7 @@
   },
   "perche": {
     "titolo": "Why?",
-    "descrizione": "How the AI produced each claim on this page: AI function, model, AI context version, date and the quotes that support it. All the evidence is also next to each claim.",
+    "descrizione": "How the AI produced each claim on this page: model, AI context, date and supporting quotes.",
     "funzioneGenerica": "AI analysis",
     "altreCitazioni": "{numero, plural, one {# more quote next to the claim} other {# more quotes next to the claim}}",
     "link": "Why?",
@@ -189,7 +189,9 @@
       "risposta": "Reply received",
       "collegamento": "Link",
       "altro": "Claim"
-    }
+    },
+    "apri": "Why?",
+    "chiudi": "Close"
   },
   "correzioni": {
     "riepilogo": "{numero, plural, one {Your correction} other {Your # corrections}}",

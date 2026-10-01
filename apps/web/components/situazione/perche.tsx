@@ -4,6 +4,8 @@ import type { EvidenzaDto, PercheDto, UrgenzaEmailOrigineDto, VistaSituazioneDto
 import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { classiPulsante } from "@/components/ui/pulsante";
+import { CassettoPerche } from "./cassetto-perche";
 import { ancora, linguaDi, type ContestoDettaglio } from "./comuni";
 
 /** Citazioni mostrate nel pannello per ogni affermazione: le altre restano accanto all'elemento. */
@@ -19,7 +21,7 @@ interface Affermazione {
 }
 
 /**
- * Pannello "Perché?": per ogni analisi dell'AI che sostiene un'affermazione della pagina mostra la Funzione
+ * Pannello "Perché?", a comparsa e chiuso all'apertura: per ogni analisi dell'AI che sostiene un'affermazione della pagina mostra la Funzione
  * AI, il modello richiesto e quello servito, la versione del Contesto AI e la data, con i rimandi alle
  * affermazioni che ne derivano e le prime citazioni che le sostengono (tutte sono accanto all'elemento).
  */
@@ -38,15 +40,17 @@ export function PannelloPerche({
   for (const p of vista.perche) gruppi.set(p.analisiId, [...(gruppi.get(p.analisiId) ?? []), p]);
 
   return (
-    <aside aria-labelledby="perche-titolo" className="lg:sticky lg:top-6 lg:max-h-[calc(100dvh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
-      <div className="space-y-4 rounded-[var(--radius-card)] border border-border bg-surface-muted p-4">
-        <div className="space-y-1">
-          <h2 id="perche-titolo" className="flex items-center gap-1.5 text-base">
-            <CircleHelp className="size-4 text-accent-strong" aria-hidden />
-            {t("titolo")}
-          </h2>
-          <p className="text-xs leading-relaxed text-text-muted">{t("descrizione")}</p>
-        </div>
+    <CassettoPerche
+      etichettaChiudi={t("chiudi")}
+      titolo={
+        <>
+          <CircleHelp className="size-4 text-accent-strong" aria-hidden />
+          {t("titolo")}
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <p className="text-xs leading-relaxed text-text-muted">{t("descrizione")}</p>
         {gruppi.size === 0 ? (
           <p className="text-sm text-text-muted">{t("vuoto")}</p>
         ) : (
@@ -57,7 +61,18 @@ export function PannelloPerche({
           </ul>
         )}
       </div>
-    </aside>
+    </CassettoPerche>
+  );
+}
+
+/** Pulsante in cima alla pagina che apre il pannello "Perché?" (chiuso all'apertura). */
+export function PulsantePerche() {
+  const t = useTranslations("situazione.perche");
+  return (
+    <a href="#perche-titolo" title={t("linkAiuto")} className={classiPulsante("secondario", "sm")}>
+      <CircleHelp className="size-4" aria-hidden />
+      {t("apri")}
+    </a>
   );
 }
 

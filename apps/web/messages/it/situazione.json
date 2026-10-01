@@ -167,7 +167,7 @@
   },
   "perche": {
     "titolo": "Perché?",
-    "descrizione": "Come l'AI ha prodotto ogni affermazione di questa pagina: funzione AI, modello, versione del Contesto AI, data e le citazioni che la sostengono. Tutte le evidenze sono anche accanto a ciascuna affermazione.",
+    "descrizione": "Come l'AI ha prodotto ogni affermazione di questa pagina: modello, Contesto AI, data e citazioni a sostegno.",
     "funzioneGenerica": "Analisi dell'AI",
     "altreCitazioni": "{numero, plural, one {Un'altra citazione accanto all'affermazione} other {Altre # citazioni accanto all'affermazione}}",
     "link": "Perché?",
@@ -189,7 +189,9 @@
       "risposta": "Risposta arrivata",
       "collegamento": "Collegamento",
       "altro": "Affermazione"
-    }
+    },
+    "apri": "Perché?",
+    "chiudi": "Chiudi"
   },
   "correzioni": {
     "riepilogo": "{numero, plural, one {La tua correzione} other {Le tue # correzioni}}",
