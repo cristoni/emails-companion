@@ -7,6 +7,14 @@
     "risposta": "Bozza di risposta",
     "sollecito": "Bozza di sollecito"
   },
+  "titoliInviati": {
+    "risposta": "Risposta inviata",
+    "sollecito": "Sollecito inviato"
+  },
+  "meta": {
+    "bozza": "Bozza",
+    "conferma": "Conferma l'invio"
+  },
   "stati": {
     "generazione": "In scrittura",
     "modificabile": "Bozza",
@@ -14,7 +22,14 @@
     "in_invio": "In invio",
     "esito_incerto": "Esito incerto",
     "inviato": "Inviata",
-    "fallito": "Non inviata"
+    "fallito": "Invio non riuscito"
+  },
+  "passi": {
+    "etichetta": "Passaggi per l'invio",
+    "modifica": "Modifica",
+    "conferma": "Rivedi e invia",
+    "fatto": "completato",
+    "blocco": "Nulla parte senza la tua conferma"
   },
   "proponi": {
     "risposta": "Proponi risposta",
@@ -34,36 +49,26 @@
   },
   "sezione": {
     "titolo": "Bozze",
-    "senzaOggetto": "Bozza in scrittura",
     "a": "A",
-    "da": "Da",
-    "aggiornata": "Aggiornata",
     "originale": "Email originale"
   },
   "pagina": {
     "situazione": "Torna alla situazione",
-    "descrizione": {
-      "risposta": "Una risposta scritta nella lingua dell'email. Rivedila, modificala e conferma prima di qualsiasi invio.",
-      "sollecito": "Un sollecito alla tua richiesta, scritto nella sua lingua. Rivedilo, modificalo e conferma prima di qualsiasi invio."
-    },
     "origine": {
       "risposta": "In risposta a",
-      "sollecito": "Sollecito alla tua richiesta"
+      "sollecito": "Sollecito per"
     },
     "attesa": "Attesa",
-    "da": "Da",
     "impostazioni": "Apri le impostazioni"
   },
   "generazione": {
     "titolo": "Scrittura della bozza…",
-    "spiegazione": "L'AI sta scrivendo una bozza nella lingua dell'email. La pagina si aggiorna da sola.",
+    "spiegazione": "La pagina si aggiorna da sola.",
     "richiesta": "Richiesta",
     "inRitardo": "Ci sta mettendo più del solito",
-    "inRitardoTesto": "Puoi continuare ad aspettare o chiedere una nuova bozza.",
     "inPausa": "L'analisi AI è in pausa",
     "inPausaTesto": "Risolvi il problema nelle impostazioni, poi rigenera la bozza: una bozza in pausa non riparte da sola.",
     "fallita": "L'AI non è riuscita a scrivere la bozza",
-    "fallitaTesto": "Puoi chiedere una nuova bozza.",
     "rigenera": "Rigenera",
     "esiti": {
       "ok": "Nuova bozza richiesta.",
@@ -71,27 +76,25 @@
     }
   },
   "editor": {
-    "titolo": "Bozza",
     "oggetto": "Oggetto",
-    "oggettoAiuto": "Mantieni l'oggetto suggerito per restare nello stesso thread di Gmail.",
+    "oggettoDiverso": "Suggerito: <oggetto></oggetto> (mantiene il thread di Gmail)",
+    "usaSuggerito": "Usalo",
     "corpo": "Messaggio",
     "salva": "Salva",
     "salvataggio": "Salvataggio…",
     "modificheNonSalvate": "Modifiche non salvate",
     "salvata": "Salvata",
-    "rivedi": "Rivedi e invia",
-    "rivediAiuto": "Salva le modifiche prima di rivedere l'invio.",
+    "rivedi": "Rivedi prima di inviare",
     "nuovaVersione": "Nel frattempo è stata salvata una versione più recente di questa bozza. Il tuo testo è ancora qui.",
     "caricaUltima": "Scarta le mie modifiche e caricala",
-    "annulla": "Scarta le modifiche",
-    "versione": "Versione {numero}",
-    "salvataIl": "salvata",
+    "annulla": "Scarta",
+    "scartaDomanda": "Scartare le modifiche?",
+    "esciSenzaSalvare": "Hai modifiche non salvate. Uscire senza salvare?",
     "origini": {
       "ai": "Scritta dall'AI",
       "utente": "Modificata da te"
     },
     "esiti": {
-      "modificata": "Salvata come nuova versione.",
       "versione_superata": "La bozza è cambiata da quando l'hai aperta. Carica l'ultima versione, poi applica di nuovo le tue modifiche.",
       "oggetto_non_valido": "L'oggetto è troppo lungo.",
       "corpo_non_valido": "Il messaggio è troppo lungo.",
@@ -105,12 +108,11 @@
     "a": "A",
     "cc": "Cc",
     "bcc": "Ccn",
-    "oggetto": "Oggetto",
-    "oggettoCalcolato": "Oggetto suggerito",
     "nessunOggetto": "Nessun oggetto",
     "nessunTesto": "Nessun testo",
-    "fissa": "Destinatari e casella sono stabiliti dall'app dalle intestazioni dell'email e non si possono modificare.",
-    "intestazioni": "Intestazioni tecniche",
+    "fissa": "Mittente e destinatari derivano dall'email originale e non si possono modificare.",
+    "intestazioni": "Dettagli tecnici",
+    "versione": "Versione",
     "inRispostaA": "In-Reply-To",
     "riferimenti": "References",
     "nessuno": "Nessuno",
@@ -131,15 +133,16 @@
     }
   },
   "contesto": {
-    "titolo": "Email usate per questa bozza",
-    "descrizione": "Le ha scelte l'app; l'AI ha letto solo queste.",
-    "nessuna": "Questa versione l'hai scritta tu: all'AI non è stata passata nessuna email.",
-    "da": "Da"
+    "soloQuesta": "L'AI ha letto solo questa email",
+    "altre": "{numero, plural, one {L'AI ha letto anche un'altra email} other {L'AI ha letto anche altre # email}}",
+    "lette": "{numero, plural, one {L'AI ha letto # email} other {L'AI ha letto # email}}",
+    "letteDallAi": "L'AI ha letto:",
+    "nessuna": "All'AI non è stata passata nessuna email"
   },
   "conferma": {
-    "titolo": "Conferma l'invio",
-    "descrizione": "Questo è esattamente ciò che verrà inviato. Nulla parte dalla tua casella finché non premi Invia ora.",
-    "versione": "Versione {numero}",
+    "titolo": "Rivedi e invia",
+    "riepilogo": "Da <da></da> a <a></a>",
+    "controllaAvvisi": "{numero, plural, one {Controlla l'avviso qui sopra} other {Controlla i # avvisi qui sopra}}",
     "invia": "Invia ora",
     "invio": "Invio…",
     "modifica": "Torna alla modifica",
@@ -158,9 +161,8 @@
     "inCorso": "Invio in corso",
     "inCorsoTesto": "Confermato e in partenza. La pagina si aggiorna da sola.",
     "confermatoIl": "Confermato",
-    "inviato": "Inviata",
-    "inviatoIl": "Inviata",
-    "fallito": "Non inviata",
+    "inviatoIl": "{tipo, select, sollecito {Inviato il} other {Inviata il}}",
+    "fallito": "Invio non riuscito",
     "fallitoTesto": "Dalla tua casella non è partito nulla. Puoi modificare la bozza e inviarla di nuovo.",
     "verifica": "Verifichiamo se è partita",
     "verificaTesto": "La cerchiamo nella posta inviata fino a <ora></ora>. Dopo potrai decidere tu: decidere prima potrebbe creare un duplicato.",

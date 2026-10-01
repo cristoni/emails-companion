@@ -5,10 +5,13 @@ import type { Indirizzo } from "@ec/core/dominio";
 import { testoCodice, type Traduttore } from "@/components/comuni/codici";
 import { DistintivoProposta } from "@/components/comuni/distintivi";
 import { LinkEmail } from "@/components/comuni/evidenze";
-import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { Avviso } from "@/components/ui/avviso";
+import { cn } from "@/components/ui/cn";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { Distintivo, type TonoDistintivo } from "@/components/ui/distintivo";
+import { Espandibile } from "@/components/ui/espandibile";
+import { CLASSE_RIGA_BUSTA } from "./griglia";
 
 /** Stato di una bozza come lo vede l'utente: stato della bozza e, se c'è, dell'ultimo invio. */
 export type ChiaveStatoBozza = "generazione" | "modificabile" | "confermato" | "in_invio" | "esito_incerto" | "inviato" | "fallito";
@@ -49,30 +52,24 @@ export function DistintivoStatoBozza({ chiave }: { chiave: ChiaveStatoBozza }) {
 }
 
 /**
- * Origine della versione: il testo scritto dall'AI resta una Proposta finché l'utente non ne conferma
- * l'invio (`confermata`); da lì in poi è solo indicato come scritto dall'AI.
+ * Origine della versione, in forma discreta: il testo scritto dall'AI resta una Proposta finché l'utente non
+ * ne conferma l'invio (`confermata`); da lì in poi è solo indicato come scritto dall'AI.
  */
-export function DistintivoOrigine({ origine, confermata = false }: { origine: "ai" | "utente"; confermata?: boolean }) {
+export function OrigineVersione({ origine, confermata = false, className }: { origine: "ai" | "utente"; confermata?: boolean; className?: string }) {
   const t = useTranslations("bozze.editor.origini");
-  if (origine === "ai" && confermata) {
+  if (origine === "ai" && !confermata) {
     return (
-      <Distintivo tono="neutro" icona={<Sparkles className="size-3" aria-hidden />}>
-        {t("ai")}
-      </Distintivo>
-    );
-  }
-  if (origine === "ai") {
-    return (
-      <span className="inline-flex flex-wrap items-center gap-2">
-        <DistintivoProposta />
-        <span className="text-xs text-text-muted">{t("ai")}</span>
+      <span className={cn("text-sm", className)}>
+        <DistintivoProposta discreto />
       </span>
     );
   }
+  const Icona = origine === "ai" ? Sparkles : UserPen;
   return (
-    <Distintivo tono="neutro" icona={<UserPen className="size-3" aria-hidden />}>
-      {t("utente")}
-    </Distintivo>
+    <span className={cn("inline-flex items-center gap-1 text-sm whitespace-nowrap text-text-muted", className)}>
+      <Icona className="size-3.5" aria-hidden />
+      {t(origine)}
+    </span>
   );
 }
 
@@ -82,44 +79,34 @@ export function testoErroreInvio(tb: Traduttore, tc: Traduttore, codice: string 
   return testoCodice(tc, "errori", codice);
 }
 
-/** Indirizzi come pillole: nome (se presente) e indirizzo in monospace. Mai link. */
+/** Indirizzi in testo semplice: il nome (se presente) seguito dall'indirizzo attenuato. Mai link. */
 export function ElencoIndirizzi({ indirizzi, vuoto }: { indirizzi: readonly Indirizzo[]; vuoto?: string }) {
   if (indirizzi.length === 0) return <span className="text-text-muted">{vuoto ?? "—"}</span>;
   return (
-    <ul className="flex flex-wrap gap-1.5">
-      {indirizzi.map((i) => (
-        <li key={i.indirizzo} className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-surface-muted px-2.5 py-0.5 text-xs">
+    <span className="break-words">
+      {indirizzi.map((i, n) => (
+        <span key={i.indirizzo}>
+          {n > 0 ? ", " : null}
           {i.nome ? (
-            <span dir="auto" className="truncate font-medium">
-              {i.nome}
-            </span>
-          ) : null}
-          <span className="truncate font-mono text-text-muted">{i.indirizzo}</span>
-        </li>
+            <>
+              <span dir="auto">{i.nome}</span> <span className="text-text-muted">{i.indirizzo}</span>
+            </>
+          ) : (
+            i.indirizzo
+          )}
+        </span>
       ))}
-    </ul>
+    </span>
   );
 }
 
 /** Righe della busta in sola lettura: casella mittente e destinatari calcolati dal server. */
-export function RigheBusta({
-  casella,
-  a,
-  cc,
-  bcc,
-  children,
-}: {
-  casella: string;
-  a: readonly Indirizzo[];
-  cc: readonly Indirizzo[];
-  bcc: readonly Indirizzo[];
-  children?: React.ReactNode;
-}) {
+export function RigheBusta({ casella, a, cc, bcc }: { casella: string; a: readonly Indirizzo[]; cc: readonly Indirizzo[]; bcc: readonly Indirizzo[] }) {
   const t = useTranslations("bozze.busta");
   return (
-    <dl className="divide-y divide-border">
+    <dl>
       <RigaBusta etichetta={t("da")}>
-        <span className="font-mono text-xs break-all">{casella}</span>
+        <span className="break-all">{casella}</span>
       </RigaBusta>
       <RigaBusta etichetta={t("a")}>
         <ElencoIndirizzi indirizzi={a} vuoto={t("nessuno")} />
@@ -134,40 +121,47 @@ export function RigheBusta({
           <ElencoIndirizzi indirizzi={bcc} />
         </RigaBusta>
       ) : null}
-      {children}
     </dl>
   );
 }
 
-/** Riga aggiuntiva della busta (per esempio l'oggetto suggerito), con lo stesso allineamento. */
-export function RigaBusta({ etichetta, children }: { etichetta: string; children: React.ReactNode }) {
+function RigaBusta({ etichetta, children }: { etichetta: string; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-start gap-3 py-2 sm:grid-cols-[7rem_minmax(0,1fr)]">
-      <dt className="pt-0.5 text-xs font-medium tracking-wide text-text-muted uppercase">{etichetta}</dt>
+    <div className={cn(CLASSE_RIGA_BUSTA, "py-1")}>
+      <dt className="text-sm text-text-muted">{etichetta}</dt>
       <dd className="min-w-0 text-sm">{children}</dd>
     </div>
   );
 }
 
-/** In-Reply-To e References calcolati dal server, in sola lettura e ripiegati. */
-export function IntestazioniTecniche({ inReplyTo, references }: { inReplyTo: string | null; references: readonly string[] }) {
+type Versione = NonNullable<DettaglioBozzaDto["versione"]>;
+
+/**
+ * Dettagli tecnici a richiesta, in fondo alla pagina: perché mittente e destinatari non si modificano, numero
+ * di versione, In-Reply-To e References calcolati dal server.
+ */
+export function DettagliTecnici({ versione }: { versione: Versione }) {
   const t = useTranslations("bozze.busta");
   return (
-    <details className="group rounded-lg border border-border bg-surface-muted px-3 py-2 text-xs">
-      <summary className="cursor-pointer text-text-muted select-none hover:text-text">{t("intestazioni")}</summary>
-      <dl className="mt-2 space-y-2">
+    <Espandibile titolo={t("intestazioni")} classeContenuto="space-y-3 pl-5 text-xs">
+      <p className="text-text-muted">{t("fissa")}</p>
+      <dl className="space-y-2">
+        <div>
+          <dt className="font-medium text-text-muted">{t("versione")}</dt>
+          <dd>{versione.numero}</dd>
+        </div>
         <div>
           <dt className="font-medium text-text-muted">{t("inRispostaA")}</dt>
-          <dd className="font-mono break-all">{inReplyTo ? `<${inReplyTo}>` : t("nessuno")}</dd>
+          <dd className="font-mono break-all">{versione.inReplyTo ? `<${versione.inReplyTo}>` : t("nessuno")}</dd>
         </div>
         <div>
           <dt className="font-medium text-text-muted">{t("riferimenti")}</dt>
           <dd>
-            {references.length === 0 ? (
+            {versione.references.length === 0 ? (
               t("nessuno")
             ) : (
               <ul className="space-y-0.5 font-mono break-all">
-                {references.map((r) => (
+                {versione.references.map((r) => (
                   <li key={r}>{`<${r}>`}</li>
                 ))}
               </ul>
@@ -175,7 +169,7 @@ export function IntestazioniTecniche({ inReplyTo, references }: { inReplyTo: str
           </dd>
         </div>
       </dl>
-    </details>
+    </Espandibile>
   );
 }
 
@@ -194,103 +188,116 @@ export function AvvisiBozza({ avvisi }: { avvisi: readonly AvvisoBozza[] }) {
   );
 }
 
-/** Email da cui deriva la bozza, ciascuna con il link all'originale. */
-export function EmailUsate({ email }: { email: readonly EmailDellaBozzaDto[] }) {
+/** Email effettivamente lette dall'AI, in una riga: ciascuna porta al suo originale. */
+export function EmailLette({ email }: { email: readonly EmailDellaBozzaDto[] }) {
   const t = useTranslations("bozze.contesto");
   return (
-    <section aria-label={t("titolo")} className="space-y-3">
-      <div className="space-y-0.5">
-        <h2 className="text-base">{t("titolo")}</h2>
-        <p className="text-sm text-text-muted">{email.length > 0 ? t("descrizione") : t("nessuna")}</p>
-      </div>
-      {email.length > 0 ? (
-        <ul className="divide-y divide-border rounded-[var(--radius-card)] border border-border bg-surface-raised">
-          {email.map((e) => (
-            <li key={e.id} className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 px-4 py-3">
-              <div className="min-w-0 space-y-0.5">
-                <TestoSemplice come="p" testo={e.oggetto} lingua={e.lingua} className="line-clamp-2 text-sm font-medium" />
-                <p className="flex flex-wrap items-center gap-x-2 text-xs text-text-muted">
-                  <span>{t("da")}</span>
-                  <span dir="auto">{e.mittente.nome ?? e.mittente.indirizzo}</span>
-                  <span aria-hidden>·</span>
-                  <Istante iso={e.ricevutaIl} stile="data_ora" />
-                </p>
-              </div>
-              <LinkEmail emailId={e.id} className="shrink-0 text-sm text-accent-strong underline-offset-4 hover:underline" />
-            </li>
+    <p className="flex items-start gap-1.5 text-sm text-text-muted">
+      <Sparkles className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+      {email.length === 0 ? (
+        <span>{t("nessuna")}</span>
+      ) : (
+        <span className="min-w-0">
+          {t("letteDallAi")}{" "}
+          {email.map((e, n) => (
+            <span key={e.id}>
+              {n > 0 ? ", " : null}
+              {/* Su mobile l'area di tocco si allarga in verticale senza spostare il testo. */}
+              <LinkEmail emailId={e.id} title={e.mittente.nome ?? e.mittente.indirizzo} className={cn(CLASSE_LINK, "py-2.5 sm:py-0")}>
+                <TestoSemplice come="span" testo={e.oggetto} lingua={e.lingua} />
+              </LinkEmail>
+            </span>
           ))}
-        </ul>
-      ) : null}
-    </section>
-  );
-}
-
-type Versione = NonNullable<DettaglioBozzaDto["versione"]>;
-
-/** Numero, origine e istante della versione mostrata; `confermata` quando l'utente ne ha confermato l'invio. */
-export function InfoVersione({ versione, confermata = false }: { versione: Versione; confermata?: boolean }) {
-  const t = useTranslations("bozze.editor");
-  return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-muted">
-      <DistintivoOrigine origine={versione.origine} confermata={confermata} />
-      <span className="font-mono">{t("versione", { numero: versione.numero })}</span>
-      <span aria-hidden>·</span>
-      <span>
-        {t("salvataIl")} <Istante iso={versione.creataIl} stile="relativo" />
-      </span>
-    </div>
+        </span>
+      )}
+    </p>
   );
 }
 
 /**
- * Versione salvata in sola lettura, esattamente come verrà (o è stata) inviata: casella mittente,
- * destinatari, oggetto e corpo in testo semplice nella lingua della bozza, intestazioni tecniche.
- * Un oggetto vuoto è dichiarato come tale, così non sembra un dato mancante.
+ * Versione salvata in sola lettura, esattamente come verrà (o è stata) inviata: l'oggetto come titolo, la
+ * busta (casella mittente e destinatari) e il corpo in testo semplice nella lingua della bozza. Sulla
+ * conferma la busta è riassunta nel `piede`, accanto a "Invia ora" (`busta={false}`). Un oggetto o un corpo
+ * vuoti sono dichiarati come tali, così non sembrano dati mancanti.
  */
 export function SchedaVersione({
-  titolo,
   casella,
   versione,
   lingua,
   confermata = false,
+  busta = true,
   piede,
 }: {
-  titolo: string;
   casella: string;
   versione: Versione;
   lingua: string | null;
   confermata?: boolean;
+  busta?: boolean;
   piede?: React.ReactNode;
 }) {
   const t = useTranslations("bozze.busta");
   return (
     <article className="overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-raised shadow-[var(--shadow-card)]">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
-        <h2 className="text-base">{titolo}</h2>
-        <InfoVersione versione={versione} confermata={confermata} />
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border px-5 py-4">
+        <h2 className="min-w-0 text-base">
+          {versione.oggetto ? (
+            <TestoSemplice come="span" testo={versione.oggetto} lingua={lingua} />
+          ) : (
+            <span className="font-normal text-text-muted italic">{t("nessunOggetto")}</span>
+          )}
+        </h2>
+        <OrigineVersione origine={versione.origine} confermata={confermata} />
       </div>
-      <div className="px-5">
-        <RigheBusta casella={casella} a={versione.a} cc={versione.cc} bcc={versione.bcc}>
-          <RigaBusta etichetta={t("oggetto")}>
-            {versione.oggetto ? (
-              <TestoSemplice come="span" testo={versione.oggetto} lingua={lingua} className="font-medium" />
-            ) : (
-              <span className="text-text-muted italic">{t("nessunOggetto")}</span>
-            )}
-          </RigaBusta>
-        </RigheBusta>
-      </div>
-      <div className="border-t border-border px-5 py-5">
+      {busta ? (
+        <div className="border-b border-border px-5 py-3">
+          <RigheBusta casella={casella} a={versione.a} cc={versione.cc} bcc={versione.bcc} />
+        </div>
+      ) : null}
+      <div className="px-5 py-5">
         {versione.corpo.trim() ? (
           <TestoSemplice testo={versione.corpo} lingua={lingua} className="text-[15px] leading-relaxed" />
         ) : (
           <p className="text-sm text-text-muted italic">{t("nessunTesto")}</p>
         )}
       </div>
-      <div className="border-t border-border px-5 py-3">
-        <IntestazioniTecniche inReplyTo={versione.inReplyTo} references={versione.references} />
-      </div>
       {piede ? <div className="border-t border-border bg-surface-muted px-5 py-4">{piede}</div> : null}
     </article>
+  );
+}
+
+/**
+ * Riepilogo accanto a "Invia ora": da quale casella e a chi parte (Cc e Ccn compresi) e, se ci sono avvisi,
+ * il richiamo a leggerli, perché sui messaggi lunghi restano fuori vista.
+ */
+export function RiepilogoInvio({ casella, versione, avvisi }: { casella: string; versione: Versione; avvisi: number }) {
+  const t = useTranslations("bozze");
+  const forte = (testo: React.ReactNode) => <span className="text-text">{testo}</span>;
+  return (
+    <div className="space-y-1.5 text-sm text-text-muted">
+      {avvisi > 0 ? (
+        <p className="flex items-center gap-1.5 font-medium text-urgent">
+          <AlertTriangle className="size-4 shrink-0" aria-hidden />
+          {t("conferma.controllaAvvisi", { numero: avvisi })}
+        </p>
+      ) : null}
+      <p className="break-words">
+        {t.rich("conferma.riepilogo", {
+          da: () => forte(casella),
+          a: () => forte(<ElencoIndirizzi indirizzi={versione.a} vuoto={t("busta.nessuno")} />),
+        })}
+        {versione.cc.length > 0 ? (
+          <>
+            {" · "}
+            {t("busta.cc")} {forte(<ElencoIndirizzi indirizzi={versione.cc} />)}
+          </>
+        ) : null}
+        {versione.bcc.length > 0 ? (
+          <>
+            {" · "}
+            {t("busta.bcc")} {forte(<ElencoIndirizzi indirizzi={versione.bcc} />)}
+          </>
+        ) : null}
+      </p>
+    </div>
   );
 }

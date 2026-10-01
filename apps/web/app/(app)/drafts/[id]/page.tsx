@@ -1,32 +1,30 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft } from "lucide-react";
 import { dettaglioBozza, LIMITE_CORPO, LIMITE_OGGETTO } from "@ec/applicazione";
-import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { Istante } from "@/components/comuni/istante";
 import { EditorBozza } from "@/components/bozze/editor-bozza";
-import { BloccoGenerazione, EmailOrigine, StatoInvio } from "@/components/bozze/pagina-bozza";
-import {
-  AvvisiBozza,
-  chiaveStatoBozza,
-  DistintivoStatoBozza,
-  EmailUsate,
-  InfoVersione,
-  IntestazioniTecniche,
-  RigaBusta,
-  RigheBusta,
-  SchedaVersione,
-} from "@/components/bozze/parti";
+import { BloccoGenerazione, ContestoBozza, IntestazioneBozza, LinkIndietro, RigaInviata, StatoInvio } from "@/components/bozze/pagina-bozza";
+import { AvvisiBozza, chiaveStatoBozza, DettagliTecnici, OrigineVersione, RigheBusta, SchedaVersione } from "@/components/bozze/parti";
+import { PassiBozza } from "@/components/bozze/passi-bozza";
 import { Avviso } from "@/components/ui/avviso";
-import { IntestazionePagina } from "@/components/ui/pagina";
 import { classiPulsante } from "@/components/ui/pulsante";
 import { richiediOnboardingEssenziale } from "@/lib/server/onboarding";
 import { comeUtente } from "@/lib/server/sessione";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("bozze.meta");
+  return { title: t("bozza") };
+}
+
 /**
- * `/drafts/[id]`: bozza di risposta o sollecito. Mostra la generazione in corso (o perché non arriva),
- * l'editor di oggetto e corpo con la busta in sola lettura, gli avvisi, le email usate e lo stato
- * dell'invio. L'invio passa solo dalla schermata di conferma (`/drafts/[id]/confirm`).
+ * `/drafts/[id]`: bozza di risposta o sollecito, passo 1 di 2. In alto il titolo con l'origine del testo e i
+ * passi verso l'invio; poi lo stato dell'ultimo invio quando chiede attenzione, una sola scheda di contesto
+ * (email a cui si risponde e che cosa ha letto l'AI), la generazione in corso (o perché non arriva) oppure
+ * gli avvisi e l'editor con la busta in sola lettura; in fondo, a richiesta, i dettagli tecnici. Dopo la
+ * conferma titolo e scheda dicono lo stato reale. L'invio passa solo dalla schermata di conferma
+ * (`/drafts/[id]/confirm`).
  */
 export default async function PaginaBozza({ params }: { params: Promise<{ id: string }> }) {
   await richiediOnboardingEssenziale();
@@ -37,21 +35,20 @@ export default async function PaginaBozza({ params }: { params: Promise<{ id: st
   const v = bozza.versione;
   const chiave = chiaveStatoBozza({ stato: bozza.stato, versioneCorrente: v?.numero ?? 0, ultimoInvio: bozza.invio });
   const modificabile = bozza.stato === "modificabile";
+  // Finché è modificabile è una bozza; confermata non lo è più: in invio o con esito da chiarire è "Risposta", poi "Risposta inviata".
+  const titolo = modificabile ? t(`titoli.${bozza.tipo}`) : chiave === "inviato" ? t(`titoliInviati.${bozza.tipo}`) : t(`tipi.${bozza.tipo}`);
 
   return (
-    <div className="space-y-6">
-      {bozza.situazioneId ? (
-        <Link href={`/situations/${bozza.situazioneId}`} className="inline-flex items-center gap-1.5 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
-          <ArrowLeft className="size-4" aria-hidden />
-          {t("pagina.situazione")}
-        </Link>
-      ) : null}
+    <div className="space-y-5">
+      {bozza.situazioneId ? <LinkIndietro href={`/situations/${bozza.situazioneId}`}>{t("pagina.situazione")}</LinkIndietro> : null}
 
-      <IntestazionePagina titolo={t(`titoli.${bozza.tipo}`)} descrizione={t(`pagina.descrizione.${bozza.tipo}`)} azioni={<DistintivoStatoBozza chiave={chiave} />} />
-
-      <EmailOrigine bozza={bozza} />
+      <IntestazioneBozza titolo={titolo} accanto={modificabile && v ? <OrigineVersione origine={v.origine} /> : null}>
+        {modificabile ? <PassiBozza attivo="modifica" /> : <RigaInviata bozza={bozza} />}
+      </IntestazioneBozza>
 
       <StatoInvio bozza={bozza} />
+
+      <ContestoBozza bozza={bozza} />
 
       {modificabile && !v ? <BloccoGenerazione bozza={bozza} /> : null}
 
@@ -76,30 +73,17 @@ export default async function PaginaBozza({ params }: { params: Promise<{ id: st
             corpo={v.corpo}
             lingua={bozza.lingua}
             limiti={{ oggetto: LIMITE_OGGETTO, corpo: LIMITE_CORPO }}
-            intestazione={<InfoVersione versione={v} />}
-            busta={
-              <>
-                <RigheBusta casella={bozza.casella.indirizzo} a={v.a} cc={v.cc} bcc={v.bcc}>
-                  {bozza.oggettoCalcolato ? (
-                    <RigaBusta etichetta={t("busta.oggettoCalcolato")}>
-                      <TestoSemplice come="span" testo={bozza.oggettoCalcolato} lingua={bozza.lingua} className="text-text-muted" />
-                    </RigaBusta>
-                  ) : null}
-                </RigheBusta>
-                <div className="space-y-3 pb-4">
-                  <p className="text-xs text-text-muted">{t("busta.fissa")}</p>
-                  <IntestazioniTecniche inReplyTo={v.inReplyTo} references={v.references} />
-                </div>
-              </>
-            }
+            oggettoSuggerito={bozza.oggettoCalcolato}
+            salvataIl={<Istante iso={v.creataIl} stile="relativo" />}
+            busta={<RigheBusta casella={bozza.casella.indirizzo} a={v.a} cc={v.cc} bcc={v.bcc} />}
           />
         </>
       ) : null}
 
       {/* In invio o inviata: l'utente ha confermato questa versione, che non è più una Proposta. */}
-      {!modificabile && v ? <SchedaVersione titolo={t("editor.titolo")} casella={bozza.casella.indirizzo} versione={v} lingua={bozza.lingua} confermata /> : null}
+      {!modificabile && v ? <SchedaVersione casella={bozza.casella.indirizzo} versione={v} lingua={bozza.lingua} confermata /> : null}
 
-      {v ? <EmailUsate email={bozza.emailContesto} /> : null}
+      {v ? <DettagliTecnici versione={v} /> : null}
     </div>
   );
 }
