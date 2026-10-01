@@ -72,7 +72,7 @@
     "collegataIl": "collegata il",
     "lettura": "Lettura",
     "invio": "Invio",
-    "concesso": "concesso",
+    "concesso": "ok",
     "mancante": "mancante",
     "ricollega": "Ricollega",
     "ricollegaTesto": "L’accesso Google è stato revocato o è scaduto, quindi la sincronizzazione è in pausa. Ricollega lo stesso account: i dati restano.",
@@ -107,14 +107,10 @@
       "casella_non_pronta": "Ricollega o autorizza questa casella prima di avviare l’importazione."
     },
     "collegaPrima": "Collega una casella Gmail",
-    "permessiOk": "lettura e invio consentiti",
     "fasi": {
       "da_stimare": "stima dell’importazione",
-      "stimata": "importazione da confermare",
       "confermata": "importazione in avvio",
-      "rifiutata": "importazione rinviata",
       "in_corso": "importazione in corso",
-      "completata": "importata",
       "errore": "importazione non riuscita"
     }
   },
@@ -159,7 +155,6 @@
   },
   "modelli": {
     "titolo": "Modelli AI",
-    "descrizione": "Ogni Funzione AI usa un proprio modello OpenRouter.",
     "funzioni": {
       "classificazione_priorita": {
         "nome": "Classificazione e priorità",
@@ -208,17 +203,18 @@
     },
     "personalizzato": "Personalizzato",
     "cambia": "Cambia",
-    "aiutoCampo": "Formato: fornitore/modello, come su openrouter.ai/models. Sono accettati solo modelli che non conservano dati e rispondono nel formato dell’app."
+    "aiutoCampo": "Formato: fornitore/modello, come su <link>openrouter.ai/models</link>. Sono accettati solo modelli che non conservano dati e rispondono nel formato dell’app."
   },
   "contesto": {
     "titolo": "Contesto AI",
-    "inUsoVersione": "In uso le tue direttive · versione {numero}",
-    "inUsoPredefinite": "In uso le Direttive predefinite",
+    "inUsoVersione": "Le tue direttive · v{numero}",
+    "inUsoPredefinite": "Direttive predefinite",
+    "personalizza": "Personalizza",
     "campo": "Le tue direttive",
     "salva": "Salva",
     "predefinite": {
-      "etichetta": "Ripristina le Direttive predefinite",
-      "titolo": "Ripristinare le Direttive predefinite?",
+      "etichetta": "Ripristina le direttive predefinite",
+      "titolo": "Ripristinare le direttive predefinite?",
       "testo": "Vengono salvate come nuova versione. Il testo attuale resta nella cronologia delle versioni.",
       "conferma": "Ripristina le predefinite"
     },
@@ -234,7 +230,7 @@
       "non_trovata": "Questa versione non esiste più.",
       "non_valido": "La richiesta non è valida. Ricarica la pagina."
     },
-    "aiuto": "Vale per le email nuove; per quelle già analizzate usa <rianalisi>Rianalizza</rianalisi>. Le garanzie dell’app restano sempre attive."
+    "aiuto": "Vale per le email nuove. Per le altre usa <rianalisi>Rianalizza</rianalisi>."
   },
   "preferenze": {
     "lingua": "Lingua",
@@ -267,7 +263,7 @@
     "continua": "Cosa continua",
     "continuaTesto": "Sincronizzazione e lettura della posta, attività, attese e correzioni già presenti, invio delle bozze che confermi.",
     "ripresa": "Alla ripresa vengono analizzate le email arrivate nel frattempo.",
-    "attivaTesto": "La pausa ferma ogni chiamata AI e ogni spesa. La posta continua a sincronizzarsi.",
+    "attivaTesto": "Ferma chiamate e spese AI; la posta continua a sincronizzarsi.",
     "inPausaTesto": "Nessuna chiamata AI e nessuna spesa. La posta continua a sincronizzarsi.",
     "dettagli": "Cosa succede"
   },
@@ -285,13 +281,12 @@
   },
   "rianalisi": {
     "titolo": "Rianalizza",
-    "descrizione": "Ripete l’analisi con il Contesto AI e i modelli attuali. Le tue correzioni restano.",
+    "descrizione": "Le tue correzioni restano.",
     "ambito": "Cosa rianalizzare",
     "aperti": "Email delle Situazioni aperte",
     "giorni": "Email degli ultimi",
     "giorniCampo": "Numero di giorni",
     "stima": "Stima il costo",
-    "nienteParte": "Non parte nulla finché non confermi.",
     "ambitoGiorni": "Email {giorni, plural, one {dell’ultimo giorno} other {degli ultimi # giorni}}",
     "numero": "{numero, plural, =0 {Nessuna email da rianalizzare} one {# email da rianalizzare} other {# email da rianalizzare}}",
     "costo": "circa {costo}",
@@ -308,20 +303,19 @@
     "giorniUnita": "giorni"
   },
   "privacy": {
-    "accettata": "Informativa accettata (versione {versione}).",
+    "accettata": "Informativa accettata",
     "nonAccettata": "Non hai accettato l’informativa attuale (versione {versione}). Finché non lo fai, l’analisi AI resta in pausa.",
     "leggi": "Leggila",
     "accetta": "Leggi e accetta"
   },
   "account": {
-    "descrizione": "Elimina il tuo account e tutto ciò che l’app conserva su di te.",
     "etichetta": "Elimina l’account…",
     "titoloConferma": "Eliminare l’account e tutti i suoi dati?",
     "analisi": "L’analisi AI si ferma subito.",
     "caselle": "Ogni casella collegata viene scollegata e il suo accesso Google revocato.",
     "dati": "Vengono eliminati email, analisi, Situazioni, bozze, il tuo Contesto AI e la tua chiave OpenRouter.",
     "backup": "I backup del database conservano i dati fino alla fine del loro periodo di ritenzione, come spiega l’informativa.",
-    "uscita": "Esci subito dall’app. L’operazione non si può annullare.",
+    "uscita": "La sessione si chiude subito. L’operazione non si può annullare.",
     "capisco": "Ho capito che il mio account e i miei dati saranno eliminati definitivamente.",
     "conferma": "Elimina il mio account",
     "inCorso": "Eliminazione…",

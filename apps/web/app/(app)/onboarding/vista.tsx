@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Plus } from "lucide-react";
+import { AREA_TOCCO } from "@/components/impostazioni/classi";
 import { opzioniImporto } from "@/components/impostazioni/formato";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
 import { classiPulsante } from "@/components/ui/pulsante";
 import { IntestazionePagina } from "@/components/ui/pagina";
 import { Scheda } from "@/components/ui/scheda";
@@ -28,7 +30,8 @@ const PASSI_OBBLIGATORI = ["informativa", "chiave", "importazione"] as const;
 /**
  * Onboarding in passi: informativa (1), chiave OpenRouter (2), Contesto AI (facoltativo, senza numero) e
  * Importazione iniziale (3). È aperto solo il primo passo obbligatorio non completato; i passi completati si
- * chiudono su una riga di riepilogo e si riaprono con "Modifica" o "Rivedi". Il Contesto AI non blocca e non
+ * chiudono sul titolo con la spunta (più, se serve, una riga di riepilogo) e si riaprono con "Modifica" o
+ * "Rivedi". Il Contesto AI non blocca e non
  * conta nel progresso.
  */
 export async function VistaOnboarding({ dati }: { dati: DatiOnboarding }) {
@@ -69,7 +72,6 @@ export async function VistaOnboarding({ dati }: { dati: DatiOnboarding }) {
             numero={1}
             stato={stato("informativa")}
             titolo={t("informativa.titolo")}
-            riepilogo={dati.consenso ? t("informativa.accettata") : undefined}
             apri={t("rivedi")}
             etichette={etichette}
           >
@@ -81,7 +83,7 @@ export async function VistaOnboarding({ dati }: { dati: DatiOnboarding }) {
             </ul>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               {dati.consenso ? null : <PulsanteInformativa etichetta={t("informativa.accetta")} />}
-              <Link href="/privacy" className="text-accent-strong underline-offset-4 hover:underline">
+              <Link href="/privacy" className={cn(CLASSE_LINK_AZIONE, AREA_TOCCO)}>
                 {t("informativa.completa")}
               </Link>
             </div>
@@ -120,7 +122,9 @@ export async function VistaOnboarding({ dati }: { dati: DatiOnboarding }) {
             numero={3}
             stato={stato("importazione")}
             titolo={t("importazione.titolo")}
-            riepilogo={fatti.importazione ? dati.caselle.map((c) => `${c.indirizzo} · ${fase(c.fase)}`).join("; ") : undefined}
+            riepilogo={
+              fatti.importazione ? dati.caselle.map((c) => (c.fase === "completata" ? c.indirizzo : `${c.indirizzo} · ${fase(c.fase)}`)).join("; ") : undefined
+            }
             apri={t("rivedi")}
             etichette={etichette}
           >

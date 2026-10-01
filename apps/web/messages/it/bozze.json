@@ -42,7 +42,7 @@
       "email_non_trovata": "Questa email non è più disponibile.",
       "attesa_non_trovata": "Questa attesa non esiste più.",
       "attesa_non_attiva": "Questa attesa è chiusa: non c'è nulla da sollecitare.",
-      "casella_non_pronta": "Nessuna casella collegata può inviarla. Ricollegala nelle impostazioni.",
+      "casella_non_pronta": "Nessuna casella collegata può inviarla. Ricollegala nelle Impostazioni.",
       "nessun_destinatario": "Non c'è nessuno a cui scrivere: tutti i destinatari sono tuoi indirizzi.",
       "errore": "Qualcosa è andato storto. Riprova."
     }
@@ -53,7 +53,7 @@
     "originale": "Email originale"
   },
   "pagina": {
-    "situazione": "Torna alla situazione",
+    "situazione": "Situazione",
     "origine": {
       "risposta": "In risposta a",
       "sollecito": "Sollecito per"
@@ -67,7 +67,7 @@
     "richiesta": "Richiesta",
     "inRitardo": "Ci sta mettendo più del solito",
     "inPausa": "L'analisi AI è in pausa",
-    "inPausaTesto": "Risolvi il problema nelle impostazioni, poi rigenera la bozza: una bozza in pausa non riparte da sola.",
+    "inPausaTesto": "Risolvi il problema nelle Impostazioni, poi rigenera la bozza: una bozza in pausa non riparte da sola.",
     "fallita": "L'AI non è riuscita a scrivere la bozza",
     "rigenera": "Rigenera",
     "esiti": {
@@ -116,7 +116,7 @@
     "inRispostaA": "In-Reply-To",
     "riferimenti": "References",
     "nessuno": "Nessuno",
-    "casellaNonPronta": "Questa casella al momento non può inviare. Ricollegala nelle impostazioni."
+    "casellaNonPronta": "Questa casella al momento non può inviare. Ricollegala nelle Impostazioni."
   },
   "avvisi": {
     "reply_to_dominio_diverso": {
@@ -129,7 +129,7 @@
     },
     "possibile_duplicato": {
       "titolo": "Possibile duplicato",
-      "testo": "Un tentativo precedente potrebbe essere già stato consegnato. Inviando di nuovo lo stesso messaggio potrebbe arrivare due volte."
+      "testo": "Un tentativo precedente potrebbe essere già arrivato: se invii di nuovo, il messaggio potrebbe arrivare due volte."
     }
   },
   "contesto": {
@@ -140,7 +140,6 @@
     "nessuna": "All'AI non è stata passata nessuna email"
   },
   "conferma": {
-    "titolo": "Rivedi e invia",
     "riepilogo": "Da <da></da> a <a></a>",
     "controllaAvvisi": "{numero, plural, one {Controlla l'avviso qui sopra} other {Controlla i # avvisi qui sopra}}",
     "invia": "Invia ora",
@@ -151,7 +150,7 @@
       "confermato": "Invio confermato.",
       "gia_in_corso": "Questa bozza è già in invio.",
       "versione_superata": "La bozza è cambiata da quando hai aperto questa pagina.",
-      "casella_non_pronta": "La casella al momento non può inviare. Ricollegala nelle impostazioni.",
+      "casella_non_pronta": "La casella al momento non può inviare. Ricollegala nelle Impostazioni.",
       "non_trovata": "Questa bozza non esiste più.",
       "bozza_vuota": "La bozza non ha un messaggio o non ha destinatari.",
       "errore": "Qualcosa è andato storto. Non è stato inviato nulla. Riprova."

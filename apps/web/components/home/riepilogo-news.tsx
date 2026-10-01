@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ArrowRight, Newspaper, Sparkles } from "lucide-react";
+import { ArrowRight, Mail, Newspaper, Sparkles } from "lucide-react";
 import type { VistaNewsDto } from "@ec/applicazione";
 import { testoCodice } from "@/components/comuni/codici";
 import { LinkEmail } from "@/components/comuni/evidenze";
@@ -13,21 +13,19 @@ import { aggiornaRiepilogoAzione } from "./azioni";
 
 /**
  * Riepilogo News delle ultime 24 ore (home e `/news`). Ogni voce è testo dell'AI, senza lingua dichiarata
- * perché può riassumere email in lingue diverse, seguito da link numerati alle email da cui deriva. In fondo
- * l'aggiornamento, che non compare quando nella finestra non ci sono News.
+ * perché può riassumere email in lingue diverse, seguito da link numerati alle email da cui deriva, ognuno
+ * con l'oggetto dell'email come nome. In fondo la rigenerazione, che non compare quando nella finestra non
+ * ci sono News. Nella home (`collegaPaginaNews`) il titolo nomina la categoria; in `/news` la nomina già la pagina.
  */
-export function RiepilogoNews({
-  news,
-  collegaPaginaNews = false,
-}: {
-  news: VistaNewsDto;
-  collegaPaginaNews?: boolean;
-  /** @deprecated Ignorato: il riepilogo ha ormai una sola forma. Resta finché `/news` lo passa. */
-  compatto?: boolean;
-}) {
+export function RiepilogoNews({ news, collegaPaginaNews = false }: { news: VistaNewsDto; collegaPaginaNews?: boolean }) {
   const t = useTranslations("home.riepilogo");
   const tc = useTranslations("comuni");
   const nonIncluse = news.nonIncluse.length;
+  const oggetti = new Map(news.membri.map((m) => [m.emailId, m.oggetto.trim()]));
+  const nomeFonte = (emailId: string, numero: number) => {
+    const oggetto = oggetti.get(emailId);
+    return oggetto ? t("fonteOggetto", { oggetto }) : t("fonte", { numero });
+  };
 
   return (
     <section aria-labelledby="riepilogo-news-titolo">
@@ -35,7 +33,7 @@ export function RiepilogoNews({
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <h2 id="riepilogo-news-titolo" className="flex items-center gap-2 text-base">
             <Newspaper className="size-4 text-text-muted" aria-hidden />
-            {t("titolo")}
+            {collegaPaginaNews ? t("titolo") : t("titoloPaginaNews")}
           </h2>
           {news.voci.length > 0 ? (
             <span title={t("testoAiAiuto")} className="inline-flex items-center gap-1 text-xs text-suggestion">
@@ -62,17 +60,22 @@ export function RiepilogoNews({
                     <TestoSemplice come="span" testo={voce.testo} />
                     {voce.emailIds.length > 0 ? (
                       <span className="ml-1.5 inline-flex gap-1 align-text-bottom">
-                        {/* Il numero è visivo, il nome accessibile dice cosa apre; l'area sensibile arriva a ~36px. */}
-                        {voce.emailIds.map((emailId, n) => (
-                          <LinkEmail
-                            key={emailId}
-                            emailId={emailId}
-                            className="relative inline-flex size-5 items-center justify-center rounded border border-border text-[11px] leading-none font-medium tabular-nums text-text-muted transition-colors after:absolute after:-inset-2 after:content-[''] hover:border-accent hover:text-accent-strong"
-                          >
-                            <span aria-hidden>{n + 1}</span>
-                            <span className="sr-only">{t("fonte", { numero: n + 1 })}</span>
-                          </LinkEmail>
-                        ))}
+                        {/* Busta e numero a vista, l'oggetto come nome e titolo; l'area sensibile arriva a ~36px. */}
+                        {voce.emailIds.map((emailId, n) => {
+                          const nome = nomeFonte(emailId, n + 1);
+                          return (
+                            <LinkEmail
+                              key={emailId}
+                              emailId={emailId}
+                              title={nome}
+                              className="relative inline-flex h-5 items-center gap-0.5 rounded border border-border px-1 text-[11px] leading-none font-medium tabular-nums text-text-muted transition-colors after:absolute after:-inset-2 after:content-[''] hover:border-accent hover:text-accent-strong"
+                            >
+                              <Mail className="size-3 shrink-0" aria-hidden />
+                              <span aria-hidden>{n + 1}</span>
+                              <span className="sr-only">{nome}</span>
+                            </LinkEmail>
+                          );
+                        })}
                       </span>
                     ) : null}
                   </p>
@@ -107,7 +110,9 @@ export function RiepilogoNews({
               ) : (
                 <span />
               )}
-              <ModuloAzione azione={aggiornaRiepilogoAzione} etichetta={t("aggiorna")} variante="fantasma" mostraOk messaggi={{ ok: t("aggiornaRichiesto") }} className="-mr-3" />
+              <span title={t("aggiornaAiuto")} className="-mr-3 inline-flex">
+                <ModuloAzione azione={aggiornaRiepilogoAzione} etichetta={t("aggiorna")} variante="fantasma" mostraOk messaggi={{ ok: t("aggiornaRichiesto") }} />
+              </span>
             </div>
           </div>
         )}

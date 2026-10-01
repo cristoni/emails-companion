@@ -6,6 +6,7 @@ import type { Attore } from "@ec/core/dominio";
 import { testoCodice } from "@/components/comuni/codici";
 import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { Distintivo } from "@/components/ui/distintivo";
 import { Espandibile } from "@/components/ui/espandibile";
 import { Conteggio, PulsanteAnnulla } from "./comuni";
@@ -31,7 +32,7 @@ export function SezioneCronologia({
     <section id="cronologia" aria-labelledby="cronologia-titolo" className="scroll-mt-6">
       <Espandibile
         titolo={
-          <h2 id="cronologia-titolo" className="inline-flex items-center gap-2 text-lg text-text">
+          <h2 id="cronologia-titolo" className="inline-flex items-center gap-2 text-base text-text">
             {t("titolo")}
             <Conteggio numero={eventi.length} />
           </h2>
@@ -72,9 +73,9 @@ function VoceEvento({ evento: e, annullabili }: { evento: EventoDto; annullabili
             {/* L'icona dice già chi ha agito: il distintivo segnala solo le modifiche dell'utente. */}
             {e.attore === "utente" ? <Distintivo tono="accento">{testoCodice(t, "attori", e.attore, "attoreGenerico")}</Distintivo> : null}
             <Istante iso={e.creatoIl} stile="data_ora" />
-            {email && UUID.test(email) ? <LinkEmail emailId={email} className="text-accent-strong underline-offset-4 hover:underline" /> : null}
+            {email && UUID.test(email) ? <LinkEmail emailId={email} className={CLASSE_LINK} /> : null}
             {altraSituazione && UUID.test(altraSituazione) ? (
-              <Link href={`/situations/${altraSituazione}`} className="text-accent-strong underline-offset-4 hover:underline">
+              <Link href={`/situations/${altraSituazione}`} className={CLASSE_LINK}>
                 {t("altraSituazione")}
               </Link>
             ) : null}

@@ -51,19 +51,26 @@ export function BarraLaterale({
   // Cambiando pagina il menu si chiude.
   useEffect(() => setAperta(false), [percorso]);
 
-  // Menu aperto: fuoco sulla X, Esc per chiudere, pagina sotto inerte e ferma; alla chiusura il fuoco torna al pulsante.
+  // Menu aperto: fuoco sulla X, Esc per chiudere, pagina sotto (con il salto al contenuto) inerte e ferma; alla
+  // chiusura il fuoco torna al pulsante. Allargando la finestra fino alla barra fissa il menu si chiude.
   useEffect(() => {
     if (!aperta) return;
-    const contenuto = [document.querySelector("main"), document.getElementById("barra-superiore")];
+    const contenuto = [document.querySelector("main"), document.getElementById("barra-superiore"), document.getElementById("salta-contenuto")];
     pulsanteChiudi.current?.focus();
     contenuto.forEach((e) => e?.setAttribute("inert", ""));
     document.documentElement.classList.add("overflow-hidden");
     const suTasto = (e: KeyboardEvent) => {
       if (e.key === "Escape") setAperta(false);
     };
+    const largo = window.matchMedia("(min-width: 64rem)");
+    const suLarghezza = () => {
+      if (largo.matches) setAperta(false);
+    };
     window.addEventListener("keydown", suTasto);
+    largo.addEventListener("change", suLarghezza);
     return () => {
       window.removeEventListener("keydown", suTasto);
+      largo.removeEventListener("change", suLarghezza);
       contenuto.forEach((e) => e?.removeAttribute("inert"));
       document.documentElement.classList.remove("overflow-hidden");
       pulsanteMenu.current?.focus({ preventScroll: true });
@@ -109,8 +116,12 @@ export function BarraLaterale({
 
       {aperta ? <div aria-hidden className="fixed inset-0 z-40 bg-black/40 lg:hidden dark:bg-black/70" onClick={chiudi} /> : null}
 
-      <aside
+      {/* Un contenitore senza ruolo: il punto di riferimento è la `<nav>` qui dentro. Aperto sugli schermi stretti è un dialogo modale. */}
+      <div
         id="barra-laterale"
+        role={aperta ? "dialog" : undefined}
+        aria-modal={aperta || undefined}
+        aria-label={aperta ? etichette.navigazione : undefined}
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-y-auto border-r border-border bg-surface-muted px-3 py-5 transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:translate-x-0 lg:transition-none",
           // Da chiuso, su schermi stretti, esce anche dall'ordine di tabulazione e dall'albero di accessibilità.
@@ -164,7 +175,7 @@ export function BarraLaterale({
             {etichette.esci}
           </button>
         </div>
-      </aside>
+      </div>
     </>
   );
 }

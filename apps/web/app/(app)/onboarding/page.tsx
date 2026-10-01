@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { DIRETTIVE_PREDEFINITE } from "@ec/ai";
 import { statoOnboarding } from "@ec/applicazione";
 import { caselle, impostazioni, sincronizzazione } from "@ec/db";
 import { comeUtente } from "@/lib/server/sessione";
 import { VistaOnboarding } from "./vista";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("onboarding");
+  return { title: t("titolo") };
+}
 
 /** `/onboarding`: legge stato di informativa, chiave (mai il valore), Contesto AI e caselle, poi mostra i passi. */
 export default async function PaginaOnboarding() {

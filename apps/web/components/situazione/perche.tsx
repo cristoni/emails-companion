@@ -1,12 +1,14 @@
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2, CircleHelp } from "lucide-react";
 import type { EvidenzaDto, PercheDto, UrgenzaEmailOrigineDto, VistaSituazioneDto } from "@ec/applicazione";
 import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { cn } from "@/components/ui/cn";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
 import { classiPulsante } from "@/components/ui/pulsante";
 import { CassettoPerche } from "./cassetto-perche";
-import { ancora, linguaDi, type ContestoDettaglio } from "./comuni";
+import { ancora, AREA_TOCCO, linguaDi, type ContestoDettaglio } from "./comuni";
 
 /** Citazioni mostrate nel pannello per ogni affermazione: le altre restano accanto all'elemento. */
 const CITAZIONI_PER_AFFERMAZIONE = 2;
@@ -18,6 +20,8 @@ interface Affermazione {
   lingua: string;
   href: string;
   evidenze: readonly EvidenzaDto[];
+  /** Confidenza dell'AI per un collegamento o una risposta collegata, da 0 a 1. */
+  confidenza?: number | null;
 }
 
 /**
@@ -50,7 +54,6 @@ export function PannelloPerche({
       }
     >
       <div className="space-y-4">
-        <p className="text-xs leading-relaxed text-text-muted">{t("descrizione")}</p>
         {gruppi.size === 0 ? (
           <p className="text-sm text-text-muted">{t("vuoto")}</p>
         ) : (
@@ -89,6 +92,7 @@ function VocePerche({
 }) {
   const t = useTranslations("situazione.perche");
   const tc = useTranslations("comuni");
+  const formato = useFormatter();
   const p = voci[0]!;
   const affermazioni = voci.map((v) => affermazione(v, vista, urgenze, contesto, t));
   const funzione = `funzioni.${p.funzione}`;
@@ -108,6 +112,11 @@ function VocePerche({
               <span className="block font-medium text-accent-strong group-hover:underline">{a.etichetta}</span>
               {a.testo ? <TestoSemplice come="span" testo={a.testo} lingua={a.lingua} className="line-clamp-2 text-text-muted" /> : null}
             </a>
+            {a.confidenza !== null && a.confidenza !== undefined ? (
+              <p className="px-1 text-xs text-text-muted">
+                {t("confidenza")} {formato.number(a.confidenza, { style: "percent", maximumFractionDigits: 0 })}
+              </p>
+            ) : null}
             {a.evidenze.length > 0 ? <Citazioni evidenze={a.evidenze} contesto={contesto} /> : null}
           </li>
         ))}
@@ -134,8 +143,13 @@ function VocePerche({
             </span>
           </>
         )}
-        <span aria-hidden>·</span>
-        <span>{p.contestoAiVersione !== null ? t("versione", { numero: p.contestoAiVersione }) : t("direttivePredefinite")}</span>
+        {/* Il Contesto AI predefinito è il caso normale: si nomina solo la versione personalizzata. */}
+        {p.contestoAiVersione !== null ? (
+          <>
+            <span aria-hidden>·</span>
+            <span>{t("versione", { numero: p.contestoAiVersione })}</span>
+          </>
+        ) : null}
         {p.completataIl ? (
           <>
             <span aria-hidden>·</span>
@@ -170,7 +184,7 @@ function Citazioni({ evidenze, contesto }: { evidenze: readonly EvidenzaDto[]; c
               lingua={linguaDi(contesto, e.emailId)}
               className="line-clamp-3 rounded-sm bg-accent-soft/60 px-1 text-text"
             />
-            <LinkEmail emailId={e.emailId} className="px-1 text-accent-strong underline-offset-4 hover:underline" />
+            <LinkEmail emailId={e.emailId} className={cn("mx-1", CLASSE_LINK_AZIONE, AREA_TOCCO)} />
           </div>
         </li>
       ))}
@@ -229,12 +243,21 @@ function affermazione(
         lingua: linguaDi(contesto, r?.emailId),
         href: `#${ancora.risposta(id)}`,
         evidenze: r?.requisiti.flatMap((q) => q.evidenze) ?? [],
+        confidenza: r?.confidenza,
       };
     }
     case "collegamento": {
       const c = vista.collegamenti.find((x) => x.id === id);
       const fonte = c ? contesto.fonti.get(c.emailId) : undefined;
-      return { chiave, etichetta: t("soggetti.collegamento"), testo: fonte?.oggetto ?? null, lingua: linguaDi(contesto, c?.emailId), href: `#${ancora.collegamento(id)}`, evidenze: [] };
+      return {
+        chiave,
+        etichetta: t("soggetti.collegamento"),
+        testo: fonte?.oggetto ?? null,
+        lingua: linguaDi(contesto, c?.emailId),
+        href: `#${ancora.collegamento(id)}`,
+        evidenze: [],
+        confidenza: c?.confidenza,
+      };
     }
     default:
       return { chiave, etichetta: t("soggetti.altro"), testo: null, lingua: contesto.lingua, href: "#perche-titolo", evidenze: [] };

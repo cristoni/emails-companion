@@ -19,7 +19,6 @@
     "ultimaSync": "Last synced",
     "maiSincronizzata": "Not synced yet",
     "inRitardo": "Behind",
-    "aggiornata": "Up to date",
     "importazione": "Initial import",
     "fasi": {
       "da_stimare": "Estimating…",
@@ -42,7 +41,6 @@
   },
   "analisi": {
     "titolo": "AI analysis",
-    "tutteAnalizzate": "Every email has been analysed",
     "errore": "{numero, plural, one {failed} other {failed}}",
     "erroreAiuto": "{numero, plural, one {It stays in Mail, without AI analysis.} other {They stay in Mail, without AI analysis.}}",
     "inPausa": "{numero, plural, one {paused} other {paused}}",
@@ -68,7 +66,6 @@
     "titolo": "Automatic updates",
     "riconciliazione": "Situation updates",
     "news": "News digest",
-    "nessunErrore": "Working normally",
     "errori": "{numero, plural, one {# error in a row} other {# errors in a row}}",
     "ultimoErrore": "Last error"
   },

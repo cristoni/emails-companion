@@ -1,5 +1,6 @@
 {
   "titolo": "Your email, turned into what you need to do",
+  "metaTitolo": "Sign in",
   "sottotitolo": "Actions, things you are waiting on and replies — each one linked to the emails it comes from.",
   "requisiti": "You’ll need a Gmail account and an OpenRouter API key.",
   "pulsante": "Continue with Google",

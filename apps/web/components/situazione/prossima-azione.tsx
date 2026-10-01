@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
-import { Archive, ArrowDown, CheckCircle2, CircleArrowRight, Mail, Zap } from "lucide-react";
-import type { ProssimaAzioneDto, UrgenzaEmailOrigineDto, VistaSituazioneDto } from "@ec/applicazione";
+import { AlertTriangle, Archive, ArrowDown, CheckCircle2, CircleArrowRight, Mail, Sparkles } from "lucide-react";
+import type { ProssimaAzioneDto, RispostaDto, UrgenzaEmailOrigineDto, VistaSituazioneDto } from "@ec/applicazione";
+import { VALUTAZIONI, type Valutazione } from "@ec/core/dominio";
 import { testoCodice } from "@/components/comuni/codici";
-import { DistintivoProposta } from "@/components/comuni/distintivi";
 import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
@@ -11,15 +11,28 @@ import { cn } from "@/components/ui/cn";
 import { Distintivo } from "@/components/ui/distintivo";
 import { classiPulsante } from "@/components/ui/pulsante";
 import { PulsanteProponiRisposta, PulsanteProponiSollecito } from "@/components/bozze/pulsanti-proposta";
-import { completaAttivitaAzione, confermaElementoAzione, segnaGestitaAzione } from "@/app/(app)/situations/[id]/azioni";
+import { completaAttivitaAzione, correggiValutazioneAzione, segnaGestitaAzione, segnaRispostaVistaAzione } from "@/app/(app)/situations/[id]/azioni";
 import { ANCORA_URGENZA } from "./intestazione";
-import { ancora, Indirizzi, linguaDi, type ContestoDettaglio } from "./comuni";
+import { ancora, Indirizzi, linguaDi, ripete, type ContestoDettaglio } from "./comuni";
+import { StrisciaProposta } from "./proposta";
 import { UrgenzaOrigine } from "./urgenza-origine";
 
 const rimando = "inline-flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-medium text-text-muted hover:bg-surface-muted hover:text-text";
 
-/** Un testo che ripete il titolo della Situazione non aggiunge nulla sotto il titolo del passo. */
-const ripeteTitolo = (testo: string, vista: VistaSituazioneDto) => testo.trim().toLowerCase() === vista.situazione.titolo.trim().toLowerCase();
+/** Un testo uguale al titolo della Situazione non aggiunge nulla sotto il titolo del passo. */
+const ripeteTitolo = (testo: string, vista: VistaSituazioneDto) => ripete(testo, [vista.situazione.titolo]) && ripete(vista.situazione.titolo, [testo]);
+
+/**
+ * Testi che la scheda mostra per il passo (titolo dell'attività, oggetto dell'Attesa, estratto della risposta):
+ * la descrizione della Situazione, se vi è già contenuta, non si ripete nell'intestazione.
+ */
+export function testiProssimaAzione(vista: VistaSituazioneDto, contesto: ContestoDettaglio): string[] {
+  const azione = vista.prossimaAzione;
+  if (azione.tipo === "attivita") return [azione.descrizione];
+  if (azione.tipo === "sollecito" || azione.tipo === "attendi") return [azione.oggetto];
+  if (azione.tipo === "rivedi_risposta") return [azione.oggettoAttesa, contesto.fonti.get(azione.emailId)?.anteprima ?? ""];
+  return [];
+}
 
 /**
  * Email per cui la scheda "Prossima azione" offre già "Proponi risposta": l'email urgente da controllare
@@ -36,7 +49,9 @@ export function emailInEvidenza(vista: VistaSituazioneDto, urgenza: UrgenzaEmail
  * Prossima azione in evidenza subito sotto il titolo: cosa fare ora, con i pulsanti per farlo (il principale
  * per primo). Se la Situazione è urgente, la striscia in cima dice una sola volta perché e offre "Segna come
  * gestita" (mai due volte nella pagina); quando l'urgenza viene da un'email, "È davvero urgente?" ne apre la
- * verifica. Un passo proposto dall'AI e non ancora confermato porta il segno della proposta.
+ * verifica. Un passo proposto dall'AI e non ancora confermato porta la domanda della proposta, mai come
+ * pulsante principale: il principale resta il lavoro da fare. La scheda dell'elemento più in basso non ripete
+ * né quei pulsanti né la domanda.
  */
 export function ProssimaAzione({
   vista,
@@ -84,7 +99,7 @@ export function ProssimaAzione({
           className="flex scroll-mt-6 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-urgent/30 bg-urgent-soft px-4 py-2 text-sm sm:px-5"
         >
           <p className="flex items-center gap-1.5 font-semibold text-urgent" title={stato.motivoUrgenza === "scadenza_vicina" ? t("scadenzaAiuto") : undefined}>
-            <Zap className="size-4 shrink-0" aria-hidden />
+            <AlertTriangle className="size-4 shrink-0" aria-hidden />
             {/* "Segnalata dall'AI" non vale per un'email che l'utente ha segnato urgente lui stesso. */}
             {verifica?.correzioni.some((c) => c.valore === true) ? t("emailSegnataDaTe") : testoCodice(tc, "motiviUrgenza", stato.motivoUrgenza, "aree.urgente")}
           </p>
@@ -123,27 +138,17 @@ function SegnaGestita({ situazioneId, primario = false }: { situazioneId: string
   );
 }
 
-/**
- * Titolo del passo, con "Prossima azione" per i lettori di schermo: l'icona e la posizione bastano alla vista.
- * Il segno della proposta sta accanto, fuori dal titolo.
- */
-function Titolo({ children, lingua, proposta = false }: { children: React.ReactNode; lingua?: string; proposta?: boolean }) {
+/** Titolo del passo, con "Prossima azione" per i lettori di schermo: l'icona e la posizione bastano alla vista. */
+function Titolo({ children, lingua }: { children: React.ReactNode; lingua?: string }) {
   const t = useTranslations("situazione.prossima");
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <h2 id="prossima-titolo" className="flex min-w-0 items-start gap-2 text-lg leading-snug">
-        <CircleArrowRight className="mt-1 size-[1.1rem] shrink-0 text-accent-strong" aria-hidden />
-        <span className="sr-only">{t("titolo")}: </span>
-        <span lang={lingua} dir="auto" className="min-w-0 break-words">
-          {children}
-        </span>
-      </h2>
-      {proposta ? (
-        <span className="text-xs font-medium">
-          <DistintivoProposta discreto />
-        </span>
-      ) : null}
-    </div>
+    <h2 id="prossima-titolo" className="flex min-w-0 items-start gap-2 text-base leading-snug">
+      <CircleArrowRight className="mt-0.5 size-[1.1rem] shrink-0 text-accent-strong" aria-hidden />
+      <span className="sr-only">{t("titolo")}: </span>
+      <span lang={lingua} dir="auto" className="min-w-0 break-words">
+        {children}
+      </span>
+    </h2>
   );
 }
 
@@ -166,7 +171,6 @@ function Contenuto({
 }) {
   const t = useTranslations("situazione.prossima");
   const ta = useTranslations("situazione.attivita");
-  const tt = useTranslations("situazione.attese");
   const tr = useTranslations("situazione.risposte");
   const tc = useTranslations("comuni");
   const linguaAttesa = (attesaId: string) => linguaDi(contesto, vista.attese.find((a) => a.id === attesaId)?.emailRichiestaId);
@@ -226,9 +230,7 @@ function Contenuto({
       const alta = azione.priorita === "alta";
       return (
         <>
-          <Titolo lingua={linguaDi(contesto, attivita?.emailSorgenteId)} proposta={attivita?.proposta}>
-            {azione.descrizione}
-          </Titolo>
+          <Titolo lingua={linguaDi(contesto, attivita?.emailSorgenteId)}>{azione.descrizione}</Titolo>
           {azione.scadenza || alta ? (
             <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-muted">
               {azione.scadenza ? (
@@ -239,6 +241,7 @@ function Contenuto({
               {alta ? <Distintivo tono="neutro">{tc("priorita.alta")}</Distintivo> : null}
             </p>
           ) : null}
+          {attivita?.proposta ? <StrisciaProposta tipo="attivita" id={azione.attivitaId} luogo="prossima" /> : null}
           <Pulsanti>
             <ModuloAzione azione={completaAttivitaAzione} campi={{ attivita: azione.attivitaId }} etichetta={ta("completa")} variante="primario" dimensione="md" />
             {risposta(attivita?.emailSorgenteId)}
@@ -247,35 +250,35 @@ function Contenuto({
       );
     }
     case "rivedi_risposta": {
-      const mittente = contesto.fonti.get(azione.emailId)?.mittente;
-      const proposta = vista.attese.flatMap((a) => a.risposte).find((r) => r.id === azione.rispostaId)?.proposta ?? false;
-      const vai = (
-        <a href={`#${ancora.risposta(azione.rispostaId)}`} className={proposta ? rimando : classiPulsante("primario", "md")}>
-          {t("vaiAllaRisposta")}
-          <ArrowDown className="size-4" aria-hidden />
-        </a>
-      );
+      // Estratto, valutazione e conferma qui, dove si decide: la riga della risposta più in basso non li ripete.
+      const fonte = contesto.fonti.get(azione.emailId);
+      const mittente = fonte?.mittente;
+      const r = vista.attese.flatMap((a) => a.risposte).find((x) => x.id === azione.rispostaId);
       return (
         <>
-          <Titolo proposta={proposta}>{mittente ? t("rivediRisposta", { mittente: mittente.nome || mittente.indirizzo }) : t("rivediRispostaAnonima")}</Titolo>
-          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-            {ripeteTitolo(azione.oggettoAttesa, vista) ? null : (
-              <>
-                <span className="text-text-muted">{t("richiesta")}</span>
-                <TestoSemplice come="span" testo={azione.oggettoAttesa} lingua={linguaAttesa(azione.attesaId)} />
-              </>
-            )}
-            <Distintivo tono="risposta">{testoCodice(tc, "valutazioni", azione.valutazione)}</Distintivo>
-          </p>
+          <Titolo>{mittente ? t("rivediRisposta", { mittente: mittente.nome || mittente.indirizzo }) : t("rivediRispostaAnonima")}</Titolo>
+          {ripeteTitolo(azione.oggettoAttesa, vista) ? null : (
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+              <span className="text-text-muted">{t("richiesta")}</span>
+              <TestoSemplice come="span" testo={azione.oggettoAttesa} lingua={linguaAttesa(azione.attesaId)} />
+            </p>
+          )}
+          {/* Il testo della risposta accanto al giudizio, per poterlo verificare (un paragrafo, non una citazione). */}
+          {fonte?.anteprima ? (
+            <TestoSemplice come="p" testo={fonte.anteprima} lingua={fonte.lingua} className="line-clamp-3 border-l-2 border-reply/40 pl-3 text-sm" />
+          ) : null}
+          {r ? <ValutazioneRisposta risposta={r} valutazione={azione.valutazione} /> : null}
+          {r?.proposta ? <StrisciaProposta tipo="risposta" id={r.id} luogo="prossima" /> : null}
           <Pulsanti>
-            {/* Un collegamento proposto si conferma da qui; il rimando alla risposta resta per rivederla. */}
-            {proposta ? (
-              <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "risposta", id: azione.rispostaId }} etichetta={tr("conferma")} variante="primario" dimensione="md" />
-            ) : (
-              vai
-            )}
+            <ModuloAzione azione={segnaRispostaVistaAzione} campi={{ risposta: azione.rispostaId }} etichetta={tr("segnaVista")} variante="primario" dimensione="md" />
             {pulsanteEmail(azione.emailId)}
-            {proposta ? vai : null}
+            {/* Motivazione ed evidenze dell'AI stanno nella riga della risposta: il rimando serve se le Attività la separano. */}
+            {vista.attivita.length > 0 ? (
+              <a href={`#${ancora.risposta(azione.rispostaId)}`} className={rimando}>
+                {t("vaiAllaRisposta")}
+                <ArrowDown className="size-3.5" aria-hidden />
+              </a>
+            ) : null}
           </Pulsanti>
         </>
       );
@@ -285,11 +288,10 @@ function Contenuto({
       const destinatari = azione.destinatari.join(", ");
       const sollecito = azione.tipo === "sollecito";
       const attesa = vista.attese.find((a) => a.id === azione.attesaId);
-      const proposta = attesa?.proposta ?? false;
       const oggetto = !ripeteTitolo(azione.oggetto, vista);
       return (
         <>
-          <Titolo proposta={proposta}>
+          <Titolo>
             {sollecito
               ? destinatari
                 ? t("sollecito", { destinatari })
@@ -308,11 +310,8 @@ function Contenuto({
               ) : null}
             </p>
           ) : null}
+          {attesa?.proposta ? <StrisciaProposta tipo="attesa" id={azione.attesaId} luogo="prossima" /> : null}
           <Pulsanti>
-            {/* In attesa e proposta dall'AI: l'unica cosa da fare ora è confermarla (o scartarla, sotto). */}
-            {!sollecito && proposta ? (
-              <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "attesa", id: azione.attesaId }} etichetta={tt("conferma")} variante="primario" dimensione="md" />
-            ) : null}
             <PulsanteProponiSollecito attesaId={azione.attesaId} bozzaId={contesto.bozzeSollecito.get(azione.attesaId)} consigliato={sollecito} dimensione="md" />
             {/* Il rimando serve solo se le Attività separano la scheda dalla sua Attesa. */}
             {vista.attivita.length > 0 ? (
@@ -326,4 +325,60 @@ function Contenuto({
       );
     }
   }
+}
+
+/**
+ * "La risposta è completa?": le tre valutazioni, quella attuale evidenziata. La scelta dell'AI porta la scintilla
+ * (anche dopo una correzione, per vedere da dove si è partiti); ogni altra opzione è una correzione annullabile.
+ */
+function ValutazioneRisposta({ risposta: r, valutazione }: { risposta: RispostaDto; valutazione: Valutazione }) {
+  const t = useTranslations("situazione.prossima.valutazione");
+  const etichettaId = `valutazione-${r.id}`;
+  const ai = (v: Valutazione) =>
+    v === r.valutazioneAi ? (
+      <>
+        <Sparkles className="size-3.5 text-suggestion" aria-hidden />
+        {v === valutazione ? (
+          <span aria-hidden className="text-xs font-normal text-text-muted max-sm:hidden">
+            AI
+          </span>
+        ) : null}
+        <span className="sr-only">({t("ai")})</span>
+      </>
+    ) : null;
+  return (
+    <div role="group" aria-labelledby={etichettaId} className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+      <span id={etichettaId} className="font-medium">
+        {t("domanda")}
+      </span>
+      {/* Più stretti sul telefono, così le tre opzioni stanno su una riga. */}
+      <span className="flex flex-wrap items-center gap-2 max-sm:[&_button]:px-2.5">
+        {VALUTAZIONI.map((v) =>
+          v === valutazione ? (
+            <span
+              key={v}
+              aria-current="true"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-reply/50 bg-reply-soft px-2.5 font-medium text-reply sm:h-8 sm:px-3"
+            >
+              <CheckCircle2 className="size-3.5" aria-hidden />
+              {t(`opzioni.${v}`)}
+              {ai(v)}
+            </span>
+          ) : (
+            <ModuloAzione
+              key={v}
+              azione={correggiValutazioneAzione}
+              campi={{ risposta: r.id, valutazione: v }}
+              etichetta={
+                <>
+                  {t(`opzioni.${v}`)}
+                  {ai(v)}
+                </>
+              }
+            />
+          ),
+        )}
+      </span>
+    </div>
+  );
 }

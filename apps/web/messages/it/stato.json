@@ -19,7 +19,6 @@
     "ultimaSync": "Ultima sincronizzazione",
     "maiSincronizzata": "Non ancora sincronizzata",
     "inRitardo": "In ritardo",
-    "aggiornata": "Aggiornata",
     "importazione": "Importazione iniziale",
     "fasi": {
       "da_stimare": "Stima in corso…",
@@ -42,7 +41,6 @@
   },
   "analisi": {
     "titolo": "Analisi AI",
-    "tutteAnalizzate": "Tutte le email sono state analizzate",
     "errore": "{numero, plural, one {non riuscita} other {non riuscite}}",
     "erroreAiuto": "{numero, plural, one {Resta nella Posta, senza analisi AI.} other {Restano nella Posta, senza analisi AI.}}",
     "inPausa": "{numero, plural, one {in pausa} other {in pausa}}",
@@ -68,7 +66,6 @@
     "titolo": "Aggiornamenti automatici",
     "riconciliazione": "Aggiornamento delle Situazioni",
     "news": "Riepilogo News",
-    "nessunErrore": "Funziona regolarmente",
     "errori": "{numero, plural, one {# errore di seguito} other {# errori di seguito}}",
     "ultimoErrore": "Ultimo errore"
   },

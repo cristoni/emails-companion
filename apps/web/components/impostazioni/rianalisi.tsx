@@ -6,7 +6,8 @@ import { useFormatter, useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { confermaRianalisiAzione, stimaRianalisiAzione, type StatoStimaRianalisi } from "@/app/(app)/settings/azioni";
 import type { StatoAzione } from "@/components/comuni/modulo-azione";
-import { Aiuto, Etichetta, Input } from "@/components/ui/campi";
+import { Etichetta, Input } from "@/components/ui/campi";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { Pulsante } from "@/components/ui/pulsante";
 import { opzioniImporto } from "./formato";
 
@@ -61,9 +62,9 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
   return (
     <div className="space-y-5">
       <form onSubmit={inviaStima} className="space-y-3">
-        <fieldset className="space-y-2">
+        <fieldset className="space-y-1">
           <legend className="sr-only">{t("ambito")}</legend>
-          <label className="flex items-center gap-2.5">
+          <label className="flex min-h-9 items-center gap-2.5 sm:min-h-8">
             <input
               type="radio"
               name="ambito"
@@ -75,7 +76,7 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
             {t("aperti")}
           </label>
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2">
-            <label className="flex items-center gap-2.5">
+            <label className="inline-flex min-h-9 items-center gap-2.5 sm:min-h-8">
               <input
                 type="radio"
                 name="ambito"
@@ -114,11 +115,10 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
           </div>
         </fieldset>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div>
           <Pulsante type="submit" dimensione="sm" disabled={stimaInCorso}>
             {stimaInCorso ? tc("azioni.inCorso") : t("stima")}
           </Pulsante>
-          <Aiuto>{t("nienteParte")}</Aiuto>
         </div>
         {erroreStima ? (
           <p role="status" className="text-sm text-danger">
@@ -132,7 +132,7 @@ export function ModuloRianalisi({ pausaAttiva, nomiFunzioni }: { pausaAttiva: bo
           <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent-strong" aria-hidden />
           <p className="flex-1">
             {testo("ok")}{" "}
-            <Link href="/status" className="text-accent-strong underline-offset-4 hover:underline">
+            <Link href="/status" className={CLASSE_LINK}>
               {t("vaiStato")}
             </Link>
           </p>

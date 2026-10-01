@@ -12,6 +12,8 @@
   --color-surface-raised: #ffffff;
   --color-border: #e4e4e7;
   --color-border-strong: #d4d4d8;
+  /* Bordo dei campi di testo: almeno 3:1 sullo sfondo, perché il campo si riconosca come tale (WCAG 1.4.11). */
+  --color-border-input: #8e8e96;
   --color-text: #18181b;
   --color-text-muted: #67676f;
   --color-accent: #2563eb;
@@ -38,6 +40,7 @@
     --color-surface-raised: #131316;
     --color-border: #27272a;
     --color-border-strong: #3f3f46;
+    --color-border-input: #63636b;
     --color-text: #f4f4f5;
     --color-text-muted: #a1a1aa;
     --color-accent: #3b82f6;

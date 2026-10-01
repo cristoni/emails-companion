@@ -17,8 +17,7 @@
     "conservazione": "Scollegare una casella o eliminare l'account cancella tutto ciò che ne deriva.",
     "limitedUse": "L'uso delle informazioni ricevute dalle API di Google rispetta la Google API Services User Data Policy, inclusi i requisiti di Limited Use.",
     "completa": "Leggi l'informativa completa",
-    "accetta": "Ho capito e accetto",
-    "accettata": "Hai accettato questa informativa."
+    "accetta": "Ho capito e accetto"
   },
   "chiave": {
     "titolo": "Chiave OpenRouter",
@@ -47,8 +46,8 @@
   "contesto": {
     "titolo": "Contesto AI",
     "spiegazione": "Spiega all'AI cosa conta per te: mittenti importanti, cosa è urgente, cosa è solo News. Puoi cambiarlo più tardi nelle Impostazioni.",
-    "predefinite": "In uso le Direttive predefinite",
-    "personali": "In uso le tue direttive",
+    "predefinite": "Direttive predefinite",
+    "personali": "Le tue direttive",
     "etichetta": "Le tue direttive",
     "salva": "Salva",
     "salvato": "Salvato.",

@@ -6,6 +6,7 @@ import { confermaImportazioneAzione, rinviaImportazioneAzione, scollegaCasellaAz
 import { testoCodice } from "@/components/comuni/codici";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { Distintivo } from "@/components/ui/distintivo";
 import { cn } from "@/components/ui/cn";
 import { Pulsante, classiPulsante } from "@/components/ui/pulsante";
@@ -32,8 +33,8 @@ function Permesso({ concesso, etichetta, testo }: { concesso: boolean; etichetta
 }
 
 /**
- * Sezione `#mailboxes`. Una casella in ordine è l'indirizzo con una sola riga attenuata (connettore,
- * permessi, importazione, data); i problemi (permessi mancanti, da ricollegare) hanno il distintivo, la
+ * Sezione `#mailboxes`. Una casella in ordine è l'indirizzo con una sola riga attenuata (spunta, connettore,
+ * importazione se non è completata, data); i problemi (permessi mancanti, da ricollegare) hanno il distintivo, la
  * spiegazione e il comando per risolverli. "Scollega" è discreto, a destra, con conferma delle conseguenze.
  */
 export function SezioneCaselle({
@@ -100,7 +101,7 @@ export function SezioneCaselle({
               {accessoCompleto ? (
                 <>
                   {t("caselle.stima.requisiti")}{" "}
-                  <a href="#openrouter" className="text-accent-strong underline-offset-4 hover:underline">
+                  <a href="#openrouter" className={CLASSE_LINK}>
                     {t("indice.chiave")}
                   </a>
                 </>
@@ -123,8 +124,8 @@ export function SezioneCaselle({
             const inOrdine = c.stato === "collegata" && c.lettura && c.invio;
             const riautorizza = c.stato === "da_ricollegare" || c.stato === "permessi_incompleti";
             const fase = c.faseImportazione ?? "da_stimare";
-            // Con il pannello della stima la fase non si ripete nella riga.
-            const mostraFase = fase !== "stimata" && fase !== "rifiutata";
+            // Con il pannello della stima la fase non si ripete nella riga; un'importazione completata è lo stato normale.
+            const mostraFase = fase !== "stimata" && fase !== "rifiutata" && fase !== "completata";
             return (
               <li key={c.id} className="space-y-3 py-3 first:pt-0">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -152,7 +153,6 @@ export function SezioneCaselle({
                       }
                       parti={[
                         testoCodice(t, "caselle.connettori", c.connettore, "caselle.connettori.altro"),
-                        inOrdine ? t("caselle.permessiOk") : null,
                         mostraFase && c.stato !== "scollegamento_in_corso" ? (
                           <span className={fase === "errore" ? "text-danger" : undefined}>{t(`caselle.fasi.${fase}`)}</span>
                         ) : null,

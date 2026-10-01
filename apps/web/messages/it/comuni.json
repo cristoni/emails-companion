@@ -14,7 +14,7 @@
     "in_attesa": "In attesa"
   },
   "categorie": {
-    "news": "News e informazioni secondarie",
+    "news": "News e informazioni",
     "operativa": "Richiede attenzione",
     "informativa": "Informativa"
   },
@@ -26,7 +26,7 @@
   "funzioni": {
     "classificazione_priorita": "Classificazione e priorità",
     "estrazione_attivita": "Estrazione attività",
-    "attese_risposte": "Gestione attese e risposte",
+    "attese_risposte": "Attese e risposte",
     "riepilogo_news": "Riepilogo News",
     "bozze_assistite": "Bozze assistite"
   },
@@ -107,7 +107,7 @@
   },
   "motiviUrgenza": {
     "utente": "L'hai segnata come urgente",
-    "email_urgente": "Email urgente",
+    "email_urgente": "Segnalata dall'AI",
     "attivita_urgente": "Un'attività ha priorità alta",
     "scadenza_vicina": "Una scadenza cade entro 48 ore"
   },
@@ -131,7 +131,7 @@
     "inviato": "Inviata",
     "fallito": "Non inviata",
     "esito_incerto": "Esito incerto",
-    "annullato": "Annullato"
+    "annullato": "Annullata"
   },
   "esiti": {
     "ok": "Salvato",
@@ -163,7 +163,7 @@
     "apriOriginale": "Apri originale",
     "apriNelProvider": "Apri in Gmail",
     "evidenza": "Evidenza",
-    "verificata": "Citazione trovata nell'email",
+    "verificata": "Citazione verificata",
     "nonVerificata": "Citazione non trovata nell'email",
     "mostraNelTesto": "Mostra nel testo"
   },

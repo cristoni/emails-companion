@@ -9,7 +9,7 @@ import { Espandibile } from "@/components/ui/espandibile";
 import { IntestazionePagina, StatoVuoto } from "@/components/ui/pagina";
 import { Scheda } from "@/components/ui/scheda";
 import { cn } from "@/components/ui/cn";
-import { AREA_TOCCO, CLASSE_LINK } from "./classi";
+import { AREA_TOCCO, CLASSE_LINK, CLASSE_LINK_AZIONE } from "./classi";
 import { casellaDaControllare, SchedaCasellaStato } from "./scheda-casella";
 import { nomeFunzione, SEZIONE_MOTIVO_PAUSA, testoErrore } from "./testi";
 
@@ -18,8 +18,9 @@ type Problema = { ancora: string; testo: string };
 
 /**
  * Contenuto di `/status`: un verdetto in cima (tutto bene, oppure l'elenco dei problemi con il link alla
- * sezione), le caselle, l'analisi AI con pause e aggiornamenti automatici, gli errori recenti solo se ci sono.
- * Si mostrano le eccezioni, non gli stati normali; ogni codice è tradotto, mai mostrato grezzo.
+ * sezione), le caselle, l'analisi AI solo se c'è qualcosa da dire (email in coda, in pausa o in errore, pause,
+ * aggiornamenti che non riescono), gli errori recenti solo se ci sono. Si mostrano le eccezioni, non gli stati
+ * normali: "tutto bene" lo dice una volta sola il verdetto. Ogni codice è tradotto, mai mostrato grezzo.
  */
 export function VistaStato({ vista, pause }: { vista: VistaStatoDto; pause: readonly Pausa[] }) {
   const t = useTranslations("stato");
@@ -48,11 +49,11 @@ export function VistaStato({ vista, pause }: { vista: VistaStatoDto; pause: read
   if (vista.analisi.errore > 0) problemi.push({ ancora: "status-analisi", testo: t("sintesi.analisiErrore", { numero: vista.analisi.errore }) });
   if (elaborazioneInErrore) problemi.push({ ancora: "status-aggiornamenti", testo: t("sintesi.aggiornamenti") });
 
-  // Senza caselle non c'è posta: "tutte analizzate" e "funziona regolarmente" sarebbero vuoti. Restano solo
-  // contatori, pause ed errori, se ci sono.
+  // L'analisi AI compare solo con un'eccezione: email in coda, in pausa o in errore, pause, aggiornamenti in
+  // errore. Le email in coda non sono un problema, ma sono un'informazione: per questo la condizione viene
+  // dai dati e non dal verdetto.
   const contatoriNonNulli = vista.analisi.errore + vista.analisi.inPausa + vista.analisi.daEseguire > 0;
-  const mostraAnalisi = !senzaCaselle || contatoriNonNulli;
-  const mostraAggiornamenti = !senzaCaselle || elaborazioneInErrore;
+  const mostraAnalisi = contatoriNonNulli || pause.length > 0 || elaborazioneInErrore;
 
   return (
     <div>
@@ -76,7 +77,7 @@ export function VistaStato({ vista, pause }: { vista: VistaStatoDto; pause: read
             <h2 id="status-caselle" className="text-base">
               {t("caselle.titolo")}
             </h2>
-            <Link href="/settings#mailboxes" className={cn("text-sm", CLASSE_LINK, AREA_TOCCO)}>
+            <Link href="/settings#mailboxes" className={cn("text-sm", CLASSE_LINK_AZIONE, AREA_TOCCO)}>
               {t("caselle.gestisci")}
             </Link>
           </header>
@@ -95,15 +96,15 @@ export function VistaStato({ vista, pause }: { vista: VistaStatoDto; pause: read
           )}
         </section>
 
-        {mostraAnalisi || pause.length > 0 || mostraAggiornamenti ? (
+        {mostraAnalisi ? (
           <section aria-labelledby="status-analisi" className="space-y-3">
             <h2 id="status-analisi" className="text-base">
               {t("analisi.titolo")}
             </h2>
             <Scheda className="divide-y divide-border">
-              {mostraAnalisi ? <Analisi analisi={vista.analisi} /> : null}
+              {contatoriNonNulli ? <Analisi analisi={vista.analisi} /> : null}
               {pause.length > 0 ? <Pause pause={pause} /> : null}
-              {mostraAggiornamenti ? <AggiornamentiAutomatici elaborazione={elaborazione} inErrore={elaborazioneInErrore} /> : null}
+              {elaborazioneInErrore ? <AggiornamentiAutomatici elaborazione={elaborazione} /> : null}
             </Scheda>
           </section>
         ) : null}
@@ -146,7 +147,7 @@ function Verdetto({ problemi }: { problemi: readonly Problema[] }) {
   );
 }
 
-/** Email in coda, in pausa o in errore: una riga di spunta se sono tutte analizzate, altrimenti solo i contatori non nulli. */
+/** Email in coda, in pausa o in errore: solo i contatori non nulli (senza, la sezione non compare). */
 function Analisi({ analisi }: { analisi: VistaStatoDto["analisi"] }) {
   const t = useTranslations("stato.analisi");
   const formato = useFormatter();
@@ -156,15 +157,6 @@ function Analisi({ analisi }: { analisi: VistaStatoDto["analisi"] }) {
     { chiave: "daEseguire", valore: analisi.daEseguire, Icona: Hourglass, tono: "text-text-muted" },
   ] as const;
   const nonNulli = contatori.filter((c) => c.valore > 0);
-
-  if (nonNulli.length === 0) {
-    return (
-      <p className="flex items-center gap-2.5 px-5 py-3.5 text-sm">
-        <CheckCircle2 className="size-4 shrink-0 text-accent-strong" aria-hidden />
-        {t("tutteAnalizzate")}
-      </p>
-    );
-  }
   return (
     <dl className="divide-y divide-border">
       {nonNulli.map(({ chiave, valore, Icona, tono }) => (
@@ -220,7 +212,7 @@ function Pause({ pause }: { pause: readonly Pausa[] }) {
                 ) : null}
               </div>
             </div>
-            <Link href={`/settings#${SEZIONE_MOTIVO_PAUSA[p.motivo] ?? "preferences"}`} className={cn("ml-6.5 text-sm sm:ml-0", CLASSE_LINK, AREA_TOCCO)}>
+            <Link href={`/settings#${SEZIONE_MOTIVO_PAUSA[p.motivo] ?? "preferences"}`} className={cn("ml-6.5 text-sm sm:ml-0", CLASSE_LINK_AZIONE, AREA_TOCCO)}>
               {p.motivo === "pausa_manuale" ? t("riprendi") : t("risolvi")}
             </Link>
           </li>
@@ -233,49 +225,32 @@ function Pause({ pause }: { pause: readonly Pausa[] }) {
 type Elaborazione = { chiave: "riconciliazione" | "news"; errori: number; codice: string | null };
 
 /**
- * Aggiornamento delle Situazioni e del Riepilogo News: una riga con la spunta, allineata a quella dell'analisi,
- * se funzionano; il dettaglio per ciascuno solo in caso di errore.
+ * Aggiornamento delle Situazioni e del Riepilogo News, solo quando non riesce: compare soltanto ciò che è in
+ * errore, con il numero di errori di seguito e l'ultimo errore tradotto.
  */
-function AggiornamentiAutomatici({ elaborazione, inErrore }: { elaborazione: readonly Elaborazione[]; inErrore: boolean }) {
+function AggiornamentiAutomatici({ elaborazione }: { elaborazione: readonly Elaborazione[] }) {
   const t = useTranslations("stato.elaborazione");
   const tr = useTranslations();
-  if (!inErrore) {
-    return (
-      <div id="status-aggiornamenti" className="flex items-center gap-2.5 px-5 py-3.5 text-sm">
-        <CheckCircle2 className="size-4 shrink-0 text-accent-strong" aria-hidden />
-        <div className="min-w-0">
-          <h3 className="inline text-sm font-normal">{t("titolo")}</h3>
-          <span className="text-text-muted"> · {t("nessunErrore")}</span>
-        </div>
-      </div>
-    );
-  }
+  const inErrore = elaborazione.filter((e) => e.errori > 0 || e.codice !== null);
   return (
     <div id="status-aggiornamenti" className="px-5 py-3.5 text-sm">
       <h3 className="text-sm">{t("titolo")}</h3>
       <dl className="mt-2 space-y-2">
-        {elaborazione.map(({ chiave, errori, codice }) => (
+        {inErrore.map(({ chiave, errori, codice }) => (
           <div key={chiave} className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
             <dt className="shrink-0 sm:w-60">{t(chiave)}</dt>
             <dd className="min-w-0">
-              {errori > 0 || codice ? (
-                <span className="inline-flex items-start gap-1.5">
-                  <CircleAlert className="mt-0.5 size-3.5 shrink-0 text-danger" aria-hidden />
-                  <span>
-                    {errori > 0 ? <span className="block">{t("errori", { numero: errori })}</span> : null}
-                    {codice ? (
-                      <span className="block text-xs text-text-muted">
-                        {t("ultimoErrore")}: {testoErrore(tr, codice)}
-                      </span>
-                    ) : null}
-                  </span>
+              <span className="inline-flex items-start gap-1.5">
+                <CircleAlert className="mt-0.5 size-3.5 shrink-0 text-danger" aria-hidden />
+                <span>
+                  {errori > 0 ? <span className="block">{t("errori", { numero: errori })}</span> : null}
+                  {codice ? (
+                    <span className="block text-xs text-text-muted">
+                      {t("ultimoErrore")}: {testoErrore(tr, codice)}
+                    </span>
+                  ) : null}
                 </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 text-text-muted">
-                  <CheckCircle2 className="size-3.5 shrink-0 text-accent-strong" aria-hidden />
-                  {t("nessunErrore")}
-                </span>
-              )}
+              </span>
             </dd>
           </div>
         ))}
@@ -303,7 +278,7 @@ function ErroriRecenti({ errori, aperto }: { errori: VistaStatoDto["erroriRecent
                 {nomeFunzione(tr, e.funzione)} · <Istante iso={e.il} stile="relativo" />
               </p>
             </div>
-            {e.emailId ? <LinkEmail emailId={e.emailId} className={cn("text-sm", CLASSE_LINK, AREA_TOCCO)} /> : null}
+            {e.emailId ? <LinkEmail emailId={e.emailId} className={cn("text-sm", CLASSE_LINK_AZIONE, AREA_TOCCO)} /> : null}
           </li>
         ))}
       </ul>

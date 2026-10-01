@@ -1,13 +1,15 @@
 import { useTranslations } from "next-intl";
-import { Zap } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import type { UrgenzaEmailOrigineDto } from "@ec/applicazione";
 import { DistintivoBase } from "@/components/comuni/distintivi";
 import { ElencoEvidenze, LinkEmail } from "@/components/comuni/evidenze";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { cn } from "@/components/ui/cn";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
 import { Espandibile } from "@/components/ui/espandibile";
 import { cambiaUrgenzaAzione } from "@/app/(app)/situations/[id]/azioni";
-import { LinkPerche, linguaDi, PulsanteAnnulla, type ContestoDettaglio } from "./comuni";
+import { AREA_TOCCO, LinkPerche, linguaDi, PulsanteAnnulla, type ContestoDettaglio } from "./comuni";
 
 /**
  * Urgenza non corretta e non urgente: lo stato normale di un'email, che non merita una riga. Basta il
@@ -27,7 +29,7 @@ export function SegnaUrgente({ emailId }: { emailId: string }) {
       variante="fantasma"
       etichetta={
         <>
-          <Zap className="size-3.5" aria-hidden />
+          <AlertTriangle className="size-3.5" aria-hidden />
           {t("segna")}
         </>
       }
@@ -64,7 +66,7 @@ export function UrgenzaOrigine({
     <Espandibile titolo={titolo} className="text-sm" classeContenuto="mt-2 space-y-2.5">
       <div className="flex flex-wrap items-center gap-2 text-text-muted">
         {oggetto !== undefined ? (
-          <LinkEmail emailId={origine.emailId} className="font-medium text-accent-strong underline-offset-4 hover:underline">
+          <LinkEmail emailId={origine.emailId} className={cn(CLASSE_LINK_AZIONE, AREA_TOCCO)}>
             <TestoSemplice come="span" testo={oggetto || "—"} lingua={linguaDi(contesto, origine.emailId)} />
           </LinkEmail>
         ) : null}

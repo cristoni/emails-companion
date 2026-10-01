@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, CalendarClock, ChevronRight, Inbox } from "lucide-react";
+import { AlertTriangle, CalendarClock, ChevronRight, History, Inbox, Sparkles } from "lucide-react";
 import type { CardSituazione as CardSituazioneDto } from "@ec/applicazione";
 import { testoCodice } from "@/components/comuni/codici";
-import { DistintivoProposta, IconaArea } from "@/components/comuni/distintivi";
+import { IconaArea } from "@/components/comuni/distintivi";
 import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { Scheda } from "@/components/ui/scheda";
 import { ProssimaAzione } from "./prossima-azione";
 
 /**
- * Card di una Situazione nella sua Area principale: titolo, motivo dell'urgenza (solo se urgente), prossima
- * azione e una riga di dettagli. Il titolo è l'unico link alla Situazione e ne estende l'area cliccabile a
+ * Card di una Situazione nella sua Area principale: titolo, motivo dell'urgenza (solo se aggiunge qualcosa al
+ * titolo della sezione), prossima azione e una riga di dettagli. Il titolo è l'unico link alla Situazione e ne estende l'area cliccabile a
  * tutta la card; ciò che deve restare interattivo sopra quel link (link all'email, tooltip) è `relative z-10`.
  * La casella compare solo se l'utente ne ha più di una (`mostraCaselle`, calcolato dalla home).
  */
@@ -20,6 +20,8 @@ export function CardSituazione({ card, mostraCaselle }: { card: CardSituazioneDt
   const tc = useTranslations("comuni");
   const azione = card.prossimaAzione;
   // La scadenza più vicina è già nella prossima azione quando questa è la stessa attività.
+  // "Email urgente" ripeterebbe il titolo della sezione: il motivo compare solo quando dice da dove viene l'urgenza.
+  const motivo = card.motivoUrgenza && card.motivoUrgenza !== "email_urgente" ? card.motivoUrgenza : null;
   const scadenzaGiaMostrata =
     azione.tipo === "attivita" && azione.scadenza !== null && card.scadenzaPiuVicina !== null && azione.scadenza.slice(0, 10) === card.scadenzaPiuVicina.slice(0, 10);
 
@@ -40,10 +42,10 @@ export function CardSituazione({ card, mostraCaselle }: { card: CardSituazioneDt
         />
       </div>
 
-      {card.motivoUrgenza ? (
+      {motivo ? (
         <p className="mt-1 flex items-center gap-1.5 text-sm text-urgent">
           <AlertTriangle className="size-4 shrink-0" aria-hidden />
-          {testoCodice(tc, "motiviUrgenza", card.motivoUrgenza, "aree.urgente")}
+          {testoCodice(tc, "motiviUrgenza", motivo, "aree.urgente")}
         </p>
       ) : null}
 
@@ -70,13 +72,17 @@ export function CardSituazione({ card, mostraCaselle }: { card: CardSituazioneDt
             <Istante iso={card.scadenzaPiuVicina} stile="giorno" className="text-text" />
           </span>
         ) : null}
-        <span>
+        <span className="inline-flex items-center gap-1">
+          <History className="size-3.5 shrink-0" aria-hidden />
           <span className="sr-only">{t("ultimaAttivita")} </span>
           <Istante iso={card.ultimaAttivita} stile="relativo" />
         </span>
         {card.haProposte ? (
-          <span className="relative z-10">
-            <DistintivoProposta discreto />
+          // Marcatore della proposta AI con il significato a vista: sul touch il tooltip non si vede.
+          <span className="relative z-10 inline-flex items-center gap-1 whitespace-nowrap text-suggestion" title={tc("propostaAiuto")}>
+            <Sparkles className="size-3.5 shrink-0" aria-hidden />
+            <span aria-hidden>{t("daConfermare")}</span>
+            <span className="sr-only">{tc("propostaAiuto")}</span>
           </span>
         ) : null}
         {mostraCaselle && card.caselle.length > 0 ? (

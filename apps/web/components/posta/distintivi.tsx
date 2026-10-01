@@ -26,15 +26,20 @@ export function DistintivoStatoAnalisi({ stato }: { stato: StatoAnalisiEmail }) 
   );
 }
 
-const FUNZIONE: Record<StatoFunzioneEmail, { tono: TonoDistintivo; icona: LucideIcon }> = {
+/** Stati di una Funzione AI da segnalare: "eseguita" e "non necessaria" sono normali e non hanno distintivo. */
+export type StatoFunzioneDaSegnalare = Exclude<StatoFunzioneEmail, "eseguita" | "non_necessaria">;
+
+export function funzioneDaSegnalare(stato: StatoFunzioneEmail): stato is StatoFunzioneDaSegnalare {
+  return stato !== "eseguita" && stato !== "non_necessaria";
+}
+
+const FUNZIONE: Record<StatoFunzioneDaSegnalare, { tono: TonoDistintivo; icona: LucideIcon }> = {
   da_eseguire: { tono: "neutro", icona: Clock },
   in_pausa: { tono: "urgente", icona: CirclePause },
-  eseguita: { tono: "accento", icona: CircleCheck },
-  non_necessaria: { tono: "neutro", icona: CircleMinus },
   errore: { tono: "pericolo", icona: TriangleAlert },
 };
 
-export function DistintivoStatoFunzione({ stato }: { stato: StatoFunzioneEmail }) {
+export function DistintivoStatoFunzione({ stato }: { stato: StatoFunzioneDaSegnalare }) {
   const t = useTranslations("comuni.statiFunzione");
   const { tono, icona: Icona } = FUNZIONE[stato];
   return (

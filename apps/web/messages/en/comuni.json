@@ -107,7 +107,7 @@
   },
   "motiviUrgenza": {
     "utente": "You marked it urgent",
-    "email_urgente": "Urgent email",
+    "email_urgente": "Flagged by the AI",
     "attivita_urgente": "An action has high priority",
     "scadenza_vicina": "A deadline is within 48 hours"
   },
@@ -163,7 +163,7 @@
     "apriOriginale": "Open original",
     "apriNelProvider": "Open in Gmail",
     "evidenza": "Evidence",
-    "verificata": "Quote found in the email",
+    "verificata": "Quote verified",
     "nonVerificata": "Quote not found in the email",
     "mostraNelTesto": "Show in the text"
   },

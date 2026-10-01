@@ -2,12 +2,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { FUNZIONI_AI } from "@ec/core/dominio";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
+import { cn } from "@/components/ui/cn";
+import { AREA_TOCCO } from "./classi";
 import { EliminaAccount } from "./elimina-account";
 import { ModuloRianalisi } from "./rianalisi";
 import { Blocco, Gruppo, Sezione } from "./sezione";
 import { testiFunzione } from "./sezione-modelli";
-
-const CLASSE_LINK = "text-accent-strong underline-offset-4 hover:underline";
 
 /** Sezione `#reanalyse`: stima e conferma esplicita della rianalisi degli elementi aperti o degli ultimi N giorni. */
 export function SezioneRianalisi({ pausaAttiva }: { pausaAttiva: boolean }) {
@@ -42,18 +43,17 @@ export function GruppoPrivacy({ consenso }: { consenso: { versione: string; acce
           </span>
         </p>
         <span className="flex flex-wrap gap-4 pl-6 sm:pl-0">
-          <Link href="/privacy" className={CLASSE_LINK}>
+          <Link href="/privacy" className={cn(CLASSE_LINK_AZIONE, AREA_TOCCO)}>
             {t("privacy.leggi")}
           </Link>
           {consenso.accettato ? null : (
-            <Link href="/onboarding" className={CLASSE_LINK}>
+            <Link href="/onboarding" className={cn(CLASSE_LINK_AZIONE, AREA_TOCCO)}>
               {t("privacy.accetta")}
             </Link>
           )}
         </span>
       </Blocco>
       <Blocco id="account" className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <p className="min-w-0 flex-1 text-text-muted">{t("account.descrizione")}</p>
         <EliminaAccount punti={[t("account.analisi"), t("account.caselle"), t("account.dati"), t("account.backup"), t("account.uscita")]} />
       </Blocco>
     </Gruppo>

@@ -1,6 +1,6 @@
 {
   "titolo": "Mail",
-  "descrizione": "Read-only. Reply from a situation.",
+  "descrizione": "Read-only. Reply from a Situation.",
   "filtro": {
     "etichetta": "Filter by connected mailbox",
     "tutte": "All mailboxes"
@@ -30,7 +30,7 @@
   },
   "email": {
     "titoloPagina": "Email",
-    "indietro": "Back to Mail",
+    "indietro": "Mail",
     "senzaOggetto": "(no subject)",
     "urgente": "Urgent",
     "intestazioni": "Headers",
@@ -39,7 +39,7 @@
     "cc": "Cc",
     "replyTo": "Reply-To",
     "nessuno": "no one",
-    "rispondiSituazione": "Reply from the situation",
+    "rispondiSituazione": "Reply from the Situation",
     "rispondiGmail": "To reply, use Gmail."
   },
   "copie": {
@@ -47,7 +47,6 @@
     "piuCaselle": "{numero, plural, other {In # mailboxes}}",
     "nessunaCartella": "No folder",
     "inviataDallApp": "Sent from this app",
-    "inviataFuori": "Sent outside this app",
     "eliminata": "Deleted in Gmail: the original is no longer available there."
   },
   "allegati": {
@@ -96,17 +95,15 @@
     "annullata": "Correction undone",
     "nonClassificata": "The AI has not classified this email yet.",
     "soloPerRisposte": "Not classified: retrieved only to check replies.",
-    "soloPerRisposteAiuto": "It predates the import window, so the AI doesn't analyse it on its own.",
-    "nonPrevista": "Sent emails aren't classified."
+    "soloPerRisposteAiuto": "It predates the import window, so the AI doesn't analyse it on its own."
   },
   "perche": {
-    "titolo": "Why?",
+    "titolo": "Analysis details",
     "funzione": "AI function",
     "modello": "Model",
-    "modelloServito": "Served by",
+    "modelloServito": "Used",
     "contesto": "AI context",
     "versione": "Version {numero}",
-    "nonRegistrata": "Not recorded",
     "completata": "Analysed"
   },
   "lingua": {
@@ -148,7 +145,7 @@
   },
   "situazioni": {
     "titolo": "{numero, plural, one {Situation} other {Situations}}",
-    "origine": "Started this situation"
+    "origine": "Started this Situation"
   },
   "analisi": {
     "titolo": "AI functions"

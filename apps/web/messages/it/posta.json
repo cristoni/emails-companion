@@ -30,7 +30,7 @@
   },
   "email": {
     "titoloPagina": "Email",
-    "indietro": "Torna alla Posta",
+    "indietro": "Posta",
     "senzaOggetto": "(senza oggetto)",
     "urgente": "Urgente",
     "intestazioni": "Intestazioni",
@@ -47,7 +47,6 @@
     "piuCaselle": "{numero, plural, other {In # caselle}}",
     "nessunaCartella": "Nessuna cartella",
     "inviataDallApp": "Inviata da questa app",
-    "inviataFuori": "Inviata fuori da questa app",
     "eliminata": "Eliminata in Gmail: l'originale non è più disponibile lì."
   },
   "allegati": {
@@ -88,25 +87,23 @@
     "valoreAi": "Per l'AI: {valore}",
     "motivazione": "Motivazione",
     "salva": "Salva",
-    "segnaUrgente": "Segna urgente",
-    "segnaNonUrgente": "Togli urgenza",
+    "segnaUrgente": "Segna come urgente",
+    "segnaNonUrgente": "Segna come non urgente",
     "annullaBreve": "Annulla",
     "annulla": "Annulla correzione",
     "annullaUrgenza": "Annulla modifica dell'urgenza",
     "annullata": "Correzione annullata",
     "nonClassificata": "L'AI non ha ancora classificato questa email.",
     "soloPerRisposte": "Non classificata: recuperata solo per verificare le risposte.",
-    "soloPerRisposteAiuto": "È precedente alla finestra di importazione: l'AI non la analizza da sola.",
-    "nonPrevista": "Le email inviate non si classificano."
+    "soloPerRisposteAiuto": "È precedente alla finestra di importazione: l'AI non la analizza da sola."
   },
   "perche": {
-    "titolo": "Perché?",
+    "titolo": "Dettagli dell'analisi",
     "funzione": "Funzione AI",
     "modello": "Modello",
-    "modelloServito": "Servito da",
+    "modelloServito": "Usato",
     "contesto": "Contesto AI",
     "versione": "Versione {numero}",
-    "nonRegistrata": "Non registrata",
     "completata": "Analizzata"
   },
   "lingua": {

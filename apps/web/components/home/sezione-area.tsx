@@ -1,17 +1,18 @@
 import { useTranslations } from "next-intl";
-import { ChevronDown } from "lucide-react";
 import type { Area } from "@ec/core/dominio";
 import type { CardSituazione as CardSituazioneDto } from "@ec/applicazione";
 import { IconaArea } from "@/components/comuni/distintivi";
+import { Espandibile } from "@/components/ui/espandibile";
 import { CardSituazione } from "./card-situazione";
 
 /** Card visibili prima di "Mostra altre"; si raccoglie solo quando le nascoste sarebbero almeno due. */
 const VISIBILI = 5;
 
 /**
- * Un'Area della home: titolo con icona e conteggio, poi le card in ordine di priorità in una sola colonna.
- * Le aree lunghe (non l'Urgente) mostrano le prime card e raccolgono le altre in un `<details>`, che le tiene
- * nella pagina. La home non mostra le aree vuote: il sommario in alto ne riporta già lo zero.
+ * Un'Area della home: titolo con icona, poi le card in ordine di priorità in una sola colonna. Il conteggio
+ * resta solo per i lettori di schermo: a vista lo dicono le card stesse e, sulle pagine lunghe, il sommario.
+ * Le aree lunghe (non l'Urgente) mostrano le prime card e raccolgono le altre in un `Espandibile`, che le
+ * tiene nella pagina. La home non mostra le aree vuote.
  */
 export function SezioneArea({ area, card, mostraCaselle }: { area: Area; card: readonly CardSituazioneDto[]; mostraCaselle: boolean }) {
   const t = useTranslations("home");
@@ -36,21 +37,21 @@ export function SezioneArea({ area, card, mostraCaselle }: { area: Area; card: r
       <h2 id={idTitolo} className="flex items-center gap-2 text-base">
         <IconaArea area={area} />
         {tc(area)}
-        <span className="rounded-full border border-border bg-surface-muted px-2 py-0.5 text-xs font-medium tabular-nums text-text-muted">
-          <span aria-hidden>{card.length}</span>
-          <span className="sr-only">{t("conteggio", { numero: card.length })}</span>
-        </span>
+        <span className="sr-only">: {t("conteggio", { numero: card.length })}</span>
       </h2>
       {elenco(visibili)}
       {altre.length > 0 ? (
-        <details className="group/altre">
-          <summary className="-ml-2 inline-flex h-9 cursor-pointer list-none items-center gap-1 rounded-lg px-2 text-sm font-medium text-text-muted select-none hover:bg-surface-muted hover:text-text [&::-webkit-details-marker]:hidden">
-            <ChevronDown className="size-4 transition-transform group-open/altre:rotate-180" aria-hidden />
-            <span className="group-open/altre:hidden">{t("mostraAltre", { numero: altre.length })}</span>
-            <span className="hidden group-open/altre:inline">{t("mostraMeno")}</span>
-          </summary>
-          <div className="mt-2">{elenco(altre)}</div>
-        </details>
+        <Espandibile
+          className="font-medium"
+          titolo={
+            <>
+              <span className="group-open/espandibile:hidden">{t("mostraAltre", { numero: altre.length })}</span>
+              <span className="hidden group-open/espandibile:inline">{t("mostraMeno")}</span>
+            </>
+          }
+        >
+          {elenco(altre)}
+        </Espandibile>
       ) : null}
     </section>
   );

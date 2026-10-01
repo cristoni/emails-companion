@@ -4,19 +4,19 @@ import { ripristinaDirettivePredefiniteAzione, ripristinaVersioneContestoAzione 
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { Distintivo } from "@/components/ui/distintivo";
 import { Espandibile } from "@/components/ui/espandibile";
 import { ConfermaAzione } from "./conferma-azione";
 import { ModuloContesto } from "./modulo-contesto";
-import { Sezione } from "./sezione";
-
-const CLASSE_LINK = "text-accent-strong underline-offset-4 hover:underline";
+import { SezioneApribile } from "./sezione-apribile";
 
 /**
- * Sezione `#ai-context`: sotto il titolo una sola riga di stato (direttive predefinite o versione in uso), il testo modificabile
- * (ogni salvataggio è una nuova versione) e, a richiesta, la cronologia con "Ripristina" e il ritorno alle
- * Direttive predefinite, offerto solo quando non sono già in uso. `predefinite` arriva dalla pagina, che la
- * legge da `@ec/ai` sul server.
+ * Sezione `#ai-context`: sotto il titolo una sola riga di stato (direttive predefinite o versione in uso) e,
+ * a destra, "Personalizza ⌄" come nell'onboarding. Chiusa al caricamento; aperta mostra il testo modificabile
+ * (ogni salvataggio è una nuova versione) con il rimando a Rianalizza, poi la cronologia con "Ripristina" e il
+ * ritorno alle Direttive predefinite, offerto solo quando non sono già in uso. `predefinite` arriva dalla
+ * pagina, che la legge da `@ec/ai` sul server.
  */
 export function SezioneContesto({ contesto, predefinite }: { contesto: VistaImpostazioniDto["contestoAi"]; predefinite: string }) {
   const t = useTranslations("impostazioni");
@@ -29,13 +29,14 @@ export function SezioneContesto({ contesto, predefinite }: { contesto: VistaImpo
   };
 
   return (
-    <Sezione
+    <SezioneApribile
       id="ai-context"
       titolo={t("contesto.titolo")}
+      etichetta={t("contesto.personalizza")}
       descrizione={
         corrente && !usaPredefinite ? (
           <>
-            {t("contesto.inUsoVersione", { numero: corrente.numero })} · <Istante iso={corrente.creatoIl} stile="data_ora" />
+            {t("contesto.inUsoVersione", { numero: corrente.numero })} · <Istante iso={corrente.creatoIl} stile="data" />
           </>
         ) : (
           t("contesto.inUsoPredefinite")
@@ -98,6 +99,6 @@ export function SezioneContesto({ contesto, predefinite }: { contesto: VistaImpo
           </ol>
         </Espandibile>
       ) : null}
-    </Sezione>
+    </SezioneApribile>
   );
 }

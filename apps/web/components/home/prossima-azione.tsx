@@ -36,17 +36,20 @@ export function ProssimaAzione({ azione, lingua, titolo }: { azione: ProssimaAzi
 
   switch (azione.tipo) {
     case "rivedi_risposta": {
-      // La valutazione è quella effettiva: se l'utente l'ha corretta non va presentata come dell'AI.
+      // La valutazione è quella effettiva: se l'utente l'ha corretta non va presentata come dell'AI. Una risposta
+      // completa è il caso normale e non ha distintivo; la valutazione resta nella Situazione.
       const corretta = azione.valutazioneCorretta;
       const chi = corretta ? t("valutazioneTua") : t("valutazioneAi");
       return (
         <Passo icona={<Reply className="text-reply" />} testo={t("rivediRisposta")} oggetto={oggetto(azione.oggettoAttesa)} lingua={lingua}>
-          <span className="relative z-10" title={chi}>
-            <Distintivo tono="risposta" icona={corretta ? <UserCheck className="size-3" aria-hidden /> : <Sparkles className="size-3" aria-hidden />}>
-              <span className="sr-only">{chi}: </span>
-              {testoCodice(tc, "valutazioni", azione.valutazione)}
-            </Distintivo>
-          </span>
+          {azione.valutazione !== "completa" ? (
+            <span className="relative z-10" title={chi}>
+              <Distintivo tono="risposta" icona={corretta ? <UserCheck className="size-3" aria-hidden /> : <Sparkles className="size-3" aria-hidden />}>
+                <span className="sr-only">{chi}: </span>
+                {testoCodice(tc, "valutazioni", azione.valutazione)}
+              </Distintivo>
+            </span>
+          ) : null}
           {/* L'area sensibile si estende in verticale (~36px) senza cambiare l'aspetto: un tocco impreciso non apre la Situazione. */}
           <LinkEmail
             emailId={azione.emailId}
@@ -89,7 +92,8 @@ export function ProssimaAzione({ azione, lingua, titolo }: { azione: ProssimaAzi
         </Passo>
       );
     case "gestisci_urgenza":
-      return <Passo icona={<MailOpen className="text-text-muted" />} testo={t("gestisciUrgenza")} />;
+      // Stesse parole del passo nella Situazione, così la card e la pagina dicono la stessa cosa.
+      return <Passo icona={<MailOpen className="text-text-muted" />} testo={azione.motivo === "utente" ? t("gestisciUrgenzaUtente") : t("gestisciUrgenza")} />;
     case "nessuna":
       return <Passo icona={<CheckCircle2 className="text-text-muted" />} testo={t("nessuna")} attenuato />;
   }

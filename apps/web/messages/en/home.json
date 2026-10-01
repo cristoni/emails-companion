@@ -1,5 +1,5 @@
 {
-  "titolo": "Home",
+  "titolo": "What needs you",
   "conteggio": "{numero, plural, one {# situation} other {# situations}}",
   "mostraAltre": "Show {numero} more",
   "mostraMeno": "Show fewer",
@@ -15,7 +15,8 @@
     "anche": "Also:",
     "scadenza": "Due",
     "caselle": "Mailboxes",
-    "ultimaAttivita": "Last activity"
+    "ultimaAttivita": "Last activity",
+    "daConfermare": "AI · to confirm"
   },
   "prossimaAzione": {
     "rivediRisposta": "Review the reply",
@@ -27,7 +28,8 @@
     "attendi": "Waiting on {destinatari}",
     "attendiSenzaDestinatari": "Waiting for a reply",
     "attesaEntro": "Expected by",
-    "gestisciUrgenza": "Read the email, then mark as handled",
+    "gestisciUrgenza": "Check the email, then mark it as handled",
+    "gestisciUrgenzaUtente": "Take care of it, then mark it as handled",
     "nessuna": "Nothing to do right now"
   },
   "avvisi": {
@@ -89,17 +91,20 @@
     }
   },
   "riepilogo": {
-    "titolo": "News digest",
+    "titolo": "News & FYI · last 24h",
+    "titoloPaginaNews": "Digest",
     "testoAi": "AI summary",
     "testoAiAiuto": "Written by the AI from the emails linked to each item. Open them to check.",
     "aggiornato": "Updated",
-    "aggiorna": "Update",
-    "aggiornaRichiesto": "Update requested.",
+    "aggiorna": "Regenerate",
+    "aggiornaAiuto": "The AI rewrites the digest using your OpenRouter key",
+    "aggiornaRichiesto": "Regeneration requested.",
     "vuoto": "No News in the last 24 hours",
     "inPreparazione": "The digest isn't ready yet.",
     "fonte": "Source email {numero}",
+    "fonteOggetto": "Source: {oggetto}",
     "nonIncluse": "{numero, plural, one {# email} other {# emails}} not yet in the digest",
-    "vediNews": "See all News",
+    "vediNews": "Open News & FYI",
     "errore": "The last update failed: {motivo}"
   }
 }

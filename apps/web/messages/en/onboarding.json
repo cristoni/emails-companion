@@ -17,8 +17,7 @@
     "conservazione": "Disconnecting a mailbox or deleting your account removes everything derived from it.",
     "limitedUse": "The use of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.",
     "completa": "Read the full notice",
-    "accetta": "I understand and agree",
-    "accettata": "You accepted this notice."
+    "accetta": "I understand and agree"
   },
   "chiave": {
     "titolo": "OpenRouter key",
@@ -47,8 +46,8 @@
   "contesto": {
     "titolo": "AI context",
     "spiegazione": "Tell the AI what matters to you: important senders, what's urgent, what's just News. You can change this later in Settings.",
-    "predefinite": "Using the default directives",
-    "personali": "Using your directives",
+    "predefinite": "Default directives",
+    "personali": "Your directives",
     "etichetta": "Your directives",
     "salva": "Save",
     "salvato": "Saved.",

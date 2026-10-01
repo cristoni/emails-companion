@@ -29,7 +29,46 @@ export interface ContestoDettaglio {
    */
   bozzeRisposta: ReadonlyMap<string, string>;
   bozzeSollecito: ReadonlyMap<string, string>;
+  /**
+   * Elemento della scheda "Prossima azione": la sua scheda più in basso non ripete i pulsanti, la proposta né
+   * la valutazione che la scheda in cima offre già.
+   */
+  inEvidenza: InEvidenza;
 }
+
+export interface InEvidenza {
+  attivitaId: string | null;
+  attesaId: string | null;
+  rispostaId: string | null;
+}
+
+/** Elemento della prossima azione: l'attività, l'Attesa da attendere o sollecitare, la risposta da rivedere. */
+function elementoInEvidenza(azione: VistaSituazioneDto["prossimaAzione"]): InEvidenza {
+  return {
+    attivitaId: azione.tipo === "attivita" ? azione.attivitaId : null,
+    attesaId: azione.tipo === "attendi" || azione.tipo === "sollecito" ? azione.attesaId : null,
+    rispostaId: azione.tipo === "rivedi_risposta" ? azione.rispostaId : null,
+  };
+}
+
+/** Confronto per non ripetere lo stesso testo: minuscole, virgolette tolte, spazi uniformi. Solo presentazione. */
+export function normalizza(testo: string): string {
+  return testo
+    .toLowerCase()
+    .replace(/[“”„"«»]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Vero se il testo, normalizzato, è uguale o contenuto in uno degli altri: mostrarlo lo ripeterebbe. Un testo vuoto non ripete nulla. */
+export function ripete(testo: string, altri: readonly (string | null | undefined)[]): boolean {
+  const n = normalizza(testo).replace(/[.?!…]+$/, "");
+  if (!n) return false;
+  return altri.some((a) => (a ? normalizza(a).includes(n) : false));
+}
+
+/** Area di tocco di almeno 36px attorno a un link isolato, senza cambiarne l'ingombro. */
+export const AREA_TOCCO = "relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']";
 
 type BozzaInContesto = Pick<VoceBozzaDto, "id" | "tipo" | "stato" | "emailRispostaId" | "attesaId">;
 
@@ -52,6 +91,7 @@ export function creaContesto(vista: VistaSituazioneDto, bozze: readonly BozzaInC
     propri: new Set(vista.fonti.flatMap((f) => f.caselle.map((c) => c.indirizzo.toLowerCase())).filter(Boolean)),
     bozzeRisposta,
     bozzeSollecito,
+    inEvidenza: elementoInEvidenza(vista.prossimaAzione),
   };
 }
 
@@ -105,7 +145,7 @@ export function Sezione({
 }) {
   return (
     <section id={id} aria-labelledby={`${id}-titolo`} className={cn("scroll-mt-6 space-y-3", className)}>
-      <h2 id={`${id}-titolo`} className="flex items-center gap-2 text-lg">
+      <h2 id={`${id}-titolo`} className="flex items-center gap-2 text-base">
         {titolo}
         {conteggio !== undefined ? <Conteggio numero={conteggio} /> : null}
       </h2>
@@ -134,8 +174,8 @@ export function ElencoSchede({ aperte, chiuse }: { aperte: React.ReactNode[]; ch
 }
 
 /**
- * Le due righe di azioni di una scheda: in alto quelle per portare avanti il lavoro (conferma, completa…), sotto,
- * attenuate e precedute da "L'AI ha sbagliato?", quelle che correggono l'AI. Una riga vuota non compare.
+ * Azioni di una scheda: in vista quelle per portare avanti il lavoro (completa, sollecita…); sotto, chiuse in
+ * "L'AI ha sbagliato?", quelle che correggono l'AI, a un clic ma senza occupare spazio. Una riga vuota non compare.
  */
 export function AzioniScheda({ fare, correggere }: { fare?: React.ReactNode; correggere?: React.ReactNode }) {
   const t = useTranslations("situazione");
@@ -144,28 +184,29 @@ export function AzioniScheda({ fare, correggere }: { fare?: React.ReactNode; cor
     <div className="mt-3 space-y-2 border-t border-border pt-3">
       {fare ? <div className="flex flex-wrap items-center gap-2">{fare}</div> : null}
       {correggere ? (
-        // Pulsanti con bordo ma testo attenuato: si leggono come pulsanti senza competere con quelli di sopra.
-        <div className="flex flex-wrap items-center gap-2 [&_button.border]:font-normal [&_button.border]:text-text-muted [&_button.border:hover]:text-text">
-          <span className="text-xs text-text-muted">{t("correggiAi")}</span>
+        <Espandibile titolo={t("correggiAi")} className="text-sm" classeContenuto="mt-2 flex flex-wrap items-center gap-2">
           {correggere}
-        </div>
+        </Espandibile>
       ) : null}
     </div>
   );
 }
 
-/** Link "Perché?" di un'affermazione dell'AI verso la voce del pannello laterale con la sua analisi. */
+/**
+ * "Perché?" di un'affermazione dell'AI: solo l'icona (il nome è nell'etichetta accessibile e nel `title`), con
+ * un'area di tocco di 36px. Apre il pannello laterale alla voce con la sua analisi.
+ */
 export function LinkPerche({ analisiId, contesto }: { analisiId: string | null | undefined; contesto: ContestoDettaglio }) {
   const t = useTranslations("situazione.perche");
   if (!analisiId || !contesto.analisi.has(analisiId)) return null;
   return (
     <a
       href={`#${ancora.perche(analisiId)}`}
-      className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs font-medium text-text-muted underline-offset-4 hover:bg-surface-muted hover:text-text hover:underline"
+      aria-label={t("linkAiuto")}
       title={t("linkAiuto")}
+      className="relative inline-flex size-6 shrink-0 items-center justify-center rounded-full text-text-muted after:absolute after:-inset-1.5 after:content-[''] hover:bg-surface-muted hover:text-text"
     >
-      <CircleHelp className="size-3.5" aria-hidden />
-      {t("link")}
+      <CircleHelp className="size-4" aria-hidden />
     </a>
   );
 }

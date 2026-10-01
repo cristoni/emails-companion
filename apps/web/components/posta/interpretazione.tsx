@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { ArrowRight, Reply, Sparkles, TriangleAlert, Undo2, UserCheck } from "lucide-react";
+import { ArrowRight, Layers, Reply, Sparkles, TriangleAlert, Undo2, UserCheck } from "lucide-react";
 import type { CorrezioneDto, RianalisiEmailDto, VistaEmailDto } from "@ec/applicazione";
 import { CATEGORIE, type StatoFunzioneEmail } from "@ec/core/dominio";
 import { testoCodice } from "@/components/comuni/codici";
@@ -13,7 +13,7 @@ import { Avviso } from "@/components/ui/avviso";
 import { Espandibile } from "@/components/ui/espandibile";
 import { classiPulsante } from "@/components/ui/pulsante";
 import { Scheda } from "@/components/ui/scheda";
-import { DistintivoStatoFunzione } from "./distintivi";
+import { DistintivoStatoFunzione, funzioneDaSegnalare, type StatoFunzioneDaSegnalare } from "./distintivi";
 import { ModuloCategoria, ModuloLingua } from "./moduli-correzione";
 
 export interface AzioniEmail {
@@ -45,16 +45,21 @@ function useMotivoFunzione() {
 
 const ETICHETTA = "flex min-h-9 items-center self-start text-sm text-text-muted";
 
-/** Riga della scheda: etichetta a sinistra, valore e azioni a destra. Con `per` l'etichetta è quella del campo. */
-function Riga({ etichetta, per, children }: { etichetta: string; per?: string; children: React.ReactNode }) {
+/**
+ * Riga della scheda: etichetta a sinistra, valore e azioni a destra. Con `per` l'etichetta è quella del campo;
+ * `aiuto` è una spiegazione breve nel `title` dell'etichetta.
+ */
+function Riga({ etichetta, per, aiuto, children }: { etichetta: string; per?: string; aiuto?: string; children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3 px-5 py-3">
       {per ? (
-        <label htmlFor={per} className={ETICHETTA}>
+        <label htmlFor={per} title={aiuto} className={ETICHETTA}>
           {etichetta}
         </label>
       ) : (
-        <span className={ETICHETTA}>{etichetta}</span>
+        <span title={aiuto} className={ETICHETTA}>
+          {etichetta}
+        </span>
       )}
       <div className="min-w-0 space-y-1">{children}</div>
     </div>
@@ -134,7 +139,8 @@ function useCosto() {
  * Scheda unica dell'AI sull'email: categoria, urgenza, priorità e lingua come righe con il valore effettivo
  * (la correzione prevale sull'AI) e la correzione sul posto, ogni correzione annullabile; poi la motivazione
  * con le evidenze e, a richiesta, la provenienza tecnica ("Perché?") e lo stato di ogni Funzione AI.
- * Categoria e urgenza si correggono solo sulle email in entrata, le sole che l'AI classifica. Dopo una
+ * Categoria e urgenza si correggono solo sulle email in entrata, le sole che l'AI classifica (per le altre la
+ * riga non c'è). Dopo una
  * correzione della lingua, "Rianalizza questa email" mostra prima la stima e chiede una conferma esplicita.
  */
 export function SchedaAi({
@@ -164,15 +170,12 @@ export function SchedaAi({
   const c = email.classificazione;
 
   let senzaClassificazione: React.ReactNode = null;
-  if (!c) {
+  if (!c && email.direzione === "entrata") {
     // La riga di stato serve solo quando la classificazione è ferma (pausa o errore), con il motivo.
     const ferma = email.analisi.find((a) => a.funzione === "classificazione_priorita" && (a.stato === "in_pausa" || a.stato === "errore"));
-    const ricevuta = email.direzione === "entrata";
     senzaClassificazione = (
       <div className="space-y-1 px-5 py-3 text-sm text-text-muted">
-        {!ricevuta ? (
-          <p>{t("nonPrevista")}</p>
-        ) : email.soloPerRisposte ? (
+        {email.soloPerRisposte ? (
           <p title={t("soloPerRisposteAiuto")}>
             {t("soloPerRisposte")}
             <span className="sr-only"> {t("soloPerRisposteAiuto")}</span>
@@ -180,7 +183,7 @@ export function SchedaAi({
         ) : (
           <p>{t("nonClassificata")}</p>
         )}
-        {ferma && ricevuta ? <p className="text-xs">{motivoFunzione(ferma.stato, ferma.motivo)}</p> : null}
+        {ferma ? <p className="text-xs">{motivoFunzione(ferma.stato, ferma.motivo)}</p> : null}
       </div>
     );
   }
@@ -225,6 +228,7 @@ function RigheClassificazione({ email, azioni }: { email: VistaEmailDto; azioni:
   const correggibile = email.direzione === "entrata";
   const correzioneCategoria = ultimaCorrezione(email.correzioni, "categoria");
   const correzioneUrgenza = ultimaCorrezione(email.correzioni, "urgente");
+  const correzionePriorita = ultimaCorrezione(email.correzioni, "priorita");
   return (
     <>
       <Riga etichetta={t("nuovaCategoria")} per={correggibile ? ID_CATEGORIA : undefined}>
@@ -289,10 +293,12 @@ function RigheClassificazione({ email, azioni }: { email: VistaEmailDto; azioni:
       </Riga>
 
       <Riga etichetta={t("priorita")}>
-        <p className="flex min-h-9 flex-wrap items-center gap-x-1.5 text-sm">
-          {t(`livelli.${c.priorita}`)}
-          {c.priorita !== c.prioritaAi ? <span className="text-xs text-text-muted">· {t("valoreAi", { valore: t(`livelli.${c.prioritaAi}`) })}</span> : null}
-        </p>
+        <p className="flex min-h-9 items-center text-sm">{t(`livelli.${c.priorita}`)}</p>
+        <Provenienza
+          corretta={correzionePriorita !== null || c.priorita !== c.prioritaAi}
+          valoreAi={c.priorita !== c.prioritaAi ? t("valoreAi", { valore: t(`livelli.${c.prioritaAi}`) }) : null}
+          annulla={correzionePriorita ? <Annulla azione={azioni.annulla} emailId={email.id} correzioneId={correzionePriorita.id} nome={t("annulla")} /> : null}
+        />
       </Riga>
     </>
   );
@@ -335,7 +341,7 @@ function RigaLingua({
 
   return (
     <>
-      <Riga etichetta={t("titolo")}>
+      <Riga etichetta={t("titolo")} aiuto={t("descrizione")}>
         <p className="flex min-h-9 flex-wrap items-center gap-x-1.5 text-sm">
           <span>{nomeLingua ?? email.lingua.valore}</span>
           <span className="font-mono text-xs text-text-muted">{email.lingua.valore}</span>
@@ -348,8 +354,7 @@ function RigaLingua({
             {t(`fonti.${fonte}`)}
           </p>
         ) : null}
-        <Espandibile titolo={t("correggi")} classeContenuto="mt-2 space-y-2">
-          <p className="text-xs text-text-muted">{t("descrizione")}</p>
+        <Espandibile titolo={t("correggi")} classeContenuto="mt-2">
           <ModuloLingua azione={azioni.lingua} emailId={email.id} attuale={email.lingua.valore} opzioni={opzioni} />
         </Espandibile>
       </Riga>
@@ -439,17 +444,24 @@ function BloccoRianalisi({
   );
 }
 
+/** Gravità degli stati da segnalare: il titolo delle Funzioni AI mostra il più grave. */
+const GRAVITA: Record<StatoFunzioneDaSegnalare, number> = { errore: 0, in_pausa: 1, da_eseguire: 2 };
+
 /**
- * Dettagli a richiesta in fondo alla scheda: "Perché?" con funzione, modello richiesto e servito, versione
- * del Contesto AI e data di ogni analisi; poi lo stato di ogni Funzione AI, aperto da sé se una è in pausa o
- * in errore, così i problemi restano visibili.
+ * Dettagli a richiesta in fondo alla scheda: "Dettagli dell'analisi" con funzione, modello richiesto e usato,
+ * versione del Contesto AI (solo se non sono le direttive predefinite) e data di ogni analisi; poi le sole
+ * Funzioni AI in attesa, in pausa o in errore (quelle eseguite o non necessarie non si elencano), aperte da
+ * sé se una è in pausa o in errore, così i problemi restano visibili.
  */
 function Dettagli({ email }: { email: VistaEmailDto }) {
   const t = useTranslations("posta");
   const tf = useTranslations("comuni.funzioni");
   const motivoFunzione = useMotivoFunzione();
-  if (email.perche.length === 0 && email.analisi.length === 0) return null;
-  const problemi = email.analisi.filter((a) => a.stato === "errore" || a.stato === "in_pausa");
+  const eccezioni = email.analisi
+    .flatMap((a) => (funzioneDaSegnalare(a.stato) ? [{ ...a, stato: a.stato }] : []))
+    .sort((a, b) => GRAVITA[a.stato] - GRAVITA[b.stato]);
+  if (email.perche.length === 0 && eccezioni.length === 0) return null;
+  const problemi = eccezioni.some((a) => a.stato === "errore" || a.stato === "in_pausa");
 
   return (
     <div className="space-y-2.5 px-5 py-3.5">
@@ -467,8 +479,12 @@ function Dettagli({ email }: { email: VistaEmailDto }) {
                   <dd className="font-mono break-all">{p.modelloServito}</dd>
                 </>
               ) : null}
-              <dt className="text-text-muted">{t("perche.contesto")}</dt>
-              <dd>{p.contestoAiVersione === null ? t("perche.nonRegistrata") : t("perche.versione", { numero: p.contestoAiVersione })}</dd>
+              {p.contestoAiVersione !== null ? (
+                <>
+                  <dt className="text-text-muted">{t("perche.contesto")}</dt>
+                  <dd>{t("perche.versione", { numero: p.contestoAiVersione })}</dd>
+                </>
+              ) : null}
               <dt className="text-text-muted">{t("perche.completata")}</dt>
               <dd>
                 <Istante iso={p.completataIl} stile="data_ora" />
@@ -477,20 +493,20 @@ function Dettagli({ email }: { email: VistaEmailDto }) {
           ))}
         </Espandibile>
       ) : null}
-      {email.analisi.length > 0 ? (
+      {eccezioni[0] ? (
         <div id="funzioni-ai" className="scroll-mt-6">
           <Espandibile
             titolo={
               <>
                 {t("analisi.titolo")}
-                {problemi[0] ? <DistintivoStatoFunzione stato={problemi[0].stato} /> : null}
+                <DistintivoStatoFunzione stato={eccezioni[0].stato} />
               </>
             }
-            aperto={problemi.length > 0}
+            aperto={problemi}
             classeContenuto="mt-2"
           >
             <ul className="space-y-2">
-              {email.analisi.map((a) => {
+              {eccezioni.map((a) => {
                 const motivo = motivoFunzione(a.stato, a.motivo);
                 return (
                   <li key={a.funzione} className="text-sm">
@@ -512,9 +528,10 @@ function Dettagli({ email }: { email: VistaEmailDto }) {
 
 /**
  * Situazioni collegate, subito sotto l'intestazione: titolo (porta alla Situazione) e una riga con ruolo e
- * origine del Collegamento; un collegamento proposto dall'AI lo dice (senza ripetere l'origine) e porta alle
- * fonti, dove si conferma o rifiuta. Per le email ricevute indica dove si risponde: da una Situazione con un
- * collegamento confermato o, altrimenti, da Gmail; le News non hanno risposte da suggerire.
+ * origine del Collegamento; un collegamento proposto dall'AI lo dice (senza ripetere l'origine) e porta alla
+ * scheda di questa email nella Situazione, dove si conferma o rifiuta. Per le email ricevute indica dove si
+ * risponde: da una Situazione con un collegamento confermato; "usa Gmail" solo se l'email non ha Situazioni
+ * (una proposta porta già a una Situazione che offre la bozza); le News non hanno risposte da suggerire.
  */
 export function SituazioniEmail({ email }: { email: VistaEmailDto }) {
   const t = useTranslations("posta.situazioni");
@@ -523,8 +540,9 @@ export function SituazioniEmail({ email }: { email: VistaEmailDto }) {
   const ricevuta = email.direzione === "entrata";
   // Solo un collegamento confermato (o l'email d'origine): una proposta dell'AI va prima confermata.
   const perRispondere = email.situazioni.find((s) => s.stato !== "proposto" && s.stato !== "rifiutato");
+  const senzaSituazioni = email.situazioni.every((s) => s.stato === "rifiutato");
   const viaGmail =
-    ricevuta && !perRispondere && email.classificazione?.categoria !== "news" ? <p className="text-sm text-text-muted">{te("rispondiGmail")}</p> : null;
+    ricevuta && senzaSituazioni && email.classificazione?.categoria !== "news" ? <p className="text-sm text-text-muted">{te("rispondiGmail")}</p> : null;
 
   if (email.situazioni.length === 0) return viaGmail;
 
@@ -533,11 +551,12 @@ export function SituazioniEmail({ email }: { email: VistaEmailDto }) {
       aria-labelledby="situazioni-titolo"
       className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 rounded-[var(--radius-card)] border border-border bg-surface-muted px-4 py-3"
     >
-      <div className="min-w-0 space-y-1.5">
-        <h2 id="situazioni-titolo" className="text-xs font-normal text-text-muted">
+      <div className="flex min-w-0 items-start gap-2.5">
+        <Layers className="mt-1 size-4 shrink-0 text-text-muted" aria-hidden />
+        <h2 id="situazioni-titolo" className="sr-only">
           {t("titolo", { numero: email.situazioni.length })}
         </h2>
-        <ul className="space-y-2">
+        <ul className="min-w-0 space-y-2">
           {email.situazioni.map((s) => {
             const proposto = s.stato === "proposto";
             const ruolo = s.origineDellaSituazione ? t("origine") : s.ruolo ? tc(`ruoliCollegamento.${s.ruolo}`) : null;
@@ -547,7 +566,7 @@ export function SituazioniEmail({ email }: { email: VistaEmailDto }) {
             return (
               <li key={s.collegamentoId ?? s.situazioneId}>
                 <Link
-                  href={`/situations/${s.situazioneId}${proposto ? "#fonti" : ""}`}
+                  href={`/situations/${s.situazioneId}${proposto ? `#email-${email.id}` : ""}`}
                   className="group inline-flex items-start gap-1.5 font-medium text-text hover:text-accent-strong"
                 >
                   <TestoSemplice come="span" testo={s.titolo} className="underline-offset-4 group-hover:underline" />

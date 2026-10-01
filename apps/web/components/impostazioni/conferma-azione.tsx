@@ -12,9 +12,10 @@ import { cn } from "@/components/ui/cn";
  * scollegare una casella o rimuovere la chiave). Il primo pulsante apre il pannello, solo il secondo invia
  * l'azione. L'esito è un codice tradotto con `messaggi`, poi con `comuni.esiti`.
  *
- * Con `discreta` il primo pulsante è un comando secondario (testo rosso senza riempimento) allineato a
- * destra, e il pannello aperto occupa tutta la riga anche dentro un contenitore flessibile che va a capo:
- * le azioni distruttive non sono più evidenti di quelle utili. Pannello e conferma restano quelli pericolosi.
+ * Con `discreta` il primo pulsante è un comando fantasma attenuato (diventa rosso solo al passaggio)
+ * allineato a destra, e il pannello aperto occupa tutta la riga anche dentro un contenitore flessibile che va
+ * a capo: le azioni distruttive non sono più evidenti di quelle utili. Il rosso pieno compare solo nel
+ * pannello di conferma.
  */
 export function ConfermaAzione({
   azione,
@@ -74,8 +75,8 @@ export function ConfermaAzione({
           dimensione="sm"
           onClick={() => setAperto(true)}
           aria-expanded={false}
-          // Il margine negativo allinea il testo rosso al bordo del contenuto, come gli altri comandi a destra.
-          className={discreta ? "-mr-3 text-danger hover:bg-danger-soft hover:text-danger" : undefined}
+          // Il margine negativo allinea il testo al bordo del contenuto, come gli altri comandi a destra.
+          className={discreta ? "-mr-3 hover:bg-danger-soft hover:text-danger" : undefined}
         >
           {etichetta}
         </Pulsante>

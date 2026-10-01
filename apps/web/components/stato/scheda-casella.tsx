@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { AlertTriangle, CheckCircle2, Clock, Info, RefreshCw } from "lucide-react";
+import { AlertTriangle, Clock, Info, RefreshCw } from "lucide-react";
 import type { VistaStatoDto } from "@ec/applicazione";
 import type { StatoCasella } from "@ec/core/dominio";
 import { Istante } from "@/components/comuni/istante";
 import { Distintivo, type TonoDistintivo } from "@/components/ui/distintivo";
 import { Scheda } from "@/components/ui/scheda";
 import { cn } from "@/components/ui/cn";
-import { AREA_TOCCO, CLASSE_LINK } from "./classi";
+import { AREA_TOCCO, CLASSE_LINK_AZIONE } from "./classi";
 import { testoErrore } from "./testi";
 
 type CasellaStato = VistaStatoDto["caselle"][number];
@@ -105,16 +105,11 @@ export function SchedaCasellaStato({ casella }: { casella: CasellaStato }) {
             {c.ultimaSyncOk ? (
               <span className="flex flex-wrap items-center gap-2">
                 <Istante iso={c.ultimaSyncOk} stile="relativo" />
-                {c.stato === "collegata" ? (
-                  inRitardo(c) ? (
-                    <Distintivo tono="urgente" icona={<Clock className="size-3" aria-hidden />}>
-                      {t("inRitardo")}
-                    </Distintivo>
-                  ) : (
-                    <Distintivo tono="accento" icona={<CheckCircle2 className="size-3" aria-hidden />}>
-                      {t("aggiornata")}
-                    </Distintivo>
-                  )
+                {/* Solo l'eccezione: una casella aggiornata non ha distintivo, basta l'ora relativa. */}
+                {inRitardo(c) ? (
+                  <Distintivo tono="urgente" icona={<Clock className="size-3" aria-hidden />}>
+                    {t("inRitardo")}
+                  </Distintivo>
                 ) : null}
               </span>
             ) : (
@@ -201,12 +196,12 @@ export function SchedaCasellaStato({ casella }: { casella: CasellaStato }) {
         ) : null}
 
         {c.stato === "permessi_incompleti" || c.stato === "da_ricollegare" ? (
-          <Link href="/settings#mailboxes" className={cn("inline-block text-sm font-medium", CLASSE_LINK, AREA_TOCCO)}>
+          <Link href="/settings#mailboxes" className={cn("text-sm", CLASSE_LINK_AZIONE, AREA_TOCCO)}>
             {t("risolvi")}
           </Link>
         ) : c.faseImportazione === "stimata" ? (
           // Nulla è guasto: l'importazione aspetta solo la conferma dell'utente.
-          <Link href="/settings#mailboxes" className={cn("inline-block text-sm font-medium", CLASSE_LINK, AREA_TOCCO)}>
+          <Link href="/settings#mailboxes" className={cn("text-sm", CLASSE_LINK_AZIONE, AREA_TOCCO)}>
             {t("conferma")}
           </Link>
         ) : null}

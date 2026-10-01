@@ -1,6 +1,6 @@
 {
   "titolo": "News e informazioni",
-  "descrizione": "Ultime 24 ore. Sposta fuori ciò che ti serve.",
+  "descrizione": "Ultime 24 ore",
   "vuoto": "Nessuna News nelle ultime 24 ore",
   "elenco": {
     "titolo": "Email originali",
@@ -11,6 +11,11 @@
   "sposta": {
     "apri": "Non è una News?",
     "aiuto": "Sposta in",
+    "categorie": {
+      "operativa": "L’AI cerca attività e attese",
+      "informativa": "Resta nella Posta, fuori dal riepilogo"
+    },
+    "annullabile": "Potrai annullare lo spostamento.",
     "spostata": "Spostata fuori dalle News."
   },
   "spostate": {

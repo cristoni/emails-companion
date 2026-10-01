@@ -64,7 +64,7 @@ export function SezioneModelli({ modelli }: { modelli: VoceModello[] }) {
   };
 
   return (
-    <Sezione id="models" titolo={t("modelli.titolo")} descrizione={t("modelli.descrizione")}>
+    <Sezione id="models" titolo={t("modelli.titolo")}>
       <ul className="-mt-1 divide-y divide-border">
         {modelli.map((m) => {
           const { nome, descrizione } = testiFunzione(t, tc, m.funzione);

@@ -6,6 +6,7 @@ import { testoCodice } from "@/components/comuni/codici";
 import { LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { DataBreve } from "@/components/posta/data-breve";
 import { Scheda } from "@/components/ui/scheda";
 import { AnnullaSpostamento, ModuloSpostaNews } from "./modulo-sposta";
 
@@ -15,38 +16,49 @@ function Mittente({ mittente, className }: { mittente: Indirizzo; className?: st
   return <TestoSemplice come="span" testo={nome || mittente.indirizzo} className={className} />;
 }
 
+/** Conteggio accanto al titolo della sezione, a pillola come nelle altre pagine. */
+function Conteggio({ numero }: { numero: number }) {
+  return (
+    <span className="rounded-full border border-border bg-surface-muted px-1.5 text-xs font-medium tracking-normal text-text-muted tabular-nums">{numero}</span>
+  );
+}
+
 /**
- * Originali delle News, come in una casella di posta: mittente e ora, oggetto (link all'email, su tutta la
- * riga), poi anteprima con in fondo le eccezioni ("non ancora nel riepilogo", la casella solo se sono più
- * d'una) e la correzione "Non è una News?". L'ora sta sopra il link, così il suo titolo con la data completa
- * resta leggibile al passaggio del mouse.
+ * Originali delle News, con la stessa gerarchia delle righe di `/mail`: mittente in grassetto e data breve,
+ * oggetto (link all'email, su tutta la riga), poi anteprima con in fondo le eccezioni ("non ancora nel
+ * riepilogo", la casella solo se sono più d'una) e la correzione "Non è una News?". La data sta sopra il
+ * link, così il suo titolo con la data completa resta leggibile al passaggio del mouse. Il taglio a due righe
+ * è sul testo dell'oggetto, non sul titolo: così l'anello del focus del link non viene tagliato.
  */
 export function ElencoNews({ membri }: { membri: VistaNewsDto["membri"] }) {
   const t = useTranslations("news.elenco");
   const piuCaselle = new Set(membri.map((m) => m.casella)).size > 1;
   return (
     <section aria-labelledby="news-elenco-titolo" className="space-y-3">
-      <h2 id="news-elenco-titolo" tabIndex={-1} className="flex items-baseline gap-2 text-base">
+      <h2 id="news-elenco-titolo" tabIndex={-1} className="flex items-center gap-2 text-base">
         {t("titolo")}
-        <span className="text-sm font-normal tabular-nums text-text-muted">{membri.length}</span>
+        <Conteggio numero={membri.length} />
       </h2>
       <Scheda className="overflow-hidden">
         <ul className="divide-y divide-border">
           {membri.map((m) => {
             const oggetto = m.oggetto.trim() || t("senzaOggetto");
             return (
-              <li key={m.emailId} className="relative px-4 py-3 transition-colors hover:bg-surface-muted sm:px-5">
+              <li
+                key={m.emailId}
+                className="relative px-4 py-3 transition-colors hover:bg-surface-muted has-[a:focus-visible]:bg-surface-muted sm:px-5"
+              >
                 <div className="flex items-baseline justify-between gap-3 text-sm">
-                  <Mittente mittente={m.mittente} className="min-w-0 truncate whitespace-nowrap font-medium" />
-                  <Istante iso={m.ricevutaIl} stile="relativo" className="relative z-10 shrink-0 text-xs tabular-nums text-text-muted" />
+                  <Mittente mittente={m.mittente} className="min-w-0 truncate whitespace-nowrap font-semibold" />
+                  <DataBreve iso={m.ricevutaIl} className="relative z-10 shrink-0 text-xs tabular-nums text-text-muted" />
                 </div>
-                <h3 id={`news-oggetto-${m.emailId}`} className="mt-0.5 line-clamp-2 text-[15px] leading-snug">
+                <h3 id={`news-oggetto-${m.emailId}`} className="mt-0.5 text-sm font-normal tracking-normal">
                   {/* Il link si estende su tutta la riga: l'intera voce apre l'email. */}
                   <LinkEmail
                     emailId={m.emailId}
-                    className="underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-accent-strong hover:underline focus-visible:underline"
+                    className="block underline-offset-4 after:absolute after:inset-0 after:content-[''] hover:text-accent-strong hover:underline focus-visible:underline"
                   >
-                    <TestoSemplice come="span" testo={oggetto} />
+                    <TestoSemplice come="span" testo={oggetto} className="line-clamp-2" />
                   </LinkEmail>
                 </h3>
                 {/* L'anteprima tiene almeno metà riga: se le eccezioni non ci stanno accanto, vanno a capo. */}

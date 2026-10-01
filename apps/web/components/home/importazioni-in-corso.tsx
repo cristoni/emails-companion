@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import type { ImportazioneDto } from "@ec/applicazione";
 import { testoCodice } from "@/components/comuni/codici";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
 import { Scheda } from "@/components/ui/scheda";
 import { cn } from "@/components/ui/cn";
 
@@ -70,7 +71,7 @@ function VoceImportazione({ importazione: i }: { importazione: ImportazioneDto }
         <p className="text-xs text-text-muted">{t("inPreparazione")}</p>
       ) : null}
       {errore ? (
-        <Link href="/status" className="inline-block text-sm font-medium text-accent-strong underline-offset-4 hover:underline">
+        <Link href="/status" className={cn(CLASSE_LINK_AZIONE, "text-sm")}>
           {t("stato")}
         </Link>
       ) : null}

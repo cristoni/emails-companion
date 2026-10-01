@@ -1,6 +1,6 @@
 {
   "titolo": "News & FYI",
-  "descrizione": "Last 24 hours. Move out what needs you.",
+  "descrizione": "Last 24 hours",
   "vuoto": "No News in the last 24 hours",
   "elenco": {
     "titolo": "Original emails",
@@ -11,6 +11,11 @@
   "sposta": {
     "apri": "Not News?",
     "aiuto": "Move to",
+    "categorie": {
+      "operativa": "The AI looks for actions and waiting items",
+      "informativa": "Stays in Mail, out of the digest"
+    },
+    "annullabile": "You can undo the move.",
     "spostata": "Moved out of News & FYI."
   },
   "spostate": {

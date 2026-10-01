@@ -1,14 +1,16 @@
 import { useTranslations } from "next-intl";
-import { ArrowDownLeft, ArrowUpRight, ExternalLink, Flag, Repeat, Zap } from "lucide-react";
+import { AlertTriangle, ArrowDownLeft, ArrowUpRight, ExternalLink, Flag, Repeat } from "lucide-react";
 import type { CollegamentoDto, FonteDto, UrgenzaEmailOrigineDto, VistaSituazioneDto } from "@ec/applicazione";
 import type { Direzione } from "@ec/core/dominio";
 import { testoCodice } from "@/components/comuni/codici";
 import { LinkEmail, LinkProvider } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
+import { cn } from "@/components/ui/cn";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
 import { Distintivo } from "@/components/ui/distintivo";
 import { PulsanteProponiRisposta } from "@/components/bozze/pulsanti-proposta";
-import { ancora, CorrezioniElemento, Indirizzi, Sezione, type ContestoDettaglio } from "./comuni";
+import { ancora, AREA_TOCCO, CorrezioniElemento, Indirizzi, Sezione, type ContestoDettaglio } from "./comuni";
 import { EmailScollegate, eOrigine, RigaCollegamento } from "./collegamenti";
 import { correzioniDelRifiuto } from "./correzioni-collegate";
 import { SegnaUrgente, UrgenzaOrigine, urgenzaPredefinita } from "./urgenza-origine";
@@ -128,7 +130,7 @@ function VoceFonte({
           {f.direzione !== "entrata" ? <span aria-hidden>·</span> : null}
           <Istante iso={f.ricevutaIl} stile="data_ora" />
           {urgente ? (
-            <Distintivo tono="urgente" icona={<Zap className="size-3" aria-hidden />}>
+            <Distintivo tono="urgente" icona={<AlertTriangle className="size-3" aria-hidden />}>
               {t("urgente")}
             </Distintivo>
           ) : null}
@@ -178,7 +180,7 @@ function VoceFonte({
                 ))}
                 {c.origineInvio === "app" ? <span className="text-text-muted">{t("inviataDallApp")}</span> : null}
                 {c.eliminataNelProvider ? <span className="text-danger">{t("eliminataNelProvider")}</span> : null}
-                <LinkProvider href={c.linkOriginale} className="inline-flex items-center gap-1 text-accent-strong underline-offset-4 hover:underline">
+                <LinkProvider href={c.linkOriginale} className={cn(CLASSE_LINK_AZIONE, "font-normal", AREA_TOCCO)}>
                   {tc("fonte.apriNelProvider")}
                   <ExternalLink className="size-3" aria-hidden />
                 </LinkProvider>
@@ -211,9 +213,9 @@ function VoceFonte({
         ) : null}
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-3">
-          <LinkEmail emailId={f.emailId} className="text-sm font-medium text-accent-strong underline-offset-4 hover:underline" />
+          <LinkEmail emailId={f.emailId} className={cn("text-sm", CLASSE_LINK_AZIONE, AREA_TOCCO)} />
           {copia ? (
-            <LinkProvider href={copia.linkOriginale} className="inline-flex items-center gap-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
+            <LinkProvider href={copia.linkOriginale} className={cn("inline-flex items-center gap-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline", AREA_TOCCO)}>
               {tc("fonte.apriNelProvider")}
               <ExternalLink className="size-3.5" aria-hidden />
             </LinkProvider>

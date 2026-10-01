@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { DIRETTIVE_PREDEFINITE } from "@ec/ai";
@@ -17,6 +18,7 @@ import { SezioneContesto } from "@/components/impostazioni/sezione-contesto";
 import { SezioneModelli } from "@/components/impostazioni/sezione-modelli";
 import { GruppoPreferenze, SezionePausa } from "@/components/impostazioni/sezione-preferenze";
 import { Avviso } from "@/components/ui/avviso";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { IntestazionePagina } from "@/components/ui/pagina";
 
 /**
@@ -34,6 +36,11 @@ const TONO_ESITO: Record<string, "successo" | "attenzione" | "info" | "errore"> 
   account_diverso_da_quello_atteso: "errore",
   errore_google: "errore",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("impostazioni");
+  return { title: t("titolo") };
+}
 
 /** Funzioni toccate dalla rianalisi: se una di queste è in pausa, la rianalisi aspetta la ripresa. */
 const FUNZIONI_RIANALISI = new Set(["*", "classificazione_priorita", "estrazione_attivita"]);
@@ -101,7 +108,7 @@ export default async function PaginaImpostazioni({ searchParams }: { searchParam
                 <span className="text-text">{testoCodice(tc, "motiviPausa", p.motivo, "errori.sconosciuto")}</span>
                 {p.funzione === "*" ? null : <> · {nomeFunzione(tr, p.funzione)}</>}
                 {" · "}
-                <a href={`#${SEZIONE_MOTIVO_PAUSA[p.motivo] ?? "pause"}`} className="text-accent-strong underline-offset-4 hover:underline">
+                <a href={`#${SEZIONE_MOTIVO_PAUSA[p.motivo] ?? "pause"}`} className={CLASSE_LINK}>
                   {t("pauseAttive.risolvi")}
                 </a>
               </li>

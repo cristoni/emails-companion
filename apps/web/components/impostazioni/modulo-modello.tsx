@@ -5,11 +5,15 @@ import { useTranslations } from "next-intl";
 import type { FunzioneAI } from "@ec/core/dominio";
 import { impostaModelloAzione } from "@/app/(app)/settings/azioni";
 import { Aiuto, Etichetta, Input } from "@/components/ui/campi";
+import { CLASSE_LINK } from "@/components/ui/collegamento";
 import { Pulsante } from "@/components/ui/pulsante";
 import { cn } from "@/components/ui/cn";
 import { useInvioSenzaReset } from "./usa-invio";
 
-/** Cambio del modello OpenRouter di una Funzione AI: la verifica di compatibilità avviene sul server. */
+/**
+ * Cambio del modello OpenRouter di una Funzione AI: la verifica di compatibilità avviene sul server. L'aiuto
+ * rimanda all'elenco dei modelli su openrouter.ai, da cui copiare l'ID.
+ */
 export function ModuloModello({ funzione, modello, nomeFunzione }: { funzione: FunzioneAI; modello: string; nomeFunzione: string }) {
   const t = useTranslations("impostazioni.modelli");
   const tc = useTranslations("comuni");
@@ -43,7 +47,15 @@ export function ModuloModello({ funzione, modello, nomeFunzione }: { funzione: F
           {inCorso ? tc("azioni.inCorso") : t("salva")}
         </Pulsante>
       </div>
-      <Aiuto id={`${id}-aiuto`}>{t("aiutoCampo")}</Aiuto>
+      <Aiuto id={`${id}-aiuto`}>
+        {t.rich("aiutoCampo", {
+          link: (parti) => (
+            <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer" className={CLASSE_LINK}>
+              {parti}
+            </a>
+          ),
+        })}
+      </Aiuto>
       <p role="status" aria-live="polite" className={cn("text-xs", esito === "ok" ? "text-accent-strong" : "text-danger")}>
         {testoEsito}
       </p>

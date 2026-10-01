@@ -7,8 +7,11 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   const utente = await richiediUtente();
   const t = await getTranslations("navigazione");
   return (
-    <div className="flex min-h-dvh">
+    // `struttura-app` diventa inerte mentre il pannello "Perché?" copre la pagina; con il pannello aperto da `xl` in
+    // su la pagina gli fa posto a destra (`data-perche` su `<html>`), così nessun comando resta nascosto sotto.
+    <div id="struttura-app" className="flex min-h-dvh">
       <a
+        id="salta-contenuto"
         href="#contenuto"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:rounded-lg focus:bg-surface-raised focus:px-3 focus:py-2 focus:shadow-[var(--shadow-card)]"
       >
@@ -27,7 +30,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
         ]}
         etichette={{ esci: t("esci"), temaScuro: t("temaScuro"), temaChiaro: t("temaChiaro"), menu: t("menu"), chiudi: t("chiudi"), navigazione: t("navigazione") }}
       />
-      <main id="contenuto" tabIndex={-1} className="min-w-0 flex-1 px-4 pt-20 pb-10 outline-none sm:px-8 lg:px-12 lg:pt-8">
+      <main id="contenuto" tabIndex={-1} className="min-w-0 flex-1 px-4 pt-20 pb-10 outline-none sm:px-8 lg:px-12 lg:pt-8 xl:[html[data-perche=aperto]_&]:pr-[24rem]">
         <div className="mx-auto w-full max-w-5xl">{children}</div>
       </main>
       <AggiornamentoAutomatico />

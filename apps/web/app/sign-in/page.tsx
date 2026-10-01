@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Info } from "lucide-react";
 import { PulsanteAccessoGoogle } from "./pulsante-accesso";
 import { utenteCorrente } from "@/lib/server/sessione";
+import { AREA_TOCCO } from "@/components/impostazioni/classi";
+import { CLASSE_LINK_AZIONE } from "@/components/ui/collegamento";
+import { cn } from "@/components/ui/cn";
+
+/** Il titolo della pagina è uno slogan: la scheda del browser e l'annuncio della pagina dicono "Accedi". */
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("accesso");
+  return { title: t("metaTitolo") };
+}
 
 /**
  * Accesso: cosa fa l'app, cosa serve per usarla (account Gmail e chiave OpenRouter), un riepilogo dell'informativa
@@ -37,7 +47,7 @@ export default async function PaginaAccesso() {
             <li>{t("informativa.modelli")}</li>
             <li>{t("informativa.invio")}</li>
           </ul>
-          <Link href="/privacy" className="inline-block text-accent-strong underline-offset-4 hover:underline">
+          <Link href="/privacy" className={cn(CLASSE_LINK_AZIONE, AREA_TOCCO)}>
             {t("informativa.completa")}
           </Link>
         </section>

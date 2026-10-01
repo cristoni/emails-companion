@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { pauseEffettiveImpostazioni, vistaStato } from "@ec/applicazione";
 import { comeUtente } from "@/lib/server/sessione";
 import { VistaStato } from "@/components/stato/vista-stato";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("stato");
+  return { title: t("titolo") };
+}
 
 /**
  * `/status`: verdetto complessivo, caselle (ultima sincronizzazione, importazione, errori), analisi AI con

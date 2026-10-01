@@ -12,8 +12,8 @@ import { ModuloChiave } from "./modulo-chiave";
 import { RigaMeta, Sezione } from "./sezione";
 import { ConsumoChiave } from "./sezione-consumo";
 
+/** Tono del distintivo per gli stati da segnalare; una chiave valida non ha distintivo, solo la spunta. */
 const TONO_CHIAVE: Record<string, TonoDistintivo> = {
-  valida: "accento",
   non_verificata: "neutro",
   non_valida: "pericolo",
   credito_esaurito: "urgente",
@@ -26,9 +26,9 @@ const DA_SOSTITUIRE = new Set(["non_valida", "non_verificata"]);
 const DA_RICARICARE = new Set(["credito_esaurito", "limitata"]);
 
 /**
- * Sezione `#openrouter`: riepilogo della Chiave OpenRouter (stato e sole ultime cifre, mai il valore), spesa
- * degli ultimi 30 giorni (`#usage`), sostituzione a richiesta e, in fondo a destra, rimozione discreta con
- * conferma. Il modulo è aperto solo se la chiave manca o va sostituita (non valida o non verificata); per
+ * Sezione `#openrouter`: riepilogo della Chiave OpenRouter (sole ultime cifre, mai il valore; il distintivo
+ * dello stato solo se è un problema), spesa degli ultimi 30 giorni (`#usage`), sostituzione a richiesta e, in
+ * fondo a destra, rimozione discreta con conferma. Il modulo è aperto solo se la chiave manca o va sostituita (non valida o non verificata); per
  * credito esaurito o limite raggiunto una riga dice di intervenire su OpenRouter. Chiuso, il modulo resta
  * nella pagina (`<details>`), sempre nella stessa posizione: così l'esito del salvataggio resta visibile
  * anche quando la pagina riletta passa da "nessuna chiave" al riepilogo.
@@ -49,19 +49,27 @@ export function SezioneChiave({ chiave, consumo }: { chiave: VistaImpostazioniDt
       {chiave ? (
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <Distintivo
-              tono={TONO_CHIAVE[chiave.stato] ?? "neutro"}
-              icona={valida ? <CheckCircle2 className="size-3" aria-hidden /> : <AlertTriangle className="size-3" aria-hidden />}
-            >
-              {testoCodice(t, "chiave.stati", chiave.stato, "chiave.stati.sconosciuto")}
-            </Distintivo>
             <span className="inline-flex items-center gap-1.5">
               <KeyRound className="size-3.5 text-text-muted" aria-hidden />
               <span className="sr-only">{t("chiave.finale")}</span>
               <span className="font-mono">••••&thinsp;{chiave.ultimeCifre}</span>
             </span>
+            {valida ? null : (
+              <Distintivo tono={TONO_CHIAVE[chiave.stato] ?? "neutro"} icona={<AlertTriangle className="size-3" aria-hidden />}>
+                {testoCodice(t, "chiave.stati", chiave.stato, "chiave.stati.sconosciuto")}
+              </Distintivo>
+            )}
           </div>
+          {/* Una chiave valida è lo stato normale: spunta e testo attenuato, come una casella in ordine. */}
           <RigaMeta
+            icona={
+              valida ? (
+                <>
+                  <CheckCircle2 className="size-3.5 shrink-0 text-accent-strong" aria-hidden />
+                  <span className="sr-only">{t("chiave.stati.valida")}</span>
+                </>
+              ) : null
+            }
             parti={[
               chiave.etichetta ? <span title={t("chiave.etichetta")}>{chiave.etichetta}</span> : null,
               limite,

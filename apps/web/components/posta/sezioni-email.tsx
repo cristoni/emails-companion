@@ -18,13 +18,17 @@ export function linkUnicoAlProvider(email: VistaEmailDto): string | null {
   return conLink.length === 1 ? conLink[0]!.linkOriginale : null;
 }
 
-/** "Apri in Gmail" come pulsante secondario, in una nuova scheda e senza referrer. */
-export function PulsanteProvider({ href }: { href: string | null }) {
+/**
+ * "Apri in Gmail" come pulsante secondario, in una nuova scheda e senza referrer. `compatto`: sotto `sm` resta
+ * solo l'icona (il testo vale per i lettori di schermo), così il pulsante sta accanto all'oggetto senza
+ * spingere mittente e data su un'altra riga.
+ */
+export function PulsanteProvider({ href, compatto = false }: { href: string | null; compatto?: boolean }) {
   const t = useTranslations("comuni.fonte");
   return (
     <LinkProvider href={href} className={cn(classiPulsante("secondario", "sm"), "shrink-0")}>
       <ExternalLink className="size-3.5" aria-hidden />
-      {t("apriNelProvider")}
+      <span className={compatto ? "sr-only sm:not-sr-only" : undefined}>{t("apriNelProvider")}</span>
     </LinkProvider>
   );
 }
@@ -72,7 +76,8 @@ const CARTELLE_OVVIE: Record<Direzione, readonly Cartella[]> = {
 /**
  * Copie dell'email nelle Caselle collegate, solo per le eccezioni: la casella quando l'utente ne ha più
  * d'una (o l'email sta in più caselle), le cartelle non ovvie per la direzione (Spam, Cestino, Archiviata…)
- * e l'origine dell'invio. Con una sola copia senza nulla da segnalare non si mostra niente; con più copie,
+ * e l'invio da questa app (l'invio da Gmail è il caso normale e non si dice). Con una sola copia senza nulla
+ * da segnalare non si mostra niente; con più copie,
  * l'elenco a richiesta con "Apri in Gmail" per ciascuna.
  */
 export function CopieEmail({ email, piuCaselle }: { email: VistaEmailDto; piuCaselle: boolean }) {
@@ -83,12 +88,13 @@ export function CopieEmail({ email, piuCaselle }: { email: VistaEmailDto; piuCas
   const mostraCasella = piuCaselle || email.copie.length > 1;
 
   const parti = (c: VistaEmailDto["copie"][number]) => {
-    // Con l'origine dell'invio indicata, "Inviata" la ripeterebbe.
-    const cartelle = c.cartelle.filter((x) => !CARTELLE_OVVIE[email.direzione].includes(x) && !(c.origineInvio && x === "inviata"));
+    const dallApp = c.origineInvio === "app";
+    // Con "Inviata da questa app", "Inviata" la ripeterebbe.
+    const cartelle = c.cartelle.filter((x) => !CARTELLE_OVVIE[email.direzione].includes(x) && !(dallApp && x === "inviata"));
     return [
       mostraCasella ? t("inCasella", { indirizzo: c.indirizzo }) : null,
       c.cartelle.length === 0 ? t("nessunaCartella") : cartelle.map((x) => tCartelle(x)).join(", ") || null,
-      c.origineInvio ? (c.origineInvio === "app" ? t("inviataDallApp") : t("inviataFuori")) : null,
+      dallApp ? t("inviataDallApp") : null,
     ].filter(Boolean);
   };
   const dettagli = (c: VistaEmailDto["copie"][number]) => (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { spostateFuoriDalleNews, vistaRiepilogoNews } from "@ec/applicazione";
 import { richiediOnboardingEssenziale } from "@/lib/server/onboarding";
@@ -6,6 +7,11 @@ import { IntestazionePagina, StatoVuoto } from "@/components/ui/pagina";
 import { RiepilogoNews } from "@/components/home/riepilogo-news";
 import { AnnuncioNews } from "./annuncio";
 import { ElencoNews, ElencoSpostate } from "./elenchi";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("news");
+  return { title: t("titolo") };
+}
 
 /**
  * `/news` (§13): il Riepilogo News, le email appena spostate fuori (annullabili per 24 ore) e gli originali

@@ -34,9 +34,12 @@ function Esito({ esito, inCorso, ok, className }: { esito: string | undefined; i
 
 /**
  * "Non è una News?": correzione a richiesta, chiusa di default. Ogni pulsante invia direttamente la nuova
- * categoria (il pulsante premuto entra nel FormData come `categoria`). Chiusa sta in fondo alla riga
- * dell'anteprima; aperta va a capo su tutta la larghezza. Dopo lo spostamento la riga sparisce: l'esito si
- * annuncia nella pagina e il focus passa alle "Spostate di recente", da cui si può annullare.
+ * categoria (il pulsante premuto entra nel FormData come `categoria`) e dice in una riga attenuata che cosa
+ * succede dopo, così non si sceglie a caso tra due nomi simili; sotto, che lo spostamento si può annullare.
+ * Il nome accessibile del pulsante è solo la categoria; la spiegazione e l'oggetto sono la descrizione.
+ * Chiusa sta in fondo alla riga dell'anteprima; aperta va a capo su tutta la larghezza. Dopo lo spostamento
+ * la riga sparisce: l'esito si annuncia nella pagina e il focus passa alle "Spostate di recente", da cui si
+ * può annullare.
  */
 export function ModuloSpostaNews({ emailId, oggetto, descrittoDa, className }: { emailId: string; oggetto: string; descrittoDa?: string; className?: string }) {
   const t = useTranslations("news.sposta");
@@ -62,15 +65,32 @@ export function ModuloSpostaNews({ emailId, oggetto, descrittoDa, className }: {
       className={cn("relative z-10 ml-auto text-right open:basis-full", className)}
       classeContenuto="mt-2"
     >
-      <form action={esegui} className="flex flex-wrap items-center justify-end gap-2">
+      <form action={esegui} className="ml-auto grid max-w-xl gap-2 text-left sm:grid-cols-2">
         <input type="hidden" name="email" value={emailId} />
-        <span className="text-xs text-text-muted">{t("aiuto")}</span>
-        {CATEGORIE.map((c) => (
-          <Pulsante key={c} type="submit" name="categoria" value={c} dimensione="sm" disabled={inCorso} aria-describedby={descrittoDa}>
-            {tc(`categorie.${c}`)}
-          </Pulsante>
-        ))}
-        <Esito esito={stato?.esito} inCorso={inCorso} ok={t("spostata")} className="w-full" />
+        <p className="text-xs text-text-muted sm:col-span-2">{t("aiuto")}</p>
+        {CATEGORIE.map((c) => {
+          const id = `sposta-${emailId}-${c}`;
+          return (
+            <Pulsante
+              key={c}
+              type="submit"
+              name="categoria"
+              value={c}
+              dimensione="sm"
+              disabled={inCorso}
+              aria-labelledby={id}
+              aria-describedby={[`${id}-aiuto`, descrittoDa].filter(Boolean).join(" ")}
+              className="h-auto flex-col items-start justify-start gap-0.5 py-2 text-left sm:h-auto"
+            >
+              <span id={id}>{tc(`categorie.${c}`)}</span>
+              <span id={`${id}-aiuto`} className="text-xs font-normal text-text-muted">
+                {t(`categorie.${c}`)}
+              </span>
+            </Pulsante>
+          );
+        })}
+        <p className="text-xs text-text-muted sm:col-span-2">{t("annullabile")}</p>
+        <Esito esito={stato?.esito} inCorso={inCorso} ok={t("spostata")} className="sm:col-span-2" />
       </form>
     </Espandibile>
   );

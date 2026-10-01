@@ -53,7 +53,7 @@
     "originale": "Original email"
   },
   "pagina": {
-    "situazione": "Back to the situation",
+    "situazione": "Situation",
     "origine": {
       "risposta": "Replying to",
       "sollecito": "Following up on"
@@ -140,7 +140,6 @@
     "nessuna": "No email was given to the AI"
   },
   "conferma": {
-    "titolo": "Review & send",
     "riepilogo": "From <da></da> to <a></a>",
     "controllaAvvisi": "{numero, plural, one {Check the warning above} other {Check the # warnings above}}",
     "invia": "Send now",

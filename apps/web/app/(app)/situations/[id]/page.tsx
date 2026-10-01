@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ChevronLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import {
   bozzeDellaSituazione,
   emailDellaSituazioneWeb,
@@ -23,7 +23,7 @@ import { SezioneCronologia } from "@/components/situazione/cronologia";
 import { SezioneFonti } from "@/components/situazione/fonti";
 import { IntestazioneSituazione, PulsanteArchivio } from "@/components/situazione/intestazione";
 import { PannelloPerche, PulsantePerche } from "@/components/situazione/perche";
-import { emailInEvidenza, ProssimaAzione } from "@/components/situazione/prossima-azione";
+import { emailInEvidenza, ProssimaAzione, testiProssimaAzione } from "@/components/situazione/prossima-azione";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("situazione");
@@ -97,8 +97,9 @@ export default async function PaginaSituazione({ params }: { params: Promise<{ i
       <div className="space-y-5">
         <div className="flex items-center justify-between gap-3">
           <nav aria-label={t("navigazione")}>
-            <Link href="/" className="-ml-1 inline-flex h-8 items-center gap-1 rounded-lg px-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
-              <ChevronLeft className="size-4" aria-hidden />
+            {/* Come il ritorno di Posta e Bozze: freccia e area di tocco di 36px. */}
+            <Link href="/" className="-ml-1 inline-flex h-9 items-center gap-1.5 rounded-lg px-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
+              <ArrowLeft className="size-4" aria-hidden />
               {t("tornaHome")}
             </Link>
           </nav>
@@ -107,7 +108,7 @@ export default async function PaginaSituazione({ params }: { params: Promise<{ i
             <PulsanteArchivio vista={vista} />
           </div>
         </div>
-        <IntestazioneSituazione vista={vista} contesto={contesto} />
+        <IntestazioneSituazione vista={vista} contesto={contesto} testiProssima={testiProssimaAzione(vista, contesto)} />
         <ProssimaAzione vista={vista} urgenza={urgenza} contesto={contesto} />
       </div>
 

@@ -1,5 +1,5 @@
 {
-  "titolo": "Home",
+  "titolo": "Cosa ti aspetta",
   "conteggio": "{numero, plural, one {# situazione} other {# situazioni}}",
   "mostraAltre": "Mostra altre {numero}",
   "mostraMeno": "Mostra meno",
@@ -15,7 +15,8 @@
     "anche": "Anche:",
     "scadenza": "Scadenza",
     "caselle": "Caselle",
-    "ultimaAttivita": "Ultima attività"
+    "ultimaAttivita": "Ultima attività",
+    "daConfermare": "AI · da confermare"
   },
   "prossimaAzione": {
     "rivediRisposta": "Rivedi la risposta",
@@ -27,7 +28,8 @@
     "attendi": "In attesa di {destinatari}",
     "attendiSenzaDestinatari": "In attesa di risposta",
     "attesaEntro": "Risposta entro",
-    "gestisciUrgenza": "Leggi l'email, poi segna come gestita",
+    "gestisciUrgenza": "Controlla l'email, poi segna come gestita",
+    "gestisciUrgenzaUtente": "Occupatene, poi segna come gestita",
     "nessuna": "Niente da fare per ora"
   },
   "avvisi": {
@@ -89,17 +91,20 @@
     }
   },
   "riepilogo": {
-    "titolo": "Riepilogo News",
+    "titolo": "News · ultime 24 ore",
+    "titoloPaginaNews": "Riepilogo",
     "testoAi": "Sintesi AI",
     "testoAiAiuto": "Scritto dall'AI in base alle email collegate a ogni voce. Apri le email per verificare.",
     "aggiornato": "Aggiornato",
-    "aggiorna": "Aggiorna",
-    "aggiornaRichiesto": "Aggiornamento richiesto.",
+    "aggiorna": "Rigenera",
+    "aggiornaAiuto": "L'AI riscrive il riepilogo con la tua chiave OpenRouter",
+    "aggiornaRichiesto": "Rigenerazione richiesta.",
     "vuoto": "Nessuna News nelle ultime 24 ore",
     "inPreparazione": "Il riepilogo non è ancora pronto.",
     "fonte": "Email fonte {numero}",
+    "fonteOggetto": "Fonte: {oggetto}",
     "nonIncluse": "{numero, plural, one {# email non ancora inclusa} other {# email non ancora incluse}} nel riepilogo",
-    "vediNews": "Vedi tutte le News",
+    "vediNews": "Apri le News",
     "errore": "L'ultimo aggiornamento non è riuscito: {motivo}"
   }
 }

@@ -1,6 +1,7 @@
 import { cn } from "./cn";
 
-const BASE = "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm placeholder:text-text-muted focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30";
+/** I campi hanno un bordo più marcato delle schede (`border-input`), così si riconoscono come campi da compilare. */
+const BASE = "w-full rounded-lg border border-border-input bg-surface px-3 py-2 text-sm placeholder:text-text-muted focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30";
 
 export function Etichetta({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return <label className={cn("text-sm font-medium", className)} {...props} />;

@@ -107,14 +107,10 @@
       "casella_non_pronta": "Reconnect or authorise this mailbox before starting the import."
     },
     "collegaPrima": "Connect a Gmail mailbox",
-    "permessiOk": "read and send allowed",
     "fasi": {
       "da_stimare": "estimating the import",
-      "stimata": "import to confirm",
       "confermata": "import starting",
-      "rifiutata": "import postponed",
       "in_corso": "importing",
-      "completata": "imported",
       "errore": "import failed"
     }
   },
@@ -159,7 +155,6 @@
   },
   "modelli": {
     "titolo": "AI models",
-    "descrizione": "Each AI function runs on its own OpenRouter model.",
     "funzioni": {
       "classificazione_priorita": {
         "nome": "Classification and priority",
@@ -208,12 +203,13 @@
     },
     "personalizzato": "Custom",
     "cambia": "Change",
-    "aiutoCampo": "Format: provider/model, as on openrouter.ai/models. Only models that keep no data and can answer in the app’s format are accepted."
+    "aiutoCampo": "Format: provider/model, as on <link>openrouter.ai/models</link>. Only models that keep no data and can answer in the app’s format are accepted."
   },
   "contesto": {
     "titolo": "AI context",
-    "inUsoVersione": "Using your directives · version {numero}",
-    "inUsoPredefinite": "Using the default directives",
+    "inUsoVersione": "Your directives · v{numero}",
+    "inUsoPredefinite": "Default directives",
+    "personalizza": "Customise",
     "campo": "Your directives",
     "salva": "Save",
     "predefinite": {
@@ -234,7 +230,7 @@
       "non_trovata": "This version no longer exists.",
       "non_valido": "The request isn’t valid. Reload the page."
     },
-    "aiuto": "Applies to new emails; use <rianalisi>Reanalyse</rianalisi> for older ones. The app’s safeguards always stay on."
+    "aiuto": "Applies to new emails. <rianalisi>Reanalyse</rianalisi> older ones."
   },
   "preferenze": {
     "lingua": "Language",
@@ -267,7 +263,7 @@
     "continua": "What keeps working",
     "continuaTesto": "Mail sync, reading your emails, your actions, waiting items and corrections, and sending drafts you confirm.",
     "ripresa": "When you resume, emails that arrived in the meantime are analysed.",
-    "attivaTesto": "Pausing stops all AI calls and spending. Mail keeps syncing.",
+    "attivaTesto": "Stops AI calls and spending; mail keeps syncing.",
     "inPausaTesto": "No AI calls, nothing spent. Mail keeps syncing.",
     "dettagli": "What happens"
   },
@@ -285,13 +281,12 @@
   },
   "rianalisi": {
     "titolo": "Reanalyse",
-    "descrizione": "Re-run the analysis with your current AI context and models. Your corrections are kept.",
+    "descrizione": "Your corrections are kept.",
     "ambito": "What to reanalyse",
     "aperti": "Emails of open Situations",
     "giorni": "Emails from the last",
     "giorniCampo": "Number of days",
     "stima": "Estimate cost",
-    "nienteParte": "Nothing runs until you confirm.",
     "ambitoGiorni": "Emails from the last {giorni, plural, one {day} other {# days}}",
     "numero": "{numero, plural, =0 {No emails to reanalyse} one {# email to reanalyse} other {# emails to reanalyse}}",
     "costo": "about {costo}",
@@ -308,13 +303,12 @@
     "giorniUnita": "days"
   },
   "privacy": {
-    "accettata": "Privacy notice accepted (version {versione}).",
+    "accettata": "Privacy notice accepted",
     "nonAccettata": "You haven’t accepted the current privacy notice (version {versione}). AI analysis stays paused until you do.",
     "leggi": "Read it",
     "accetta": "Review and accept"
   },
   "account": {
-    "descrizione": "Delete your account and everything the app stores about you.",
     "etichetta": "Delete account…",
     "titoloConferma": "Delete your account and all its data?",
     "analisi": "AI analysis stops immediately.",

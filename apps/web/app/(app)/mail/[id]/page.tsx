@@ -5,7 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import { casellePosta, vistaEmail, vistaRianalisiEmail, type StatoAnalisiEmail, type VistaEmailDto } from "@ec/applicazione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
-import { DistintivoCategoria, DistintivoStatoAnalisi, DistintivoUrgente } from "@/components/posta/distintivi";
+import { DistintivoStatoAnalisi, DistintivoUrgente } from "@/components/posta/distintivi";
 import { SchedaAi, SituazioniEmail, type AzioniEmail } from "@/components/posta/interpretazione";
 import {
   AllegatiEmail,
@@ -91,8 +91,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * `/mail/[id]`: lettura di un'email in sola lettura. In alto i distintivi delle sole eccezioni (urgente, da
- * gestire, analisi ferma o in attesa), l'intestazione compatta con "Apri in Gmail", le copie quando c'è
+ * `/mail/[id]`: lettura di un'email in sola lettura. In alto i distintivi delle sole eccezioni (urgente,
+ * analisi ferma o in attesa: la categoria sta già nella scheda dell'AI), l'intestazione compatta con "Apri in
+ * Gmail" accanto all'oggetto (solo icona sotto `sm`), le copie quando c'è
  * qualcosa da segnalare, gli allegati per nome e le Situazioni collegate (con il punto da cui rispondere);
  * sotto, il corpo (testo semplice o originale isolato, scelti nell'URL) e accanto la scheda dell'AI:
  * classificazione con le evidenze e le correzioni annullabili, lingua con la rianalisi su conferma, dettagli
@@ -130,16 +131,15 @@ export default async function PaginaEmail({ params, searchParams }: { params: Pr
 
   return (
     <article className="space-y-5">
-      <Link href="/mail" className="inline-flex items-center gap-1.5 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
+      <Link href="/mail" className="-ml-1 inline-flex h-9 items-center gap-1.5 rounded-lg px-1 text-sm text-text-muted underline-offset-4 hover:text-text hover:underline">
         <ArrowLeft className="size-4" aria-hidden />
         {t("email.indietro")}
       </Link>
 
       <header className="space-y-3">
-        {c?.urgente || c?.categoria === "operativa" || statoAnalisi ? (
+        {c?.urgente || statoAnalisi ? (
           <div className="flex flex-wrap items-center gap-1.5">
             {c?.urgente ? <DistintivoUrgente etichetta={t("email.urgente")} /> : null}
-            {c?.categoria === "operativa" ? <DistintivoCategoria categoria={c.categoria} /> : null}
             {statoAnalisi ? (
               <a href="#funzioni-ai" className="rounded-full hover:opacity-80">
                 <DistintivoStatoAnalisi stato={statoAnalisi} />
@@ -147,11 +147,11 @@ export default async function PaginaEmail({ params, searchParams }: { params: Pr
             ) : null}
           </div>
         ) : null}
-        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-          <h1 className="min-w-0 text-2xl leading-tight">
+        <div className="flex items-start justify-between gap-3 sm:gap-4">
+          <h1 className="min-w-0 text-2xl leading-tight break-words">
             <TestoSemplice come="span" testo={email.oggetto.trim() || t("email.senzaOggetto")} lingua={email.oggetto.trim() ? email.lingua.valore : null} />
           </h1>
-          <PulsanteProvider href={linkProvider} />
+          <PulsanteProvider href={linkProvider} compatto />
         </div>
         <IntestazioniEmail email={email} />
         <CopieEmail email={email} piuCaselle={piuCaselle} />

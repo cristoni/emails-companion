@@ -1,19 +1,35 @@
 import { useTranslations } from "next-intl";
-import { CalendarClock, CheckCircle2, Sparkles, Zap } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, Sparkles } from "lucide-react";
 import type { AttivitaDto } from "@ec/applicazione";
 import { testoCodice } from "@/components/comuni/codici";
-import { DistintivoBase, DistintivoProposta } from "@/components/comuni/distintivi";
+import { DistintivoBase } from "@/components/comuni/distintivi";
 import { ElencoEvidenze, LinkEmail } from "@/components/comuni/evidenze";
 import { Istante } from "@/components/comuni/istante";
 import { ModuloAzione } from "@/components/comuni/modulo-azione";
 import { TestoSemplice } from "@/components/comuni/testo-semplice";
 import { cn } from "@/components/ui/cn";
 import { Distintivo } from "@/components/ui/distintivo";
-import { completaAttivitaAzione, confermaElementoAzione, riapriAttivitaAzione, scartaElementoAzione } from "@/app/(app)/situations/[id]/azioni";
-import { ancora, AzioniScheda, CorrezioniElemento, ElencoSchede, LinkPerche, linguaDi, Sezione, type ContestoDettaglio } from "./comuni";
+import { completaAttivitaAzione, riapriAttivitaAzione, scartaElementoAzione } from "@/app/(app)/situations/[id]/azioni";
+import { ancora, AzioniScheda, CorrezioniElemento, ElencoSchede, LinkPerche, linguaDi, normalizza, ripete, Sezione, type ContestoDettaglio } from "./comuni";
 import { ModificaAttivita } from "./modifica-attivita";
+import { SegnoProposta, StrisciaProposta } from "./proposta";
 
 const aperta = (a: AttivitaDto) => a.stato === "proposta" || a.stato === "confermata";
+
+/** Descrizione senza un verbo iniziale come "Rispondi:" o "Reply:", per confrontarla con la citazione. */
+const senzaVerbo = (testo: string) => testo.replace(/^[^:\n]{1,24}:\s*/u, "");
+
+/**
+ * Vero se la descrizione dell'attività dice solo ciò che dice già la citazione sotto. Per l'attività della
+ * scheda "Prossima azione", che ne mostra già il titolo intero, conta anche la sola citazione dopo il verbo
+ * iniziale; per le altre serve lo stesso testo, così non si perde mai un'informazione.
+ */
+function ripeteCitazione(a: AttivitaDto, inEvidenza: boolean): boolean {
+  const citazioni = a.evidenze.map((e) => e.citazione);
+  if (citazioni.length === 0) return false;
+  if (inEvidenza) return ripete(senzaVerbo(a.descrizione), citazioni);
+  return citazioni.some((c) => normalizza(c) === normalizza(a.descrizione));
+}
 
 /** Attività della Situazione: le aperte in vista, le completate, scartate o non più trovate raccolte a parte. */
 export function SezioneAttivita({ attivita, contesto }: { attivita: readonly AttivitaDto[]; contesto: ContestoDettaglio }) {
@@ -32,6 +48,9 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
   const inCorso = aperta(a);
   // Le evidenze portano già all'email da cui deriva l'attività: il link a parte serve solo se nessuna lo fa.
   const sorgenteCitata = a.evidenze.some((e) => e.emailId === a.emailSorgenteId);
+  // In evidenza nella scheda "Prossima azione": lì ci sono già "Segna come completata" e la domanda della proposta.
+  const inEvidenza = contesto.inEvidenza.attivitaId === a.id;
+  const soloCitazione = ripeteCitazione(a, inEvidenza);
 
   return (
     <li
@@ -42,23 +61,26 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
-        {a.proposta ? <DistintivoProposta /> : <StatoAttivita attivita={a} />}
+        {/* Una proposta ha la sua domanda in fondo alla scheda (o nella scheda in cima): qui il segno compatto. */}
+        {a.proposta ? inEvidenza ? <SegnoProposta /> : null : <StatoAttivita attivita={a} />}
         <DistintivoBase base={a.base} />
         {a.priorita === "alta" && inCorso ? <PrioritaAlta /> : null}
         {a.urgente && inCorso ? (
-          <Distintivo tono="urgente" icona={<Zap className="size-3" aria-hidden />}>
+          <Distintivo tono="urgente" icona={<AlertTriangle className="size-3" aria-hidden />}>
             {t("urgente")}
           </Distintivo>
         ) : null}
         <LinkPerche analisiId={a.analisiId} contesto={contesto} />
       </div>
 
-      <TestoSemplice
-        come="p"
-        testo={a.descrizione}
-        lingua={lingua}
-        className={cn("mt-2 text-[15px] leading-relaxed", !inCorso && "text-text-muted line-through decoration-border-strong")}
-      />
+      {soloCitazione ? null : (
+        <TestoSemplice
+          come="p"
+          testo={a.descrizione}
+          lingua={lingua}
+          className={cn("mt-2 text-[15px] leading-relaxed", !inCorso && "text-text-muted line-through decoration-border-strong")}
+        />
+      )}
 
       {a.scadenza || a.scadenzaCitazione ? (
         <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
@@ -101,24 +123,28 @@ function SchedaAttivita({ attivita: a, contesto }: { attivita: AttivitaDto; cont
         </p>
       ) : null}
 
+      {inCorso && a.proposta && !inEvidenza ? <StrisciaProposta tipo="attivita" id={a.id} className="mt-3" /> : null}
+
       {/* Completata dall'AI: la riapertura è già nel riquadro dell'inferenza, qui sopra. */}
       {inCorso ? (
         <AzioniScheda
           fare={
             <>
               {/* Il pulsante principale della pagina è nella scheda "Prossima azione": qui tutti secondari. */}
-              {a.proposta ? <ModuloAzione azione={confermaElementoAzione} campi={{ tipo: "attivita", id: a.id }} etichetta={t("conferma")} /> : null}
-              <ModuloAzione azione={completaAttivitaAzione} campi={{ attivita: a.id }} etichetta={t("completa")} />
+              {inEvidenza ? null : <ModuloAzione azione={completaAttivitaAzione} campi={{ attivita: a.id }} etichetta={t("completa")} />}
               <ModificaAttivita attivitaId={a.id} descrizione={a.descrizione} lingua={lingua} scadenza={a.scadenza ? a.scadenza.slice(0, 10) : ""} priorita={a.priorita} />
             </>
           }
           correggere={
-            <ModuloAzione
-              azione={scartaElementoAzione}
-              campi={{ tipo: "attivita", id: a.id }}
-              etichetta={t("scarta")}
-              conferma={{ domanda: t("scartaDomanda"), etichetta: t("scartaConferma") }}
-            />
+            // Per una proposta "Non è un'attività" è già nella sua domanda.
+            a.proposta ? undefined : (
+              <ModuloAzione
+                azione={scartaElementoAzione}
+                campi={{ tipo: "attivita", id: a.id }}
+                etichetta={t("scarta")}
+                conferma={{ domanda: t("scartaDomanda"), etichetta: t("scartaConferma") }}
+              />
+            )
           }
         />
       ) : !a.completataDaAi ? (

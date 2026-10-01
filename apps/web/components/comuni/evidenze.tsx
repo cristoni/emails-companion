@@ -2,12 +2,17 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import type { EvidenzaDto } from "@ec/applicazione";
-import { CLASSE_LINK } from "@/components/ui/collegamento";
+import { cn } from "@/components/ui/cn";
+import { AREA_TOCCO, CLASSE_LINK } from "@/components/ui/collegamento";
 import { TestoSemplice } from "./testo-semplice";
 
+/** Classe predefinita dei link alle email: link nel testo con un'area di tocco di almeno 36px. */
+const CLASSE_LINK_EMAIL = cn(CLASSE_LINK, AREA_TOCCO);
+
 /**
- * Evidenze di un'affermazione dell'AI: ogni citazione porta all'email da cui deriva e dice se è stata
- * trovata alla lettera nel testo, così ogni affermazione resta verificabile.
+ * Evidenze di un'affermazione dell'AI: ogni citazione porta all'email da cui deriva, così ogni affermazione
+ * resta verificabile. La citazione trovata alla lettera nel testo è il caso normale e ha solo un'icona (con
+ * il testo nel `title` e per i lettori di schermo); quella non trovata, l'eccezione da guardare, è scritta.
  */
 export function ElencoEvidenze({
   evidenze,
@@ -33,17 +38,24 @@ export function ElencoEvidenze({
         <li key={`${e.emailId}-${i}`} className="border-l-2 border-border-strong py-0.5 pl-3 text-sm">
           <TestoSemplice come="blockquote" testo={`“${e.citazione}”`} className="text-text" />
           <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-text-muted">
-            <span className="inline-flex items-center gap-1">
-              {e.verificata ? <CheckCircle2 className="size-3.5 text-accent-strong" aria-hidden /> : <AlertTriangle className="size-3.5 text-urgent" aria-hidden />}
-              {t(e.verificata ? "verificata" : "nonVerificata")}
-            </span>
+            {e.verificata ? (
+              <span className="inline-flex items-center" title={t("verificata")}>
+                <CheckCircle2 className="size-3.5 text-accent-strong" aria-hidden />
+                <span className="sr-only">{t("verificata")}</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1">
+                <AlertTriangle className="size-3.5 text-urgent" aria-hidden />
+                {t("nonVerificata")}
+              </span>
+            )}
             <Link
               href={
                 e.emailId === emailCorrente
                   ? `${hrefEmailCorrente ?? `/mail/${e.emailId}`}#${e.verificata ? `citazione-${i}` : "testo"}`
                   : `/mail/${e.emailId}`
               }
-              className={CLASSE_LINK}
+              className={CLASSE_LINK_EMAIL}
             >
               {t(e.emailId === emailCorrente ? "mostraNelTesto" : "apri")}
             </Link>
@@ -58,7 +70,7 @@ export function ElencoEvidenze({
 export function LinkEmail({ emailId, children, className, title }: { emailId: string; children?: React.ReactNode; className?: string; title?: string }) {
   const t = useTranslations("comuni.fonte");
   return (
-    <Link href={`/mail/${emailId}`} title={title} className={className ?? CLASSE_LINK}>
+    <Link href={`/mail/${emailId}`} title={title} className={className ?? CLASSE_LINK_EMAIL}>
       {children ?? t("apri")}
     </Link>
   );
@@ -69,7 +81,7 @@ export function LinkProvider({ href, children, className }: { href: string | nul
   const t = useTranslations("comuni.fonte");
   if (!href) return null;
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={className ?? CLASSE_LINK}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className ?? CLASSE_LINK_EMAIL}>
       {children ?? t("apriNelProvider")}
     </a>
   );

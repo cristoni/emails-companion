@@ -34,8 +34,9 @@ export default async function PaginaConfermaInvio({ params }: { params: Promise<
 
   return (
     <div className="space-y-5">
-      {/* Nessun link di ritorno in cima: riportano all'editor il passo "Modifica" e il pulsante accanto a "Invia ora". */}
-      <IntestazioneBozza titolo={t("conferma.titolo")}>
+      {/* Stesso titolo dell'editor: il passo corrente lo dicono i passi. Nessun link di ritorno in cima: riportano
+          all'editor il passo "Modifica" e il pulsante accanto a "Invia ora". */}
+      <IntestazioneBozza titolo={t(`titoli.${bozza.tipo}`)}>
         <PassiBozza attivo="conferma" hrefModifica={`/drafts/${bozza.id}`} />
       </IntestazioneBozza>
 
