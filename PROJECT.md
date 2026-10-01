@@ -83,6 +83,15 @@ Prese durante la realizzazione di riepilogo, bozze e rianalisi.
 - **Lingua dell'interfaccia e tema** si salvano nelle preferenze dell'account; il tema salvato vale su ogni nuovo dispositivo, mentre la scelta fatta su un browser resta su quel browser.
 - **Rianalisi**: gli ultimi N giorni arrivano al massimo a 365. La stima non chiama modelli e l'ambito è fissato al momento della stima; dopo la conferma la rianalisi prosegue a blocchi e riprende da sola dopo una pausa. Un'email spostata nelle News non genera Attività, anche se l'estrazione era già avvenuta.
 
+### 2.3 Decisioni di prodotto del 1° ottobre 2026
+
+Prese dopo la prova della demo: le funzioni restano, l'interfaccia deve essere più chiara e **più immediata di un client di posta classico**, con meno testo.
+
+- **Colori**: l'accento è blu e non c'è verde nell'interfaccia; gli stati positivi usano l'accento con un'icona. Le Risposte arrivate passano al viola per distinguersi dall'accento.
+- **Meno testo**: titoli senza frasi di spiegazione, nessun badge per gli stati normali (ricevuta, analizzata, priorità media…), icone al posto delle etichette ridondanti. I contenuti secondari (correzioni, cronologia, motivi dei collegamenti, dati tecnici) restano raggiungibili ma chiusi in un dettaglio a richiesta. Le sezioni vuote non occupano spazio.
+- **Home**: sotto il titolo un sommario con il numero di Situazioni per Area; ogni Area compare solo se contiene qualcosa; le Situazioni sono in un'unica colonna nell'ordine di precedenza; su schermi larghi il Riepilogo News sta a lato. Con una sola casella collegata la casella di provenienza non viene ripetuta su ogni Situazione: compare quando le caselle sono più di una.
+- **Dettaglio della Situazione**: la prossima azione, con i suoi pulsanti, viene subito dopo il titolo e l'urgenza è indicata una sola volta. Il pannello "Perché?" è **a comparsa e chiuso all'apertura della pagina**: si apre dal pulsante in alto o dal "Perché?" accanto a un'affermazione.
+
 ## 3. Concetti funzionali
 
 | Concetto | Significato |
